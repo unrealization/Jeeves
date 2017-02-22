@@ -3,6 +3,8 @@ package bot;
 import interfaces.BotCommand;
 import interfaces.BotModule;
 import interfaces.NewUserHandler;
+import interfaces.PresenceUpdateHandler;
+import interfaces.UserUpdateHandler;
 
 import java.util.Set;
 
@@ -11,8 +13,10 @@ import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.MentionEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.UserUpdateEvent;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -29,6 +33,8 @@ public class DiscordEventHandlers
 			dispatcher.registerListener(new MessageReceivedListener());
 			dispatcher.registerListener(new MentionListener());
 			dispatcher.registerListener(new NewUserListener());
+			dispatcher.registerListener(new UserUpdateListener());
+			dispatcher.registerListener(new UserPresenceListener());
 
 			IUser botUser = bot.getOurUser();
 			System.out.println("Logged in as " + botUser.getName() + " (" + Jeeves.version + ")");
@@ -91,7 +97,60 @@ public class DiscordEventHandlers
 				module.newUserHandler(event);
 			}
 		}
-		
+	}
+
+	public static class UserUpdateListener implements IListener<UserUpdateEvent>
+	{
+		@Override
+		public void handle(UserUpdateEvent event)
+		{
+			Set<String> moduleSet = Jeeves.modules.keySet();
+			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+
+			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+			{
+				UserUpdateHandler module;
+
+				try
+				{
+					module = (UserUpdateHandler)Jeeves.modules.get(moduleList[moduleIndex]);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					continue;
+				}
+
+				module.userUpdateHandler(event);
+			}
+		}
+	}
+
+	public static class UserPresenceListener implements IListener<PresenceUpdateEvent>
+	{
+		@Override
+		public void handle(PresenceUpdateEvent event)
+		{
+			Set<String> moduleSet = Jeeves.modules.keySet();
+			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+
+			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+			{
+				PresenceUpdateHandler module;
+
+				try
+				{
+					module = (PresenceUpdateHandler)Jeeves.modules.get(moduleList[moduleIndex]);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					continue;
+				}
+
+				module.presenceUpdateHandler(event);
+			}
+		}
 	}
 
 	private static void handleMessage(IMessage message)
