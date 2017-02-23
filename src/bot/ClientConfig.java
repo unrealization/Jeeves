@@ -132,4 +132,38 @@ public class ClientConfig implements BotConfig
 	{
 		this.config.put(key, value);
 	}
+
+	@Override
+	public String[] getKeyList(String serverId)
+	{
+		return this.getKeyList();
+	}
+
+	public String[] getKeyList()
+	{
+		Set<String> keySet = this.config.keySet();
+		String[] keyList = keySet.toArray(new String[keySet.size()]);
+		return keyList;
+	}
+
+	@Override
+	public boolean hasKey(String serverId, String key)
+	{
+		return this.hasKey(key);
+	}
+
+	public boolean hasKey(String key)
+	{
+		String[] keyList = this.getKeyList();
+
+		for (int keyIndex = 0; keyIndex < keyList.length; keyIndex++)
+		{
+			if (keyList[keyIndex].equals(key))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

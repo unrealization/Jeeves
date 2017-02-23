@@ -141,7 +141,6 @@ public class ServerConfig implements BotConfig
 	@Override
 	public String getValue(String serverId, String key)
 	{
-		//TODO: default config magic
 		if (this.config.containsKey(serverId) == false)
 		{
 			return "";
@@ -160,7 +159,6 @@ public class ServerConfig implements BotConfig
 	@Override
 	public void setValue(String serverId, String key, String value)
 	{
-		//TODO: default config magic
 		HashMap<String, String> serverConfig;
 
 		if (this.config.containsKey(serverId) == false)
@@ -174,5 +172,30 @@ public class ServerConfig implements BotConfig
 
 		serverConfig.put(key, value);
 		this.config.put(serverId, serverConfig);
+	}
+
+
+	@Override
+	public String[] getKeyList(String serverId)
+	{
+		Set<String> keySet = this.config.get(serverId).keySet();
+		String[] keyList = keySet.toArray(new String[keySet.size()]);
+		return keyList;
+	}
+
+	@Override
+	public boolean hasKey(String serverId, String key)
+	{
+		String[] keyList = this.getKeyList(serverId);
+
+		for (int keyIndex = 0; keyIndex < keyList.length; keyIndex++)
+		{
+			if (keyList[keyIndex].equals(key))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

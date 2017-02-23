@@ -13,4 +13,6 @@ public interface BotConfig
 	public void saveConfig(String fileName) throws ParserConfigurationException, TransformerException;
 	public String getValue(String serverId, String key);
 	public void setValue(String serverId, String key, String value);
+	public String[] getKeyList(String serverId);
+	public boolean hasKey(String serverId, String key);
 }

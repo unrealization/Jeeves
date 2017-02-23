@@ -8,6 +8,9 @@ import interfaces.UserUpdateHandler;
 
 import java.util.Set;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.IListener;
@@ -220,42 +223,54 @@ public class DiscordEventHandlers
 
 			for (int commandIndex = 0; commandIndex < commandList.length; commandIndex++)
 			{
-				if (commandList[commandIndex].toLowerCase().equals(commandName) == true)
+				if (commandList[commandIndex].toLowerCase().equals(commandName) == false)
 				{
-					System.out.println("Executing " + commandName + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ")");
-					Class<?> commandClass;
-
-					try
-					{
-						commandClass = Class.forName(module.getClass().getName() + "$" + commandList[commandIndex]);
-					}
-					catch (ClassNotFoundException e)
-					{
-						e.printStackTrace();
-						return;
-					}
-
-					BotCommand command;
-
-					try
-					{
-						command = (BotCommand)commandClass.newInstance();
-					}
-					catch (InstantiationException | IllegalAccessException e)
-					{
-						e.printStackTrace();
-						return;
-					}
-
-					if (command == null)
-					{
-						System.out.println("Error");
-					}
-
-					command.execute(message, arguments);
-					//TaskHandler executor = new TaskHandler(message, command, arguments);
-					//executor.start();
+					continue;
 				}
+
+				try
+				{
+					Jeeves.checkConfig(message.getGuild().getID(), module.getDefaultConfig());
+				}
+				catch (ParserConfigurationException | TransformerException e)
+				{
+					e.printStackTrace();
+					return;
+				}
+
+				System.out.println("Executing " + commandName + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ")");
+				Class<?> commandClass;
+
+				try
+				{
+					commandClass = Class.forName(module.getClass().getName() + "$" + commandList[commandIndex]);
+				}
+				catch (ClassNotFoundException e)
+				{
+					e.printStackTrace();
+					return;
+				}
+
+				BotCommand command;
+
+				try
+				{
+					command = (BotCommand)commandClass.newInstance();
+				}
+				catch (InstantiationException | IllegalAccessException e)
+				{
+					e.printStackTrace();
+					return;
+				}
+
+				if (command == null)
+				{
+					System.out.println("Error");
+				}
+
+				command.execute(message, arguments);
+				//TaskHandler executor = new TaskHandler(message, command, arguments);
+				//executor.start();
 			}
 		}
 	}

@@ -133,7 +133,6 @@ public class Edsm implements BotModule
 		public void execute(IMessage message, String[] arguments)
 		{
 			String commanderName = String.join(" ", arguments).trim();
-			System.out.println("Commander: " + commanderName);
 
 			if (commanderName.isEmpty() == true)
 			{
