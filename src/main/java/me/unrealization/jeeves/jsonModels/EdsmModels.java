@@ -1,4 +1,4 @@
-package jsonModels;
+package me.unrealization.jeeves.jsonModels;
 
 public class EdsmModels
 {

@@ -1,18 +1,18 @@
-package modules;
+package me.unrealization.jeeves.modules;
 
 import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import bot.Jeeves;
+import me.unrealization.jeeves.bot.Jeeves;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;
-import interfaces.BotCommand;
-import interfaces.BotModule;
-import interfaces.NewUserHandler;
+import me.unrealization.jeeves.interfaces.BotCommand;
+import me.unrealization.jeeves.interfaces.BotModule;
+import me.unrealization.jeeves.interfaces.NewUserHandler;
 
 public class Welcome implements BotModule, NewUserHandler
 {

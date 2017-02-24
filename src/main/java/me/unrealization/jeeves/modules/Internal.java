@@ -1,12 +1,12 @@
-package modules;
+package me.unrealization.jeeves.modules;
 
 import java.util.HashMap;
 
-import bot.Jeeves;
+import me.unrealization.jeeves.bot.Jeeves;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;
-import interfaces.BotCommand;
-import interfaces.BotModule;
+import me.unrealization.jeeves.interfaces.BotCommand;
+import me.unrealization.jeeves.interfaces.BotModule;
 
 public class Internal implements BotModule
 {

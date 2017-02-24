@@ -1,4 +1,4 @@
-package bot;
+package me.unrealization.jeeves.bot;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import interfaces.BotConfig;
+import me.unrealization.jeeves.interfaces.BotConfig;
 
 public class ClientConfig implements BotConfig
 {

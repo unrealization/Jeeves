@@ -1,4 +1,4 @@
-package interfaces;
+package me.unrealization.jeeves.interfaces;
 
 import java.util.HashMap;
 

@@ -1,6 +1,6 @@
-package bot;
+package me.unrealization.jeeves.bot;
 
-import interfaces.BotConfig;
+import me.unrealization.jeeves.interfaces.BotConfig;
 
 import java.io.File;
 import java.io.IOException;
