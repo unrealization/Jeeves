@@ -1,4 +1,4 @@
-package bot;
+package me.unrealization.jeeves.bot;
 
 import com.google.gson.Gson;
 

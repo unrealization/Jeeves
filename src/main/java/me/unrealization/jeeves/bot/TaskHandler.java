@@ -1,7 +1,7 @@
-package bot;
+package me.unrealization.jeeves.bot;
 
 import sx.blah.discord.handle.obj.IMessage;
-import interfaces.BotCommand;
+import me.unrealization.jeeves.interfaces.BotCommand;
 
 public class TaskHandler implements Runnable
 {

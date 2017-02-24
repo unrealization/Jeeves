@@ -1,6 +1,6 @@
-package bot;
+package me.unrealization.jeeves.bot;
 
-import interfaces.BotModule;
+import me.unrealization.jeeves.interfaces.BotModule;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,9 +10,9 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import modules.Edsm;
-import modules.Internal;
-import modules.Welcome;
+import me.unrealization.jeeves.modules.Edsm;
+import me.unrealization.jeeves.modules.Internal;
+import me.unrealization.jeeves.modules.Welcome;
 
 import org.xml.sax.SAXException;
 

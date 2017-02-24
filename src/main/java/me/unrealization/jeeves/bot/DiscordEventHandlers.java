@@ -1,10 +1,10 @@
-package bot;
+package me.unrealization.jeeves.bot;
 
-import interfaces.BotCommand;
-import interfaces.BotModule;
-import interfaces.NewUserHandler;
-import interfaces.PresenceUpdateHandler;
-import interfaces.UserUpdateHandler;
+import me.unrealization.jeeves.interfaces.BotCommand;
+import me.unrealization.jeeves.interfaces.BotModule;
+import me.unrealization.jeeves.interfaces.NewUserHandler;
+import me.unrealization.jeeves.interfaces.PresenceUpdateHandler;
+import me.unrealization.jeeves.interfaces.UserUpdateHandler;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -12,7 +12,7 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import modules.Internal;
+import me.unrealization.jeeves.modules.Internal;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.IListener;

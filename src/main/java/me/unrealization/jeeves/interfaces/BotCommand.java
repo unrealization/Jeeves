@@ -1,4 +1,4 @@
-package interfaces;
+package me.unrealization.jeeves.interfaces;
 
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;

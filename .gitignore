@@ -1,6 +1,9 @@
+.idea
+.target
 .classpath
 .project
 .settings/*
 bin/*
 clientConfig.xml
 serverConfig.xml
+dependency-reduced-pom.xml
