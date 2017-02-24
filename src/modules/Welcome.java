@@ -9,6 +9,7 @@ import bot.Jeeves;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.Permissions;
 import interfaces.BotCommand;
 import interfaces.BotModule;
 import interfaces.NewUserHandler;
@@ -102,10 +103,11 @@ public class Welcome implements BotModule, NewUserHandler
 		}
 
 		@Override
-		public String[] permissions()
+		public Permissions[] permissions()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
 		}
 
 		@Override
@@ -167,10 +169,11 @@ public class Welcome implements BotModule, NewUserHandler
 		}
 
 		@Override
-		public String[] permissions()
+		public Permissions[] permissions()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
 		}
 
 		@Override

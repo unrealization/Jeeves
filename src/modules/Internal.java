@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import bot.Jeeves;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.Permissions;
 import interfaces.BotCommand;
 import interfaces.BotModule;
 
@@ -11,19 +12,20 @@ public class Internal implements BotModule
 {
 	private String version = Jeeves.version;
 	private String[] commandList;
+	private HashMap<String, String> defaultConfig = new HashMap<String, String>();
 
 	public Internal()
 	{
 		this.commandList = new String[2];
 		this.commandList[0] = "Version";
 		this.commandList[1] = "Ping";
+		this.defaultConfig.put("commandPrefix", "!");
 	}
 
 	@Override
 	public HashMap<String, String> getDefaultConfig()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.defaultConfig;
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class Internal implements BotModule
 		}
 
 		@Override
-		public String[] permissions()
+		public Permissions[] permissions()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -95,7 +97,7 @@ public class Internal implements BotModule
 		}
 
 		@Override
-		public String[] permissions() {
+		public Permissions[] permissions() {
 			// TODO Auto-generated method stub
 			return null;
 		}

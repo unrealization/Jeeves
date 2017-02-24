@@ -7,6 +7,7 @@ import bot.Jeeves;
 import jsonModels.EdsmModels;
 import apis.EdsmApi;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.Permissions;
 import interfaces.BotCommand;
 import interfaces.BotModule;
 
@@ -65,7 +66,7 @@ public class Edsm implements BotModule
 		}
 
 		@Override
-		public String[] permissions()
+		public Permissions[] permissions()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -117,7 +118,7 @@ public class Edsm implements BotModule
 		}
 
 		@Override
-		public String[] permissions()
+		public Permissions[] permissions()
 		{
 			// TODO Auto-generated method stub
 			return null;

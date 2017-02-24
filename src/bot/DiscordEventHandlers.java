@@ -6,6 +6,7 @@ import interfaces.NewUserHandler;
 import interfaces.PresenceUpdateHandler;
 import interfaces.UserUpdateHandler;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,6 +23,8 @@ import sx.blah.discord.handle.impl.events.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.UserUpdateEvent;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.DiscordException;
 
 public class DiscordEventHandlers
 {
@@ -52,7 +55,7 @@ public class DiscordEventHandlers
 			IMessage message = event.getMessage();
 			String messageContent = message.getContent();
 
-			if (messageContent.startsWith(Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix")))
+			if (messageContent.startsWith(Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix")) == true)
 			{
 				DiscordEventHandlers.handleMessage(message);
 			}
@@ -68,7 +71,7 @@ public class DiscordEventHandlers
 			String messageContent = message.getContent();
 			IUser botUser = event.getClient().getOurUser();
 
-			if ((messageContent.startsWith(botUser.mention(true))) || (messageContent.startsWith(botUser.mention(false))))
+			if ((messageContent.startsWith(botUser.mention(true)) == true) || (messageContent.startsWith(botUser.mention(false)) == true))
 			{
 				DiscordEventHandlers.handleMessage(message);
 			}
@@ -266,6 +269,42 @@ public class DiscordEventHandlers
 				if (command == null)
 				{
 					System.out.println("Error");
+				}
+
+				if (command.owner() == true)
+				{
+					String ownerId = "";
+
+					try
+					{
+						ownerId = message.getClient().getApplicationOwner().getID();
+					}
+					catch (DiscordException e)
+					{
+						e.printStackTrace();
+					}
+
+					if (message.getAuthor().getID().equals(ownerId))
+					{
+						Jeeves.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
+						return;
+					}
+				}
+
+				Permissions[] permissionList = command.permissions();
+
+				if (permissionList != null)
+				{
+					EnumSet<Permissions> userPermissions = message.getAuthor().getPermissionsForGuild(message.getGuild());
+
+					for (int permissionIndex = 0; permissionIndex < permissionList.length; permissionIndex++)
+					{
+						if (userPermissions.contains(permissionList[permissionIndex]) == false)
+						{
+							Jeeves.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
+							return;
+						}
+					}
 				}
 
 				command.execute(message, arguments);
