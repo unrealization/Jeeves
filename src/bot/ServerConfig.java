@@ -31,20 +31,31 @@ public class ServerConfig implements BotConfig
 {
 	private HashMap<String, HashMap<String, String>> config = new HashMap<String, HashMap<String, String>>();
 
-	public ServerConfig() throws ParserConfigurationException, SAXException, IOException
+	public ServerConfig() throws ParserConfigurationException, SAXException
 	{
 		this.loadConfig();
 	}
 
 	@Override
-	public void loadConfig(String fileName) throws ParserConfigurationException, SAXException, IOException
+	public void loadConfig(String fileName) throws ParserConfigurationException, SAXException
 	{
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		docFactory.setIgnoringComments(true);
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
 		File xmlFile = new File(fileName);
-		Document doc = docBuilder.parse(xmlFile);
+		Document doc;
+
+		try
+		{
+			doc = docBuilder.parse(xmlFile);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			this.config = new HashMap<String, HashMap<String, String>>();
+			return;
+		}
 
 		NodeList servers = doc.getElementsByTagName("server");
 
@@ -74,7 +85,7 @@ public class ServerConfig implements BotConfig
 		}
 	}
 
-	public void loadConfig() throws ParserConfigurationException, SAXException, IOException
+	public void loadConfig() throws ParserConfigurationException, SAXException
 	{
 		this.loadConfig("serverConfig.xml");
 	}
@@ -129,8 +140,8 @@ public class ServerConfig implements BotConfig
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.transform(domSource, result);
 
-		result = new StreamResult(System.out);
-		transformer.transform(domSource, result);
+		/*result = new StreamResult(System.out);
+		transformer.transform(domSource, result);*/
 	}
 
 	public void saveConfig() throws ParserConfigurationException, TransformerException
@@ -174,10 +185,16 @@ public class ServerConfig implements BotConfig
 		this.config.put(serverId, serverConfig);
 	}
 
-
 	@Override
 	public String[] getKeyList(String serverId)
 	{
+		HashMap<String, String> serverConfig = this.config.get(serverId);
+
+		if (serverConfig == null)
+		{
+			return null;
+		}
+
 		Set<String> keySet = this.config.get(serverId).keySet();
 		String[] keyList = keySet.toArray(new String[keySet.size()]);
 		return keyList;
@@ -187,6 +204,11 @@ public class ServerConfig implements BotConfig
 	public boolean hasKey(String serverId, String key)
 	{
 		String[] keyList = this.getKeyList(serverId);
+
+		if (keyList == null)
+		{
+			return false;
+		}
 
 		for (int keyIndex = 0; keyIndex < keyList.length; keyIndex++)
 		{

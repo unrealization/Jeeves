@@ -12,9 +12,11 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import modules.Internal;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.IListener;
+import sx.blah.discord.handle.impl.events.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.MentionEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
@@ -41,6 +43,7 @@ public class DiscordEventHandlers
 			dispatcher.registerListener(new NewUserListener());
 			dispatcher.registerListener(new UserUpdateListener());
 			dispatcher.registerListener(new UserPresenceListener());
+			dispatcher.registerListener(new GuildCreateListener());
 
 			IUser botUser = bot.getOurUser();
 			System.out.println("Logged in as " + botUser.getName() + " (" + Jeeves.version + ")");
@@ -54,6 +57,11 @@ public class DiscordEventHandlers
 		{
 			IMessage message = event.getMessage();
 			String messageContent = message.getContent();
+
+			if (Jeeves.serverConfig.hasKey(message.getGuild().getID(), "commandPrefix") == false)
+			{
+				return;
+			}
 
 			if (messageContent.startsWith(Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix")) == true)
 			{
@@ -159,13 +167,33 @@ public class DiscordEventHandlers
 		}
 	}
 
+	public static class GuildCreateListener implements IListener<GuildCreateEvent>
+	{
+		@Override
+		public void handle(GuildCreateEvent event)
+		{
+			System.out.println("Creating default config for " + event.getGuild().getName());
+			Internal internal = new Internal();
+
+			try
+			{
+				Jeeves.checkConfig(event.getGuild().getID(), internal.getDefaultConfig());
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				e.printStackTrace();
+				System.out.println("Cannot create default config for " + event.getGuild().getName());
+			}
+		}
+	}
+
 	private static void handleMessage(IMessage message)
 	{
 		String messageContent = message.getContent();
 		IUser botUser = message.getClient().getOurUser();
 		int cutLength = 0;
 
-		if (messageContent.startsWith(Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix")))
+		if ((Jeeves.serverConfig.hasKey(message.getGuild().getID(), "commandPrefix")) && (messageContent.startsWith(Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix"))))
 		{
 			cutLength = Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix").length();
 		}

@@ -28,7 +28,7 @@ import sx.blah.discord.util.RateLimitException;
 
 public class Jeeves
 {
-	public static String version = "Jeeves4J 0.3";
+	public static String version = "Jeeves4J 0.4";
 	public static IDiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
@@ -165,10 +165,6 @@ public class Jeeves
 		{
 			e.printStackTrace();
 			return;
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
 		}
 
 		Jeeves.loadModules();

@@ -95,8 +95,8 @@ public class ClientConfig implements BotConfig
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.transform(domSource, result);
 
-		result = new StreamResult(System.out);
-		transformer.transform(domSource, result);
+		/*result = new StreamResult(System.out);
+		transformer.transform(domSource, result);*/
 	}
 
 	public void saveConfig() throws ParserConfigurationException, TransformerException
