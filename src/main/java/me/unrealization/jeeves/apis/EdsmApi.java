@@ -1,11 +1,11 @@
-package apis;
+package me.unrealization.jeeves.apis;
 
 import java.io.IOException;
 
-import jsonModels.EdsmModels;
-import bot.JSONHandler;
-import bot.WebClient;
-import interfaces.BotApi;
+import me.unrealization.jeeves.jsonModels.EdsmModels;
+import me.unrealization.jeeves.bot.JSONHandler;
+import me.unrealization.jeeves.bot.WebClient;
+import me.unrealization.jeeves.interfaces.BotApi;
 
 public class EdsmApi implements BotApi
 {

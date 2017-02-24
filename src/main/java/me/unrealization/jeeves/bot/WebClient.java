@@ -1,4 +1,4 @@
-package bot;
+package me.unrealization.jeeves.bot;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

@@ -1,15 +1,15 @@
-package modules;
+package me.unrealization.jeeves.modules;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-import bot.Jeeves;
-import jsonModels.EdsmModels;
-import apis.EdsmApi;
+import me.unrealization.jeeves.bot.Jeeves;
+import me.unrealization.jeeves.jsonModels.EdsmModels;
+import me.unrealization.jeeves.apis.EdsmApi;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;
-import interfaces.BotCommand;
-import interfaces.BotModule;
+import me.unrealization.jeeves.interfaces.BotCommand;
+import me.unrealization.jeeves.interfaces.BotModule;
 
 public class Edsm implements BotModule
 {
