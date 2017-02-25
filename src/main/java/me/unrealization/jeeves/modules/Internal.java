@@ -46,6 +46,18 @@ public class Internal implements BotModule
 		return this.commandList;
 	}
 
+	@Override
+	public String getDiscordId()
+	{
+		return "";
+	}
+
+	@Override
+	public boolean canDisable()
+	{
+		return false;
+	}
+
 	public static class Ping implements BotCommand
 	{
 		@Override

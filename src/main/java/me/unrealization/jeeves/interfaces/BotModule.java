@@ -8,4 +8,6 @@ public interface BotModule
 	public String getHelp();
 	public String getVersion();
 	public String[] getCommands();
+	public String getDiscordId();
+	public boolean canDisable();
 }

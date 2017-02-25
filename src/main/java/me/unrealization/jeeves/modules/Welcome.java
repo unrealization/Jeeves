@@ -54,6 +54,18 @@ public class Welcome implements BotModule, NewUserHandler
 	}
 
 	@Override
+	public String getDiscordId()
+	{
+		return "";
+	}
+
+	@Override
+	public boolean canDisable()
+	{
+		return true;
+	}
+
+	@Override
 	public void newUserHandler(UserJoinEvent event)
 	{
 		System.out.println("User " + event.getUser().getName() + " has joined " + event.getGuild().getName());

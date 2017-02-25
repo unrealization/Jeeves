@@ -49,6 +49,18 @@ public class Edsm implements BotModule
 		return this.commandList;
 	}
 
+	@Override
+	public String getDiscordId()
+	{
+		return "";
+	}
+
+	@Override
+	public boolean canDisable()
+	{
+		return true;
+	}
+
 	public static class GetEDStatus implements BotCommand
 	{
 		@Override
