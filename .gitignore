@@ -2,11 +2,9 @@
 .target
 .classpath
 .project
-.settings/*
-bin/*
+.settings/
 clientConfig.xml
 serverConfig.xml
-dependency-reduced-pom.xml
-target/*
-doc/*
-/target/
+doc/
+target/
+modules/

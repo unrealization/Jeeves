@@ -56,7 +56,7 @@ public class Welcome implements BotModule, NewUserHandler
 	@Override
 	public String getDiscordId()
 	{
-		return "";
+		return null;
 	}
 
 	@Override

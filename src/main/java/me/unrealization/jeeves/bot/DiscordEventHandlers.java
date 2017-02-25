@@ -265,7 +265,14 @@ public class DiscordEventHandlers
 					return;
 				}
 
-				System.out.println("Executing " + commandName + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ")");
+				String discordId = module.getDiscordId();
+
+				if ((discordId != null) && (discordId != message.getGuild().getID()))
+				{
+					Jeeves.sendMessage(message.getChannel(), "This command is not available on this Discord.");
+					return;
+				}
+
 				Class<?> commandClass;
 
 				try
@@ -308,7 +315,9 @@ public class DiscordEventHandlers
 						e.printStackTrace();
 					}
 
-					if (message.getAuthor().getID().equals(ownerId))
+					//TODO: Test
+					//if (message.getAuthor().getID().equals(ownerId) == false)
+					if (message.getAuthor().getID().equals(ownerId) == true)
 					{
 						Jeeves.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
 						return;
@@ -331,6 +340,7 @@ public class DiscordEventHandlers
 					}
 				}
 
+				System.out.println("Executing " + commandName + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ")");
 				command.execute(message, arguments);
 				//TaskHandler executor = new TaskHandler(message, command, arguments);
 				//executor.start();

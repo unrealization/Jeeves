@@ -2,6 +2,9 @@ package me.unrealization.jeeves.modules;
 
 import java.util.HashMap;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import me.unrealization.jeeves.bot.Jeeves;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;
@@ -16,9 +19,11 @@ public class Internal implements BotModule
 
 	public Internal()
 	{
-		this.commandList = new String[2];
+		this.commandList = new String[4];
 		this.commandList[0] = "Version";
 		this.commandList[1] = "Ping";
+		this.commandList[2] = "GetCommandPrefix";
+		this.commandList[3] = "SetCommandPrefix";
 		this.defaultConfig.put("commandPrefix", "!");
 		this.defaultConfig.put("respondOnPrefix", "0");
 		this.defaultConfig.put("respondOnMention", "1");
@@ -53,7 +58,7 @@ public class Internal implements BotModule
 	@Override
 	public String getDiscordId()
 	{
-		return "";
+		return null;
 	}
 
 	@Override
@@ -81,14 +86,13 @@ public class Internal implements BotModule
 		@Override
 		public Permissions[] permissions()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public boolean owner()
 		{
-			return false;
+			return true;
 		}
 
 		@Override
@@ -101,41 +105,132 @@ public class Internal implements BotModule
 	public static class Version implements BotCommand
 	{
 		@Override
-		public String help() {
+		public String help()
+		{
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public String usage() {
+		public String usage()
+		{
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public Permissions[] permissions() {
-			// TODO Auto-generated method stub
+		public Permissions[] permissions()
+		{
 			return null;
 		}
 
 		@Override
-		public boolean owner() {
-			// TODO Auto-generated method stub
+		public boolean owner()
+		{
 			return false;
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments) {
-			/*try
+		public void execute(IMessage message, String[] arguments)
+		{
+			Jeeves.sendMessage(message.getChannel(), Jeeves.version);
+		}
+	}
+
+	public static class GetCommandPrefix implements BotCommand
+	{
+		@Override
+		public String help()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String usage()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return false;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix");
+			Jeeves.sendMessage(message.getChannel(), "The command prefix is: " + commandPrefix);
+		}
+	}
+
+	public static class SetCommandPrefix implements BotCommand
+	{
+		@Override
+		public String help()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String usage()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return false;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			// TODO Auto-generated method stub
+			String commandPrefix = String.join(" ", arguments).trim();
+
+			if (commandPrefix.isEmpty() == true)
 			{
-				Thread.sleep(5000);
+				Jeeves.sendMessage(message.getChannel(), "The command prefix cannot be empty.");
+				return;
 			}
-			catch (InterruptedException e)
+
+			Jeeves.serverConfig.setValue(message.getGuild().getID(), "commandPrefix", commandPrefix);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
 			{
 				e.printStackTrace();
-			}*/
+				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
 
-			Jeeves.sendMessage(message.getChannel(), Jeeves.version);
+			Jeeves.sendMessage(message.getChannel(), "The command prefix has been set to: " + commandPrefix);
 		}
 	}
 }

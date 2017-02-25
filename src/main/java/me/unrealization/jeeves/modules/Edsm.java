@@ -15,19 +15,20 @@ public class Edsm implements BotModule
 {
 	private String version = "0.1";
 	private String[] commandList;
+	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
 
 	public Edsm()
 	{
 		this.commandList = new String[2];
 		this.commandList[0] = "GetEDStatus";
 		this.commandList[1] = "Locate";
+		this.defaultConfig.put("edsmUseBetaServer", "1");
 	}
 
 	@Override
 	public HashMap<String, Object> getDefaultConfig()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.defaultConfig;
 	}
 
 	@Override
@@ -52,7 +53,7 @@ public class Edsm implements BotModule
 	@Override
 	public String getDiscordId()
 	{
-		return "";
+		return null;
 	}
 
 	@Override
@@ -80,7 +81,6 @@ public class Edsm implements BotModule
 		@Override
 		public Permissions[] permissions()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -132,7 +132,6 @@ public class Edsm implements BotModule
 		@Override
 		public Permissions[] permissions()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 

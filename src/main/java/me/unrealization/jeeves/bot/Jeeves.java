@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import me.unrealization.jeeves.modules.Ccn;
 import me.unrealization.jeeves.modules.Edsm;
 import me.unrealization.jeeves.modules.Internal;
 import me.unrealization.jeeves.modules.Welcome;
@@ -28,7 +29,7 @@ import sx.blah.discord.util.RateLimitException;
 
 public class Jeeves
 {
-	public static String version = "Jeeves4J 0.4";
+	public static String version = "Jeeves4J 0.5";
 	public static IDiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
@@ -66,6 +67,9 @@ public class Jeeves
 
 	private static void loadModules()
 	{
+		Ccn ccn = new Ccn();
+		Jeeves.modules.put("ccn", ccn);
+
 		Edsm edsm = new Edsm();
 		Jeeves.modules.put("edsm", edsm);
 
