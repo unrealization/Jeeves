@@ -7,4 +7,6 @@ bin/*
 clientConfig.xml
 serverConfig.xml
 dependency-reduced-pom.xml
+target/*
+doc/*
 /target/
