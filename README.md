@@ -12,9 +12,13 @@ This is the second incarnation of Jeeves, with the first one (https://github.com
 # Installation
 
 Jeeves uses Maven (https://maven.apache.org/) in order to pull in dependencies.
+
 Run `mvn install` to build the JAR.
 
 # Configuration
 
 In order to operate Jeeves will require you to set up an application with a bot user on the Discord developer site (https://discordapp.com/developers/applications/me).
-Once that is done you need to create the file `clientConfig.xml` containing your bot's token. See `clientConfig.xml.sample` for an example.
+
+Once that is done you need to create the file `clientConfig.xml` containing your bot's token.
+
+See `clientConfig.xml.sample` for an example.
