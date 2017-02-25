@@ -58,12 +58,7 @@ public class DiscordEventHandlers
 			IMessage message = event.getMessage();
 			String messageContent = message.getContent();
 
-			if (Jeeves.serverConfig.hasKey(message.getGuild().getID(), "commandPrefix") == false)
-			{
-				return;
-			}
-
-			if (messageContent.startsWith(Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix")) == true)
+			if (messageContent.startsWith((String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix")) == true)
 			{
 				DiscordEventHandlers.handleMessage(message);
 			}
@@ -192,10 +187,11 @@ public class DiscordEventHandlers
 		String messageContent = message.getContent();
 		IUser botUser = message.getClient().getOurUser();
 		int cutLength = 0;
+		String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix");
 
-		if ((Jeeves.serverConfig.hasKey(message.getGuild().getID(), "commandPrefix")) && (messageContent.startsWith(Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix"))))
+		if (messageContent.startsWith(commandPrefix))
 		{
-			cutLength = Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix").length();
+			cutLength = commandPrefix.length();
 		}
 		else if (messageContent.startsWith(botUser.mention(true)))
 		{

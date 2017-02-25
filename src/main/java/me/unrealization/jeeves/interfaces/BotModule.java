@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public interface BotModule
 {
-	public HashMap<String, String> getDefaultConfig();
+	public HashMap<String, Object> getDefaultConfig();
 	public String getHelp();
 	public String getVersion();
 	public String[] getCommands();

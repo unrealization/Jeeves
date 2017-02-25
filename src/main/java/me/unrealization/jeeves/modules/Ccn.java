@@ -14,7 +14,7 @@ public class Ccn implements BotModule, NewUserHandler
 {
 	private String version = "0.1";
 	private String[] commandList;
-	private HashMap<String, String> defaultConfig = new HashMap<String, String>();
+	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
 
 	public Ccn()
 	{
@@ -28,7 +28,7 @@ public class Ccn implements BotModule, NewUserHandler
 	}
 
 	@Override
-	public HashMap<String, String> getDefaultConfig()
+	public HashMap<String, Object> getDefaultConfig()
 	{
 		return this.defaultConfig;
 	}

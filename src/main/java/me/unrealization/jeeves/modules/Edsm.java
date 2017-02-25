@@ -24,7 +24,7 @@ public class Edsm implements BotModule
 	}
 
 	@Override
-	public HashMap<String, String> getDefaultConfig()
+	public HashMap<String, Object> getDefaultConfig()
 	{
 		// TODO Auto-generated method stub
 		return null;

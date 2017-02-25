@@ -12,7 +12,7 @@ public class Internal implements BotModule
 {
 	private String version = Jeeves.version;
 	private String[] commandList;
-	private HashMap<String, String> defaultConfig = new HashMap<String, String>();
+	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
 
 	public Internal()
 	{
@@ -20,10 +20,14 @@ public class Internal implements BotModule
 		this.commandList[0] = "Version";
 		this.commandList[1] = "Ping";
 		this.defaultConfig.put("commandPrefix", "!");
+		this.defaultConfig.put("respondOnPrefix", "0");
+		this.defaultConfig.put("respondOnMention", "1");
+		this.defaultConfig.put("ignoredChannels", new String[0]);
+		this.defaultConfig.put("ignoredUsers", new String[0]);
 	}
 
 	@Override
-	public HashMap<String, String> getDefaultConfig()
+	public HashMap<String, Object> getDefaultConfig()
 	{
 		return this.defaultConfig;
 	}

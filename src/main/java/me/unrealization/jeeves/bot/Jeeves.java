@@ -76,7 +76,7 @@ public class Jeeves
 		Jeeves.modules.put("welcome", welcome);
 	}
 
-	public static void checkConfig(String serverId, HashMap<String, String> defaultConfig) throws ParserConfigurationException, TransformerException
+	public static void checkConfig(String serverId, HashMap<String, Object> defaultConfig) throws ParserConfigurationException, TransformerException
 	{
 		if (defaultConfig == null)
 		{
@@ -168,7 +168,7 @@ public class Jeeves
 		}
 
 		Jeeves.loadModules();
-		Jeeves.bot = Jeeves.createClient(Jeeves.clientConfig.getValue("loginToken"));
+		Jeeves.bot = Jeeves.createClient((String)Jeeves.clientConfig.getValue("loginToken"));
 		EventDispatcher dispatcher = Jeeves.bot.getDispatcher();
 		dispatcher.registerListener(new DiscordEventHandlers.ReadyEventListener());
 	}

@@ -18,7 +18,7 @@ public class Welcome implements BotModule, NewUserHandler
 {
 	private String version = "1.0";
 	private String[] commandList;
-	private HashMap<String, String> defaultConfig = new HashMap<String, String>();
+	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
 
 	public Welcome()
 	{
@@ -29,7 +29,7 @@ public class Welcome implements BotModule, NewUserHandler
 	}
 
 	@Override
-	public HashMap<String, String> getDefaultConfig()
+	public HashMap<String, Object> getDefaultConfig()
 	{
 		return this.defaultConfig;
 	}
@@ -69,7 +69,7 @@ public class Welcome implements BotModule, NewUserHandler
 	public void newUserHandler(UserJoinEvent event)
 	{
 		System.out.println("User " + event.getUser().getName() + " has joined " + event.getGuild().getName());
-		String channelId = Jeeves.serverConfig.getValue(event.getGuild().getID(), "welcomeChannel");
+		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getID(), "welcomeChannel");
 
 		if (channelId.isEmpty() == true)
 		{
@@ -131,7 +131,7 @@ public class Welcome implements BotModule, NewUserHandler
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String welcomeChannelId = Jeeves.serverConfig.getValue(message.getGuild().getID(), "welcomeChannel");
+			String welcomeChannelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "welcomeChannel");
 
 			if (welcomeChannelId.isEmpty() == true)
 			{

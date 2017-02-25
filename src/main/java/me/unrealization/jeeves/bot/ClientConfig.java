@@ -25,7 +25,7 @@ import me.unrealization.jeeves.interfaces.BotConfig;
 
 public class ClientConfig implements BotConfig
 {
-	private HashMap<String, String> config = new HashMap<String, String>();
+	private HashMap<String, Object> config = new HashMap<String, Object>();
 
 	public ClientConfig() throws ParserConfigurationException, SAXException, IOException
 	{
@@ -42,7 +42,7 @@ public class ClientConfig implements BotConfig
 		File xmlFile = new File(fileName);
 		Document doc = docBuilder.parse(xmlFile);
 
-		Element docRoot = (Element)doc.getElementsByTagName("config").item(0);
+		Node docRoot = doc.getElementsByTagName("config").item(0);
 		NodeList clientConfigList = docRoot.getChildNodes();
 
 		for (int configIndex = 0; configIndex < clientConfigList.getLength(); configIndex++)
@@ -54,9 +54,40 @@ public class ClientConfig implements BotConfig
 				continue;
 			}
 
-			Element configItem = (Element)configNode;
-			String configName = configItem.getNodeName();
-			String configValue = configItem.getTextContent();
+			String configName = configNode.getNodeName();
+			Object configValue;
+
+			if (configNode.getChildNodes().getLength() == 1)
+			{
+				configValue = configNode.getTextContent().trim();
+			}
+			else
+			{
+				NodeList itemChildNodes = configNode.getChildNodes();
+				configValue = new String[0];
+
+				for (int itemIndex = 0; itemIndex < itemChildNodes.getLength(); itemIndex++)
+				{
+					Node itemNode = itemChildNodes.item(itemIndex);
+
+					if (itemNode.getNodeType() != Node.ELEMENT_NODE)
+					{
+						continue;
+					}
+
+					String[] configArray = (String[])configValue;
+					String[] tmpValues = new String[configArray.length + 1];
+
+					for (int valueIndex = 0; valueIndex < configArray.length; valueIndex++)
+					{
+						tmpValues[valueIndex] = configArray[valueIndex];
+					}
+
+					tmpValues[configArray.length] = itemNode.getTextContent().trim();
+					configValue = tmpValues;
+				}
+			}
+
 			this.config.put(configName, configValue);
 		}
 	}
@@ -82,7 +113,24 @@ public class ClientConfig implements BotConfig
 		for (int keyIndex = 0; keyIndex < configKeyList.length; keyIndex++)
 		{
 			Element setting = doc.createElement(configKeyList[keyIndex]);
-			setting.setTextContent(this.config.get(configKeyList[keyIndex]));
+			Object configItem = this.config.get(configKeyList[keyIndex]);
+
+			if (configItem.getClass() == String.class)
+			{
+				setting.setTextContent((String)configItem);
+			}
+			else
+			{
+				String[] configItemList = (String[])configItem;
+
+				for (int itemIndex = 0; itemIndex < configItemList.length; itemIndex++)
+				{
+					Element item = doc.createElement("entry");
+					item.setTextContent(configItemList[itemIndex]);
+					setting.appendChild(item);
+				}
+			}
+
 			docRoot.appendChild(setting);
 		}
 
@@ -105,12 +153,12 @@ public class ClientConfig implements BotConfig
 	}
 
 	@Override
-	public String getValue(String serverId, String key)
+	public Object getValue(String serverId, String key)
 	{
 		return this.getValue(key);
 	}
 
-	public String getValue(String key)
+	public Object getValue(String key)
 	{
 		if (this.config.containsKey(key) == false)
 		{
@@ -118,17 +166,17 @@ public class ClientConfig implements BotConfig
 			//throw new Exception("Unknown key " + key);
 		}
 
-		String value = this.config.get(key);
+		Object value = this.config.get(key);
 		return value;
 	}
 
 	@Override
-	public void setValue(String serverId, String key, String value)
+	public void setValue(String serverId, String key, Object value)
 	{
 		this.setValue(key, value);
 	}
 
-	public void setValue(String key, String value)
+	public void setValue(String key, Object value)
 	{
 		this.config.put(key, value);
 	}
