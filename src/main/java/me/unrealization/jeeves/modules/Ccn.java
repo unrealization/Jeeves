@@ -18,9 +18,9 @@ public class Ccn implements BotModule, UserJoinedHandler
 
 	public Ccn()
 	{
-		this.commandList = new String[2];
+		/*this.commandList = new String[2];
 		this.commandList[0] = "GetWelcomeChannel";
-		this.commandList[1] = "SetWelcomeChannel";
+		this.commandList[1] = "SetWelcomeChannel";*/
 		this.defaultConfig.put("ccnProximityRole", "");
 		//this.defaultConfig.put("ccnEdsmUseBetaServer", "0");
 		this.defaultConfig.put("ccnEdsmId", "");
