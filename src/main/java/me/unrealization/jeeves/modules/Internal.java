@@ -276,11 +276,11 @@ public class Internal implements BotModule
 				Jeeves.sendMessage(message.getChannel(), "Invalid value");
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "debugging", debugging);
+			Jeeves.clientConfig.setValue("debugging", debugging);
 
 			try
 			{
-				Jeeves.serverConfig.saveConfig();
+				Jeeves.clientConfig.saveConfig();
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
