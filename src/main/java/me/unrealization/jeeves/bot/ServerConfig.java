@@ -77,14 +77,18 @@ public class ServerConfig implements BotConfig
 
 				String configName = configNode.getNodeName();
 				Object configValue;
+				NodeList itemChildNodes = configNode.getChildNodes();
 
-				if (configNode.getChildNodes().getLength() == 1)
+				if (itemChildNodes.getLength() == 0)
+				{
+					configValue = "";
+				}
+				else if (itemChildNodes.getLength() == 1)
 				{
 					configValue = configNode.getTextContent().trim();
 				}
 				else
 				{
-					NodeList itemChildNodes = configNode.getChildNodes();
 					configValue = new String[0];
 
 					for (int itemIndex = 0; itemIndex < itemChildNodes.getLength(); itemIndex++)
