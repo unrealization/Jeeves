@@ -89,7 +89,7 @@ public class Welcome implements BotModule, NewUserHandler
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
-				e.printStackTrace();
+				Jeeves.debugException(e);
 			}
 
 			return;
@@ -154,7 +154,7 @@ public class Welcome implements BotModule, NewUserHandler
 				}
 				catch (ParserConfigurationException | TransformerException e)
 				{
-					e.printStackTrace();
+					Jeeves.debugException(e);
 				}
 
 				return;
@@ -223,7 +223,7 @@ public class Welcome implements BotModule, NewUserHandler
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
-				e.printStackTrace();
+				Jeeves.debugException(e);
 				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}

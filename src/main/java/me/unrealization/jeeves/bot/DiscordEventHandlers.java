@@ -113,7 +113,7 @@ public class DiscordEventHandlers
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					Jeeves.debugException(e);
 					continue;
 				}
 
@@ -140,7 +140,7 @@ public class DiscordEventHandlers
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					Jeeves.debugException(e);
 					continue;
 				}
 
@@ -167,7 +167,7 @@ public class DiscordEventHandlers
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					Jeeves.debugException(e);
 					continue;
 				}
 
@@ -190,8 +190,12 @@ public class DiscordEventHandlers
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
-				e.printStackTrace();
-				System.out.println("Cannot create default config for " + event.getGuild().getName());
+				boolean debugging = Jeeves.debugException(e);
+
+				if (debugging == true)
+				{
+					System.out.println("Cannot create default config for " + event.getGuild().getName());
+				}
 			}
 		}
 	}
@@ -280,7 +284,7 @@ public class DiscordEventHandlers
 				}
 				catch (ParserConfigurationException | TransformerException e)
 				{
-					e.printStackTrace();
+					Jeeves.debugException(e);
 					return;
 				}
 
@@ -300,7 +304,7 @@ public class DiscordEventHandlers
 				}
 				catch (ClassNotFoundException e)
 				{
-					e.printStackTrace();
+					Jeeves.debugException(e);
 					return;
 				}
 
@@ -312,7 +316,7 @@ public class DiscordEventHandlers
 				}
 				catch (InstantiationException | IllegalAccessException e)
 				{
-					e.printStackTrace();
+					Jeeves.debugException(e);
 					return;
 				}
 
@@ -331,7 +335,7 @@ public class DiscordEventHandlers
 					}
 					catch (DiscordException e)
 					{
-						e.printStackTrace();
+						Jeeves.debugException(e);
 					}
 
 					if (message.getAuthor().getID().equals(ownerId) == false)

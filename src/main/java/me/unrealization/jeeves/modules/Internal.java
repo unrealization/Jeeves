@@ -185,7 +185,7 @@ public class Internal implements BotModule
 			}
 			catch (DiscordException e)
 			{
-				e.printStackTrace();
+				Jeeves.debugException(e);
 			}
 		}
 	}
@@ -221,8 +221,16 @@ public class Internal implements BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			// TODO Auto-generated method stub
-			
+			String debugging = (String)Jeeves.clientConfig.getValue("debugging");
+
+			if (debugging.equals("0") == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "Debugging is disabled.");
+			}
+			else
+			{
+				Jeeves.sendMessage(message.getChannel(), "Debugging is enabled.");
+			}
 		}
 	}
 
@@ -257,10 +265,35 @@ public class Internal implements BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			// TODO Auto-generated method stub
-			
+			String debugging = String.join(" ", arguments);
+
+			if ((debugging.equals("0") == false) && (debugging.equals("1") == false))
+			{
+				Jeeves.sendMessage(message.getChannel(), "Invalid value");
+			}
+
+			Jeeves.serverConfig.setValue(message.getGuild().getID(), "debugging", debugging);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			if (debugging.equals("0") == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "Debugging has been disabled.");
+			}
+			else
+			{
+				Jeeves.sendMessage(message.getChannel(), "Debugging has been enabled.");
+			}
 		}
-		
 	}
 
 	public static class GetCommandPrefix implements BotCommand
@@ -351,7 +384,7 @@ public class Internal implements BotModule
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
-				e.printStackTrace();
+				Jeeves.debugException(e);
 				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
@@ -456,7 +489,7 @@ public class Internal implements BotModule
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
-				e.printStackTrace();
+				Jeeves.debugException(e);
 				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
@@ -569,7 +602,7 @@ public class Internal implements BotModule
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
-				e.printStackTrace();
+				Jeeves.debugException(e);
 				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}

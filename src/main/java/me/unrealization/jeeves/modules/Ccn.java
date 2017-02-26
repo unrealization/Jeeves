@@ -86,7 +86,7 @@ public class Ccn implements BotModule, NewUserHandler
 		}
 		catch (RateLimitException | DiscordException e)
 		{
-			e.printStackTrace();
+			Jeeves.debugException(e);
 			return;
 		}
 

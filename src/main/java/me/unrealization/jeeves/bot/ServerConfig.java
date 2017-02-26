@@ -52,7 +52,7 @@ public class ServerConfig implements BotConfig
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			Jeeves.debugException(e);
 			this.config = new HashMap<String, HashMap<String, Object>>();
 			return;
 		}

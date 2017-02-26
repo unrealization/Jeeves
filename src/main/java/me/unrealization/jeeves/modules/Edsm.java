@@ -103,7 +103,7 @@ public class Edsm implements BotModule
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Jeeves.debugException(e);
 				Jeeves.sendMessage(message.getChannel(), "Cannot retrieve the Elite: Dangerous server status.");
 				return;
 			}
@@ -161,7 +161,7 @@ public class Edsm implements BotModule
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Jeeves.debugException(e);
 				Jeeves.sendMessage(message.getChannel(), "Cannot retrieve the location of " + commanderName);
 				return;
 			}

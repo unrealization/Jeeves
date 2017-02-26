@@ -59,7 +59,7 @@ public class Jeeves
 		}
 		catch (DiscordException e)
 		{
-			e.printStackTrace();
+			Jeeves.debugException(e);
 		}
 
 		return client;
@@ -118,11 +118,24 @@ public class Jeeves
 		}
 		catch (RateLimitException | DiscordException | MissingPermissionsException e)
 		{
-			e.printStackTrace();
+			Jeeves.debugException(e);
 			return false;
 		}
 
 		return true;
+	}
+
+	public static boolean debugException(Exception e)
+	{
+		String debugging = (String)Jeeves.clientConfig.getValue("debugging");
+
+		if (debugging.equals("1") == true)
+		{
+			e.printStackTrace();
+			return true;
+		}
+
+		return false;
 	}
 
 	public static IChannel findChannel(IGuild server, String channelName)
@@ -159,7 +172,7 @@ public class Jeeves
 		}
 		catch (ParserConfigurationException | SAXException | IOException e)
 		{
-			e.printStackTrace();
+			Jeeves.debugException(e);
 			return;
 		}
 
@@ -169,7 +182,7 @@ public class Jeeves
 		}
 		catch (ParserConfigurationException | SAXException e)
 		{
-			e.printStackTrace();
+			Jeeves.debugException(e);
 			return;
 		}
 
