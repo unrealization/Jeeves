@@ -15,7 +15,7 @@ public class WebClient
 		connection.setRequestMethod(method);
 		connection.setRequestProperty("User-Agent", "Java Test");
 
-		if (method == "POST")
+		if (method.equals("POST") == true)
 		{
 			connection.setDoOutput(true);
 			DataOutputStream paramWriter = new DataOutputStream(connection.getOutputStream());

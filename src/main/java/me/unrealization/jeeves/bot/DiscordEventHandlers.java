@@ -56,6 +56,13 @@ public class DiscordEventHandlers
 		public void handle(MessageReceivedEvent event)
 		{
 			IMessage message = event.getMessage();
+			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "respondOnPrefix");
+
+			if (respondOnPrefix.equals("0") == true)
+			{
+				return;
+			}
+
 			String messageContent = message.getContent();
 
 			if (messageContent.startsWith((String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix")) == true)
@@ -71,6 +78,13 @@ public class DiscordEventHandlers
 		public void handle(MentionEvent event)
 		{
 			IMessage message = event.getMessage();
+			String respondOnMention = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "respondOnMention");
+
+			if (respondOnMention.equals("0"))
+			{
+				return;
+			}
+
 			String messageContent = message.getContent();
 			IUser botUser = event.getClient().getOurUser();
 
@@ -248,6 +262,11 @@ public class DiscordEventHandlers
 			BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
 			String[] commandList = module.getCommands();
 
+			if (commandList == null)
+			{
+				continue;
+			}
+
 			for (int commandIndex = 0; commandIndex < commandList.length; commandIndex++)
 			{
 				if (commandList[commandIndex].toLowerCase().equals(commandName) == false)
@@ -315,9 +334,7 @@ public class DiscordEventHandlers
 						e.printStackTrace();
 					}
 
-					//TODO: Test
-					//if (message.getAuthor().getID().equals(ownerId) == false)
-					if (message.getAuthor().getID().equals(ownerId) == true)
+					if (message.getAuthor().getID().equals(ownerId) == false)
 					{
 						Jeeves.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
 						return;
@@ -340,7 +357,7 @@ public class DiscordEventHandlers
 					}
 				}
 
-				System.out.println("Executing " + commandName + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ")");
+				System.out.println("Executing " + command.getClass().getSimpleName() + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ": " + message.getChannel().getName() + ")");
 				command.execute(message, arguments);
 				//TaskHandler executor = new TaskHandler(message, command, arguments);
 				//executor.start();

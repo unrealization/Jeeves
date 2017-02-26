@@ -29,11 +29,11 @@ import sx.blah.discord.util.RateLimitException;
 
 public class Jeeves
 {
-	public static String version = "Jeeves4J 0.5";
+	public static String version = "Jeeves4J 0.6";
 	public static IDiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
-	public static HashMap<String, BotModule> modules = new HashMap< String, BotModule>();
+	public static HashMap<String, BotModule> modules = null;
 
 	private static IDiscordClient createClient(String token)
 	{
@@ -67,6 +67,8 @@ public class Jeeves
 
 	private static void loadModules()
 	{
+		Jeeves.modules = new HashMap< String, BotModule>();
+
 		Ccn ccn = new Ccn();
 		Jeeves.modules.put("ccn", ccn);
 
