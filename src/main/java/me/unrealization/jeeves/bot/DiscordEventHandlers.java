@@ -2,8 +2,9 @@ package me.unrealization.jeeves.bot;
 
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
-import me.unrealization.jeeves.interfaces.NewUserHandler;
+import me.unrealization.jeeves.interfaces.UserJoinedHandler;
 import me.unrealization.jeeves.interfaces.PresenceUpdateHandler;
+import me.unrealization.jeeves.interfaces.UserLeftHandler;
 import me.unrealization.jeeves.interfaces.UserUpdateHandler;
 
 import java.util.EnumSet;
@@ -22,6 +23,7 @@ import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.UserLeaveEvent;
 import sx.blah.discord.handle.impl.events.UserUpdateEvent;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -40,7 +42,8 @@ public class DiscordEventHandlers
 			EventDispatcher dispatcher = bot.getDispatcher();
 			dispatcher.registerListener(new MessageReceivedListener());
 			dispatcher.registerListener(new MentionListener());
-			dispatcher.registerListener(new NewUserListener());
+			dispatcher.registerListener(new UserJoinedListener());
+			dispatcher.registerListener(new UserLeftListener());
 			dispatcher.registerListener(new UserUpdateListener());
 			dispatcher.registerListener(new UserPresenceListener());
 			dispatcher.registerListener(new GuildCreateListener());
@@ -95,7 +98,7 @@ public class DiscordEventHandlers
 		}
 	}
 
-	public static class NewUserListener implements IListener<UserJoinEvent>
+	public static class UserJoinedListener implements IListener<UserJoinEvent>
 	{
 		@Override
 		public void handle(UserJoinEvent event)
@@ -105,11 +108,11 @@ public class DiscordEventHandlers
 
 			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 			{
-				NewUserHandler module;
+				UserJoinedHandler module;
 
 				try
 				{
-					module = (NewUserHandler)Jeeves.modules.get(moduleList[moduleIndex]);
+					module = (UserJoinedHandler)Jeeves.modules.get(moduleList[moduleIndex]);
 				}
 				catch (Exception e)
 				{
@@ -117,7 +120,34 @@ public class DiscordEventHandlers
 					continue;
 				}
 
-				module.newUserHandler(event);
+				module.userJoinedHandler(event);
+			}
+		}
+	}
+
+	public static class UserLeftListener implements IListener<UserLeaveEvent>
+	{
+		@Override
+		public void handle(UserLeaveEvent event)
+		{
+			Set<String> moduleSet = Jeeves.modules.keySet();
+			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+
+			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+			{
+				UserLeftHandler module;
+
+				try
+				{
+					module = (UserLeftHandler)Jeeves.modules.get(moduleList[moduleIndex]);
+				}
+				catch (Exception e)
+				{
+					Jeeves.debugException(e);
+					continue;
+				}
+
+				module.userLeftHandler(event);
 			}
 		}
 	}

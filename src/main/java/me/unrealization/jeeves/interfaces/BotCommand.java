@@ -9,12 +9,7 @@ public interface BotCommand
 	 * Get information about the command
 	 * @return A short text on what the command does
 	 */
-	public String help();
-	/**
-	 * Get usage information about the command
-	 * @return A short text on how to use the command
-	 */
-	public String usage();
+	public String getHelp();
 	/**
 	 * Get the permissions required to run the command
 	 * @return The list of permissions required to be allowed to run the command, or null if no permissions are needed

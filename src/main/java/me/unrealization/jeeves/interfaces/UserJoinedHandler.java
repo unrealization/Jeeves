@@ -2,11 +2,11 @@ package me.unrealization.jeeves.interfaces;
 
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
 
-public interface NewUserHandler
+public interface UserJoinedHandler
 {
 	/**
 	 * React to a new user joining a Discord server
-	 * @param event The new user event that needs handling
+	 * @param event The user join event that needs handling
 	 */
-	public void newUserHandler(UserJoinEvent event);
+	public void userJoinedHandler(UserJoinEvent event);
 }

@@ -2,7 +2,7 @@ package me.unrealization.jeeves.modules;
 
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.interfaces.BotModule;
-import me.unrealization.jeeves.interfaces.NewUserHandler;
+import me.unrealization.jeeves.interfaces.UserJoinedHandler;
 import java.util.HashMap;
 
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
@@ -10,7 +10,7 @@ import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
 
-public class Ccn implements BotModule, NewUserHandler
+public class Ccn implements BotModule, UserJoinedHandler
 {
 	private String version = "0.1";
 	private String[] commandList;
@@ -65,7 +65,7 @@ public class Ccn implements BotModule, NewUserHandler
 	}
 
 	@Override
-	public void newUserHandler(UserJoinEvent event)
+	public void userJoinedHandler(UserJoinEvent event)
 	{
 		String message = "Welcome to the Colonia Citizens Network, " + event.getUser().getName() + "\n\n";
 		message += "In order to make the most out of your experience here we have set up a number of roles which you can assign to yourself, using our bot Jeeves in our **#bots** channel. These roles allow access to special channels dedicated to different topics, where you can meet players who share your interests.\n\n";

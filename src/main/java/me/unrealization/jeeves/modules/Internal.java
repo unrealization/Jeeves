@@ -83,14 +83,7 @@ public class Internal implements BotModule
 	public static class Ping implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -118,14 +111,7 @@ public class Internal implements BotModule
 	public static class Version implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -153,14 +139,7 @@ public class Internal implements BotModule
 	public static class Shutdown implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -197,14 +176,7 @@ public class Internal implements BotModule
 	public static class GetDebugging implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -241,14 +213,7 @@ public class Internal implements BotModule
 	public static class SetDebugging implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -303,14 +268,7 @@ public class Internal implements BotModule
 	public static class GetCommandPrefix implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -341,14 +299,7 @@ public class Internal implements BotModule
 	public static class SetCommandPrefix implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -400,14 +351,7 @@ public class Internal implements BotModule
 	public static class GetRespondOnPrefix implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -446,14 +390,7 @@ public class Internal implements BotModule
 	public static class SetRespondOnPrefix implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -512,14 +449,7 @@ public class Internal implements BotModule
 	public static class GetRespondOnMention implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -559,14 +489,7 @@ public class Internal implements BotModule
 	public static class SetRespondOnMention implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -625,14 +548,7 @@ public class Internal implements BotModule
 	public static class GetIgnoredChannels implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -686,14 +602,7 @@ public class Internal implements BotModule
 	public static class AddIgnoredChannel implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -773,14 +682,7 @@ public class Internal implements BotModule
 	public static class RemoveIgnoredChannel implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;

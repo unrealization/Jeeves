@@ -12,9 +12,9 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
-import me.unrealization.jeeves.interfaces.NewUserHandler;
+import me.unrealization.jeeves.interfaces.UserJoinedHandler;
 
-public class Welcome implements BotModule, NewUserHandler
+public class Welcome implements BotModule, UserJoinedHandler
 {
 	private String version = "1.0";
 	private String[] commandList;
@@ -66,7 +66,7 @@ public class Welcome implements BotModule, NewUserHandler
 	}
 
 	@Override
-	public void newUserHandler(UserJoinEvent event)
+	public void userJoinedHandler(UserJoinEvent event)
 	{
 		System.out.println("User " + event.getUser().getName() + " has joined " + event.getGuild().getName());
 		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getID(), "welcomeChannel");
@@ -101,14 +101,7 @@ public class Welcome implements BotModule, NewUserHandler
 	public static class GetWelcomeChannel implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -167,14 +160,7 @@ public class Welcome implements BotModule, NewUserHandler
 	public static class SetWelcomeChannel implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;

@@ -65,14 +65,7 @@ public class Edsm implements BotModule
 	public static class GetEDStatus implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -116,14 +109,7 @@ public class Edsm implements BotModule
 	public static class Locate implements BotCommand
 	{
 		@Override
-		public String help()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String usage()
+		public String getHelp()
 		{
 			// TODO Auto-generated method stub
 			return null;
