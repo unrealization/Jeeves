@@ -68,7 +68,6 @@ public class Welcome implements BotModule, UserJoinedHandler
 	@Override
 	public void userJoinedHandler(UserJoinEvent event)
 	{
-		System.out.println("User " + event.getUser().getName() + " has joined " + event.getGuild().getName());
 		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getID(), "welcomeChannel");
 
 		if (channelId.isEmpty() == true)

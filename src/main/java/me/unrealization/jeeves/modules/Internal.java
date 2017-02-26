@@ -8,6 +8,7 @@ import javax.xml.transform.TransformerException;
 import me.unrealization.jeeves.bot.Jeeves;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import me.unrealization.jeeves.interfaces.BotCommand;
@@ -21,7 +22,7 @@ public class Internal implements BotModule
 
 	public Internal()
 	{
-		this.commandList = new String[14];
+		this.commandList = new String[17];
 		this.commandList[0] = "Version";
 		this.commandList[1] = "Ping";
 		this.commandList[2] = "Shutdown";
@@ -36,6 +37,9 @@ public class Internal implements BotModule
 		this.commandList[11] = "GetIgnoredChannels";
 		this.commandList[12] = "AddIgnoredChannel";
 		this.commandList[13] = "RemoveIgnoredChannel";
+		this.commandList[14] = "GetIgnoredUsers";
+		this.commandList[15] = "AddIgnoredUser";
+		this.commandList[16] = "RemoveIgnoredUser";
 		this.defaultConfig.put("commandPrefix", "!");
 		this.defaultConfig.put("respondOnPrefix", "0");
 		this.defaultConfig.put("respondOnMention", "1");
@@ -726,8 +730,8 @@ public class Internal implements BotModule
 			if (ignoredChannels.getClass() == String.class)
 			{
 				Jeeves.sendMessage(message.getChannel(), "No channels are being ignored.");
+				return;
 			}
-
 
 			String[] ignoredChannelList = (String[])ignoredChannels;
 			String[] tmpIgnoredChannelList = new String[ignoredChannelList.length - 1];
@@ -772,6 +776,236 @@ public class Internal implements BotModule
 			}
 
 			Jeeves.sendMessage(message.getChannel(), "The following channel is no longer being ignored: " + channel.getName());
+		}
+	}
+
+	public static class GetIgnoredUsers implements BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return false;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredUsers");
+
+			if (ignoredUsers.getClass() == String.class)
+			{
+				Jeeves.sendMessage(message.getChannel(), "No users are being ignored.");
+				return;
+			}
+
+			String[] ignoredUserList = (String[])ignoredUsers;
+
+			if (ignoredUserList.length == 0)
+			{
+				Jeeves.sendMessage(message.getChannel(), "No users are being ignored.");
+				return;
+			}
+
+			String output = "The following users are being ignored:\n\n";
+
+			for (int userIndex = 0; userIndex < ignoredUserList.length; userIndex++)
+			{
+				IUser user = message.getGuild().getUserByID(ignoredUserList[userIndex]);
+				output += user.getName() + "\n";
+			}
+
+			Jeeves.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class AddIgnoredUser implements BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return false;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String userName = String.join(" ", arguments).trim();
+
+			if (userName.isEmpty() == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "You need to provide a user name.");
+				return;
+			}
+
+			IUser user = Jeeves.findUser(message.getGuild(), userName);
+
+			if (user == null)
+			{
+				Jeeves.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+				return;
+			}
+
+			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredUsers");
+			String[] ignoredUserList;
+
+			if (ignoredUsers.getClass() == String.class)
+			{
+				ignoredUserList = new String[0];
+			}
+			else
+			{
+				ignoredUserList = (String[])ignoredUsers;
+			}
+
+			String[] tmpIgnoredUserList = new String[ignoredUserList.length + 1];
+
+			for (int userIndex = 0; userIndex < ignoredUserList.length; userIndex++)
+			{
+				tmpIgnoredUserList[userIndex] = ignoredUserList[userIndex];
+			}
+
+			tmpIgnoredUserList[ignoredUserList.length] = user.getID();
+			ignoredUserList = tmpIgnoredUserList;
+			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredUsers", ignoredUserList);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			Jeeves.sendMessage(message.getChannel(), "The following user is now being ignored: " + user.getName());
+		}
+	}
+
+	public static class RemoveIgnoredUser implements BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return false;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String userName = String.join(" ", arguments).trim();
+
+			if (userName.isEmpty() == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "You need to provide a user name.");
+				return;
+			}
+
+			IUser user = Jeeves.findUser(message.getGuild(), userName);
+
+			if (user == null)
+			{
+				Jeeves.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+				return;
+			}
+
+			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredUsers");
+
+			if (ignoredUsers.getClass() == String.class)
+			{
+				Jeeves.sendMessage(message.getChannel(), "No users are being ignored.");
+				return;
+			}
+
+			String[] ignoredUserList = (String[])ignoredUsers;
+			String[] tmpIgnoredUserList = new String[ignoredUserList.length - 1];
+			int tmpIndex = 0;
+			boolean removed = false;
+
+			for (int userIndex = 0; userIndex < ignoredUserList.length; userIndex++)
+			{
+				if (user.getID().equals(ignoredUserList[userIndex]) == true)
+				{
+					removed = true;
+					continue;
+				}
+
+				if (tmpIndex == tmpIgnoredUserList.length)
+				{
+					break;
+				}
+
+				tmpIgnoredUserList[tmpIndex] = ignoredUserList[userIndex];
+				tmpIndex++;
+			}
+
+			if (removed == false)
+			{
+				Jeeves.sendMessage(message.getChannel(), "The user " + user.getName() + " is not being ignored.");
+				return;
+			}
+
+			ignoredUserList = tmpIgnoredUserList;
+			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredUsers", ignoredUserList);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			Jeeves.sendMessage(message.getChannel(), "The following user is no longer being ignored: " + user.getName());
 		}
 	}
 }

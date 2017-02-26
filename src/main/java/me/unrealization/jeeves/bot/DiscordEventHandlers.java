@@ -103,6 +103,7 @@ public class DiscordEventHandlers
 		@Override
 		public void handle(UserJoinEvent event)
 		{
+			System.out.println("User " + event.getUser().getName() + " has joined " + event.getGuild().getName());
 			Set<String> moduleSet = Jeeves.modules.keySet();
 			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
 

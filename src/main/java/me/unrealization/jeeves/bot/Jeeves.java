@@ -13,6 +13,7 @@ import javax.xml.transform.TransformerException;
 import me.unrealization.jeeves.modules.Ccn;
 import me.unrealization.jeeves.modules.Edsm;
 import me.unrealization.jeeves.modules.Internal;
+import me.unrealization.jeeves.modules.UserLog;
 import me.unrealization.jeeves.modules.Welcome;
 
 import org.xml.sax.SAXException;
@@ -78,6 +79,9 @@ public class Jeeves
 
 		Internal internal = new Internal();
 		Jeeves.modules.put("internal", internal);
+
+		UserLog userLog = new UserLog();
+		Jeeves.modules.put("userLog", userLog);
 
 		Welcome welcome = new Welcome();
 		Jeeves.modules.put("welcome", welcome);
@@ -158,6 +162,32 @@ public class Jeeves
 				if (channel.mention().equals(channelName) == true)
 				{
 					return channel;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public static IUser findUser(IGuild server, String userName)
+	{
+		List<IUser> userList = server.getUsersByName(userName);
+
+		if (userList.size() > 0)
+		{
+			return userList.get(0);
+		}
+		else
+		{
+			userList = server.getUsers();
+
+			for (int userIndex = 0; userIndex < userList.size(); userIndex++)
+			{
+				IUser user = userList.get(userIndex);
+
+				if ((user.mention(true).equals(userName) == true) || (user.mention(false).equals(userName) == true))
+				{
+					return user;
 				}
 			}
 		}
