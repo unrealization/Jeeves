@@ -202,6 +202,16 @@ public class DiscordEventHandlers
 
 	private static void handleMessage(IMessage message)
 	{
+		if (Jeeves.isIgnored(message.getChannel()) == true)
+		{
+			return;
+		}
+
+		if (Jeeves.isIgnored(message.getGuild().getID(), message.getAuthor()) == true)
+		{
+			return;
+		}
+
 		String messageContent = message.getContent();
 		IUser botUser = message.getClient().getOurUser();
 		int cutLength = 0;

@@ -22,6 +22,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -162,6 +163,50 @@ public class Jeeves
 		}
 
 		return null;
+	}
+
+	public static boolean isIgnored(IChannel channel)
+	{
+		Object ignoredChannels = Jeeves.serverConfig.getValue(channel.getGuild().getID(), "ignoredChannels");
+
+		if (ignoredChannels.getClass() == String.class)
+		{
+			return false;
+		}
+
+		String[] ignoredChannelList = (String[])ignoredChannels;
+
+		for (int channelIndex = 0; channelIndex < ignoredChannelList.length; channelIndex++)
+		{
+			if (channel.getID().equals(ignoredChannelList[channelIndex]) == true)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean isIgnored(String serverId, IUser user)
+	{
+		Object ignoredUsers = Jeeves.serverConfig.getValue(serverId, "ignoredUsers");
+
+		if (ignoredUsers.getClass() == String.class)
+		{
+			return false;
+		}
+
+		String[] ignoredUserList = (String[])ignoredUsers;
+
+		for (int userIndex = 0; userIndex < ignoredUserList.length; userIndex++)
+		{
+			if (user.getID().equals(ignoredUserList[userIndex]) == true)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static void main(String[] args)
