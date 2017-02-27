@@ -8,6 +8,7 @@ import me.unrealization.jeeves.interfaces.UserLeftHandler;
 import me.unrealization.jeeves.interfaces.UserUpdateHandler;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,6 +26,7 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.UserLeaveEvent;
 import sx.blah.discord.handle.impl.events.UserUpdateEvent;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
@@ -109,11 +111,18 @@ public class DiscordEventHandlers
 
 			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 			{
-				UserJoinedHandler module;
+				BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+
+				if (Jeeves.isDisabled(event.getGuild().getID(), module) == true)
+				{
+					continue;
+				}
+
+				UserJoinedHandler handler;
 
 				try
 				{
-					module = (UserJoinedHandler)Jeeves.modules.get(moduleList[moduleIndex]);
+					handler = (UserJoinedHandler)module;
 				}
 				catch (Exception e)
 				{
@@ -121,7 +130,7 @@ public class DiscordEventHandlers
 					continue;
 				}
 
-				module.userJoinedHandler(event);
+				handler.userJoinedHandler(event);
 			}
 		}
 	}
@@ -136,11 +145,18 @@ public class DiscordEventHandlers
 
 			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 			{
-				UserLeftHandler module;
+				BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+
+				if (Jeeves.isDisabled(event.getGuild().getID(), module) == true)
+				{
+					continue;
+				}
+
+				UserLeftHandler handler;
 
 				try
 				{
-					module = (UserLeftHandler)Jeeves.modules.get(moduleList[moduleIndex]);
+					handler = (UserLeftHandler)module;
 				}
 				catch (Exception e)
 				{
@@ -148,7 +164,7 @@ public class DiscordEventHandlers
 					continue;
 				}
 
-				module.userLeftHandler(event);
+				handler.userLeftHandler(event);
 			}
 		}
 	}
@@ -158,24 +174,38 @@ public class DiscordEventHandlers
 		@Override
 		public void handle(UserUpdateEvent event)
 		{
+			List<IGuild> serverList = event.getClient().getGuilds();
 			Set<String> moduleSet = Jeeves.modules.keySet();
 			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
 
-			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
-				UserUpdateHandler module;
+				IGuild server = serverList.get(serverIndex);
+				String serverId = server.getID();
 
-				try
+				for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 				{
-					module = (UserUpdateHandler)Jeeves.modules.get(moduleList[moduleIndex]);
-				}
-				catch (Exception e)
-				{
-					Jeeves.debugException(e);
-					continue;
-				}
+					BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
 
-				module.userUpdateHandler(event);
+					if (Jeeves.isDisabled(serverId, module) == true)
+					{
+						continue;
+					}
+
+					UserUpdateHandler handler;
+
+					try
+					{
+						handler = (UserUpdateHandler)module;
+					}
+					catch (Exception e)
+					{
+						Jeeves.debugException(e);
+						continue;
+					}
+
+					handler.userUpdateHandler(serverId, event);
+				}
 			}
 		}
 	}
@@ -185,24 +215,38 @@ public class DiscordEventHandlers
 		@Override
 		public void handle(PresenceUpdateEvent event)
 		{
+			List<IGuild> serverList = event.getClient().getGuilds();
 			Set<String> moduleSet = Jeeves.modules.keySet();
 			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
 
-			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
-				PresenceUpdateHandler module;
+				IGuild server = serverList.get(serverIndex);
+				String serverId = server.getID();
 
-				try
+				for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 				{
-					module = (PresenceUpdateHandler)Jeeves.modules.get(moduleList[moduleIndex]);
-				}
-				catch (Exception e)
-				{
-					Jeeves.debugException(e);
-					continue;
-				}
+					BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
 
-				module.presenceUpdateHandler(event);
+					if (Jeeves.isDisabled(serverId, module) == true)
+					{
+						continue;
+					}
+
+					PresenceUpdateHandler handler;
+
+					try
+					{
+						handler = (PresenceUpdateHandler)module;
+					}
+					catch (Exception e)
+					{
+						Jeeves.debugException(e);
+						continue;
+					}
+
+					handler.presenceUpdateHandler(serverId, event);
+				}
 			}
 		}
 	}
@@ -305,6 +349,12 @@ public class DiscordEventHandlers
 		for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 		{
 			BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+
+			if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
+			{
+				continue;
+			}
+
 			String[] commandList = module.getCommands();
 
 			if (commandList == null)

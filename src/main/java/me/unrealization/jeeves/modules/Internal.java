@@ -1218,6 +1218,12 @@ public class Internal implements BotModule
 				return;
 			}
 
+			if (module.canDisable() == false)
+			{
+				Jeeves.sendMessage(message.getChannel(), "The module " + moduleName + " cannot be disabled.");
+				return;
+			}
+
 			if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
 			{
 				Jeeves.sendMessage(message.getChannel(), "The module " + moduleName + " is disabled already.");
@@ -1245,7 +1251,8 @@ public class Internal implements BotModule
 
 			tmpDisabledModuleList[disabledModuleList.length] = moduleName;
 			disabledModuleList = tmpDisabledModuleList;
-			
+			Jeeves.serverConfig.setValue(message.getGuild().getID(), "disabledModules", disabledModuleList);
+
 			try
 			{
 				Jeeves.serverConfig.saveConfig();
