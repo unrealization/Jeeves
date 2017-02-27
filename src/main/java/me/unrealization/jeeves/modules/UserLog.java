@@ -26,7 +26,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 {
 	public UserLog()
 	{
-		this.version = "0.8";
+		this.version = "0.9";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetUserLogChannel";
@@ -152,7 +152,6 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		Jeeves.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + "'s status has changed from " + oldPresence.name() + " to " + newPresence.name());
 	}
 
-
 	@Override
 	public void userUpdateHandler(IGuild server, UserUpdateEvent event)
 	{
@@ -165,14 +164,13 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get the user log channel.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -225,15 +223,15 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Set or clear the user log channel.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "[channel]";
+			return output;
 		}
 
 		@Override

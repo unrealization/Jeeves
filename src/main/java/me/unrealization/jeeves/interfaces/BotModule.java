@@ -33,7 +33,7 @@ public abstract class BotModule
 
 			try
 			{
-				commandClass = Class.forName(this.commandList[commandIndex]);
+				commandClass = Class.forName(this.getClass().getName() + "$" + this.commandList[commandIndex]);
 			}
 			catch (ClassNotFoundException e)
 			{
@@ -53,12 +53,20 @@ public abstract class BotModule
 				continue;
 			}
 
-			output += command.getClass().getSimpleName();
+			output += "`" + command.getClass().getSimpleName();
 			String parameters = command.getParameters();
 
-			if (parameters.isEmpty() == false)
+			if ((parameters != null) && (parameters.isEmpty() == false))
 			{
 				output += " " + parameters;
+			}
+
+			output += "`\n";
+			String help = command.getHelp();
+
+			if ((help != null) && (help.isEmpty() == false))
+			{
+				output += "\t" + help + "\n";
 			}
 
 			output += "\n";

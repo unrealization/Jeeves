@@ -61,8 +61,8 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get help.";
+			return output;
 		}
 
 		@Override
@@ -87,8 +87,8 @@ public class Internal extends BotModule
 					continue;
 				}
 
-				output += moduleList[moduleIndex] + " functions\n\n";
-				output += module.getHelp() + "\n\n";
+				output += "**" + moduleList[moduleIndex] + " functions**\n\n";
+				output += module.getHelp() + "\n";
 			}
 
 			IChannel channel;
@@ -100,8 +100,7 @@ public class Internal extends BotModule
 			catch (RateLimitException | DiscordException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), output);
-				return;
+				channel = message.getChannel();
 			}
 
 			Jeeves.sendMessage(channel, output);

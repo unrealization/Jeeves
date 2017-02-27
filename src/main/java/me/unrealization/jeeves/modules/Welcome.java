@@ -62,14 +62,13 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get the welcome channel.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -122,15 +121,15 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Set or clear the welcome channel.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "[channel]";
+			return output;
 		}
 
 		@Override
