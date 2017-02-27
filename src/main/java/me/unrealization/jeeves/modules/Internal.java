@@ -1,6 +1,7 @@
 package me.unrealization.jeeves.modules;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -22,7 +23,7 @@ public class Internal implements BotModule
 
 	public Internal()
 	{
-		this.commandList = new String[17];
+		this.commandList = new String[20];
 		this.commandList[0] = "Version";
 		this.commandList[1] = "Ping";
 		this.commandList[2] = "Shutdown";
@@ -40,6 +41,9 @@ public class Internal implements BotModule
 		this.commandList[14] = "GetIgnoredUsers";
 		this.commandList[15] = "AddIgnoredUser";
 		this.commandList[16] = "RemoveIgnoredUser";
+		this.commandList[17] = "GetModules";
+		this.commandList[18] = "EnableModule";
+		this.commandList[19] = "DisableModule";
 		this.defaultConfig.put("commandPrefix", "!");
 		this.defaultConfig.put("respondOnPrefix", "0");
 		this.defaultConfig.put("respondOnMention", "1");
@@ -136,7 +140,7 @@ public class Internal implements BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			Jeeves.sendMessage(message.getChannel(), Jeeves.version);
+			Jeeves.sendMessage(message.getChannel(), "Jeeves " + Jeeves.version);
 		}
 	}
 
@@ -645,6 +649,12 @@ public class Internal implements BotModule
 				return;
 			}
 
+			if (Jeeves.isIgnored(channel) == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "The channel " + channel.getName() + " is being ignored already.");
+				return;
+			}
+
 			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredChannels");
 			String[] ignoredChannelList;
 
@@ -875,6 +885,12 @@ public class Internal implements BotModule
 				return;
 			}
 
+			if (Jeeves.isIgnored(message.getGuild().getID(), user) == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "The user " + user.getName() + " is being ignored already.");
+				return;
+			}
+
 			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredUsers");
 			String[] ignoredUserList;
 
@@ -1006,6 +1022,242 @@ public class Internal implements BotModule
 			}
 
 			Jeeves.sendMessage(message.getChannel(), "The following user is no longer being ignored: " + user.getName());
+		}
+	}
+
+	public static class GetModules implements BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return false;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			Set<String> moduleSet = Jeeves.modules.keySet();
+			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+			String output = "The following modules are available:\n\n";
+
+			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+			{
+				BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+				output += "\t" + moduleList[moduleIndex] + " " + module.getVersion();
+
+				if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
+				{
+					output += " (disabled)";
+				}
+
+				output += "\n";
+			}
+
+			Jeeves.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class EnableModule implements BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return false;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String moduleName = String.join(" ", arguments).trim();
+
+			if (moduleName.isEmpty() == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "You need to provide a module name.");
+				return;
+			}
+
+			BotModule module = Jeeves.modules.get(moduleName);
+
+			if (module == null)
+			{
+				Jeeves.sendMessage(message.getChannel(), "Cannot find the module " + moduleName);
+				return;
+			}
+
+			String discordId = module.getDiscordId();
+
+			if ((discordId != null) && (message.getGuild().getID().equals(discordId) == false))
+			{
+				Jeeves.sendMessage(message.getChannel(), "The module " + moduleName + " is not available on this server.");
+				return;
+			}
+
+			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().getID(), "disabledModules");
+
+			if (disabledModules.getClass() == String.class)
+			{
+				Jeeves.sendMessage(message.getChannel(), "All available modules are enabled.");
+				return;
+			}
+
+			String[] disabledModuleList = (String[])disabledModules;
+			String[] tmpDisabledModuleList = new String[disabledModuleList.length - 1];
+			int tmpIndex = 0;
+			boolean removed = true;
+
+			for (int moduleIndex = 0; moduleIndex < disabledModuleList.length; moduleIndex++)
+			{
+				if (moduleName.equals(disabledModuleList[moduleIndex]) == true)
+				{
+					removed = true;
+					continue;
+				}
+
+				if (tmpIndex == tmpDisabledModuleList.length)
+				{
+					break;
+				}
+
+				tmpDisabledModuleList[tmpIndex] = disabledModuleList[moduleIndex];
+				tmpIndex++;
+			}
+
+			if (removed == false)
+			{
+				Jeeves.sendMessage(message.getChannel(), "The module " + moduleName +  " is not disabled.");
+				return;
+			}
+
+			disabledModuleList = tmpDisabledModuleList;
+			Jeeves.serverConfig.setValue(message.getGuild().getID(), "disabledModules", disabledModuleList);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			Jeeves.sendMessage(message.getChannel(), "The following module has been enabled: " + moduleName);
+		}
+	}
+
+	public static class DisableModule implements BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return false;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String moduleName = String.join(" ", arguments).trim();
+
+			if (moduleName.isEmpty() == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "You need to provide a module name.");
+				return;
+			}
+
+			BotModule module = Jeeves.modules.get(moduleName);
+
+			if (module == null)
+			{
+				Jeeves.sendMessage(message.getChannel(), "Cannot find the module " + moduleName);
+				return;
+			}
+
+			if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "The module " + moduleName + " is disabled already.");
+				return;
+			}
+
+			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().getID(), "disabledModules");
+			String[] disabledModuleList;
+
+			if (disabledModules.getClass() == String.class)
+			{
+				disabledModuleList = new String[0];
+			}
+			else
+			{
+				disabledModuleList = (String[])disabledModules;
+			}
+
+			String[] tmpDisabledModuleList = new String[disabledModuleList.length + 1];
+
+			for (int moduleIndex = 0; moduleIndex < disabledModuleList.length; moduleIndex++)
+			{
+				tmpDisabledModuleList[moduleIndex] = disabledModuleList[moduleIndex];
+			}
+
+			tmpDisabledModuleList[disabledModuleList.length] = moduleName;
+			disabledModuleList = tmpDisabledModuleList;
+			
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			Jeeves.sendMessage(message.getChannel(), "The following module has been disabled: " + moduleName);
 		}
 	}
 }

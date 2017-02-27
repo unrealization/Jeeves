@@ -13,7 +13,7 @@ import javax.xml.transform.TransformerException;
 import me.unrealization.jeeves.modules.Ccn;
 import me.unrealization.jeeves.modules.Edsm;
 import me.unrealization.jeeves.modules.Internal;
-import me.unrealization.jeeves.modules.UserLog;
+//import me.unrealization.jeeves.modules.UserLog;
 import me.unrealization.jeeves.modules.Welcome;
 
 import org.xml.sax.SAXException;
@@ -31,10 +31,11 @@ import sx.blah.discord.util.RateLimitException;
 
 public class Jeeves
 {
-	public static String version = "Jeeves4J 0.6";
+	public static String version = "0.6.5";
 	public static IDiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
+	//TODO: Make private
 	public static HashMap<String, BotModule> modules = null;
 
 	private static IDiscordClient createClient(String token)
@@ -70,21 +71,17 @@ public class Jeeves
 	private static void loadModules()
 	{
 		Jeeves.modules = new HashMap< String, BotModule>();
+		Jeeves.modules.put("ccn", new Ccn());
+		Jeeves.modules.put("edsm", new Edsm());
+		Jeeves.modules.put("internal", new Internal());
+		//Jeeves.modules.put("userLog", new UserLog());
+		Jeeves.modules.put("welcome", new Welcome());
+	}
 
-		Ccn ccn = new Ccn();
-		Jeeves.modules.put("ccn", ccn);
-
-		Edsm edsm = new Edsm();
-		Jeeves.modules.put("edsm", edsm);
-
-		Internal internal = new Internal();
-		Jeeves.modules.put("internal", internal);
-
-		UserLog userLog = new UserLog();
-		Jeeves.modules.put("userLog", userLog);
-
-		Welcome welcome = new Welcome();
-		Jeeves.modules.put("welcome", welcome);
+	public static BotModule getModule(String moduleName)
+	{
+		BotModule module = Jeeves.modules.get(moduleName);
+		return module;
 	}
 
 	public static void checkConfig(String serverId, HashMap<String, Object> defaultConfig) throws ParserConfigurationException, TransformerException
@@ -231,6 +228,36 @@ public class Jeeves
 		for (int userIndex = 0; userIndex < ignoredUserList.length; userIndex++)
 		{
 			if (user.getID().equals(ignoredUserList[userIndex]) == true)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean isDisabled(String serverId, BotModule module)
+	{
+		String discordId = module.getDiscordId();
+
+		if ((discordId != null) && (discordId.equals(serverId) == false))
+		{
+			return true;
+		}
+
+		Object disabledModules = Jeeves.serverConfig.getValue(serverId, "disabledModules");
+
+		if (disabledModules.getClass() == String.class)
+		{
+			return false;
+		}
+
+		String[] disabledModuleList = (String[])disabledModules;
+		String moduleName = module.getClass().getSimpleName().toLowerCase();
+
+		for (int moduleIndex = 0; moduleIndex < disabledModuleList.length; moduleIndex++)
+		{
+			if (disabledModuleList[moduleIndex].toLowerCase().equals(moduleName) == true)
 			{
 				return true;
 			}
