@@ -185,17 +185,17 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String userLogChannelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "userLogChannel");
+			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "userLogChannel");
 
-			if (userLogChannelId.isEmpty() == true)
+			if (channelId.isEmpty() == true)
 			{
 				Jeeves.sendMessage(message.getChannel(), "No user log channel has been set.");
 				return;
 			}
 
-			IChannel userLogChannel = message.getGuild().getChannelByID(userLogChannelId);
+			IChannel channel = message.getGuild().getChannelByID(channelId);
 
-			if (userLogChannel == null)
+			if (channel == null)
 			{
 				Jeeves.sendMessage(message.getChannel(), "A user log channel has been set, but it does not exist.");
 
@@ -214,7 +214,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The user log channel is: " + userLogChannel.getName());
+			Jeeves.sendMessage(message.getChannel(), "The user log channel is: " + channel.getName());
 		}
 	}
 
@@ -246,7 +246,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		public void execute(IMessage message, String[] arguments)
 		{
 			String channelName = String.join(" ", arguments).trim();
-			IChannel userLogChannel = null;
+			IChannel channel = null;
 
 			if (channelName.isEmpty() == true)
 			{
@@ -254,15 +254,15 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			}
 			else
 			{
-				userLogChannel = Jeeves.findChannel(message.getGuild(), channelName);
+				channel = Jeeves.findChannel(message.getGuild(), channelName);
 
-				if (userLogChannel == null)
+				if (channel == null)
 				{
 					Jeeves.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "userLogChannel", userLogChannel.getID());
+				Jeeves.serverConfig.setValue(message.getGuild().getID(), "userLogChannel", channel.getID());
 			}
 
 			try
@@ -276,13 +276,13 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 				return;
 			}
 
-			if (userLogChannel == null)
+			if (channel == null)
 			{
 				Jeeves.sendMessage(message.getChannel(), "The user log channel has been cleared.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "The user log channel has been set to: " + userLogChannel.getName());
+				Jeeves.sendMessage(message.getChannel(), "The user log channel has been set to: " + channel.getName());
 			}
 		}
 	}

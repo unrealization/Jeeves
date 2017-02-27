@@ -23,6 +23,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
@@ -165,6 +166,32 @@ public class Jeeves
 				if (channel.mention().equals(channelName) == true)
 				{
 					return channel;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public static IRole findRole(IGuild server, String roleName)
+	{
+		List<IRole> roleList = server.getRolesByName(roleName);
+
+		if (roleList.size() > 0)
+		{
+			return roleList.get(0);
+		}
+		else
+		{
+			roleList = server.getRoles();
+
+			for (int roleIndex = 0; roleIndex < roleList.size(); roleIndex++)
+			{
+				IRole role = roleList.get(roleIndex);
+
+				if (role.mention().equals(roleName) == true)
+				{
+					return role;
 				}
 			}
 		}
