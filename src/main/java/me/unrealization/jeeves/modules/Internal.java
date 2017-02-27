@@ -1,10 +1,13 @@
 package me.unrealization.jeeves.modules;
 
+import java.util.List;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import me.unrealization.jeeves.bot.Jeeves;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
@@ -19,28 +22,29 @@ public class Internal extends BotModule
 	{
 		this.version = Jeeves.version;
 
-		this.commandList = new String[21];
+		this.commandList = new String[22];
 		this.commandList[0] = "Help";
 		this.commandList[1] = "Version";
 		this.commandList[2] = "Ping";
 		this.commandList[3] = "Shutdown";
 		this.commandList[4] = "GetDebugging";
 		this.commandList[5] = "SetDebugging";
-		this.commandList[6] = "GetCommandPrefix";
-		this.commandList[7] = "SetCommandPrefix";
-		this.commandList[8] = "GetRespondOnPrefix";
-		this.commandList[9] = "SetRespondOnPrefix";
-		this.commandList[10] = "GetRespondOnMention";
-		this.commandList[11] = "SetRespondOnMention";
-		this.commandList[12] = "GetIgnoredChannels";
-		this.commandList[13] = "AddIgnoredChannel";
-		this.commandList[14] = "RemoveIgnoredChannel";
-		this.commandList[15] = "GetIgnoredUsers";
-		this.commandList[16] = "AddIgnoredUser";
-		this.commandList[17] = "RemoveIgnoredUser";
-		this.commandList[18] = "GetModules";
-		this.commandList[19] = "EnableModule";
-		this.commandList[20] = "DisableModule";
+		this.commandList[6] = "GetServers";
+		this.commandList[7] = "GetCommandPrefix";
+		this.commandList[8] = "SetCommandPrefix";
+		this.commandList[9] = "GetRespondOnPrefix";
+		this.commandList[10] = "SetRespondOnPrefix";
+		this.commandList[11] = "GetRespondOnMention";
+		this.commandList[12] = "SetRespondOnMention";
+		this.commandList[13] = "GetIgnoredChannels";
+		this.commandList[14] = "AddIgnoredChannel";
+		this.commandList[15] = "RemoveIgnoredChannel";
+		this.commandList[16] = "GetIgnoredUsers";
+		this.commandList[17] = "AddIgnoredUser";
+		this.commandList[18] = "RemoveIgnoredUser";
+		this.commandList[19] = "GetModules";
+		this.commandList[20] = "EnableModule";
+		this.commandList[21] = "DisableModule";
 
 		this.defaultConfig.put("commandPrefix", "!");
 		this.defaultConfig.put("respondOnPrefix", "0");
@@ -278,6 +282,44 @@ public class Internal extends BotModule
 			{
 				Jeeves.sendMessage(message.getChannel(), "Debugging has been enabled.");
 			}
+		}
+	}
+
+	public static class GetServers extends BotCommand
+	{
+
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the list of servers the bot is connected to.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return true;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			List<IGuild> serverList = message.getClient().getGuilds();
+			String output = "The bot is connected to the following servers:\n\n";
+
+			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
+			{
+				IGuild server = serverList.get(serverIndex);
+				output += "\t" + server.getName() + "\n";
+			}
+
+			Jeeves.sendMessage(message.getChannel(), output);
 		}
 	}
 

@@ -32,7 +32,7 @@ import sx.blah.discord.util.RateLimitException;
 
 public class Jeeves
 {
-	public static String version = "0.6.5";
+	public static String version = "0.7";
 	public static IDiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
