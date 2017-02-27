@@ -1,7 +1,5 @@
 package me.unrealization.jeeves.modules;
 
-import java.util.HashMap;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -11,38 +9,39 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.RateLimitException;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 
-public class Internal implements BotModule
+public class Internal extends BotModule
 {
-	private String version = Jeeves.version;
-	private String[] commandList;
-	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
-
 	public Internal()
 	{
-		this.commandList = new String[20];
-		this.commandList[0] = "Version";
-		this.commandList[1] = "Ping";
-		this.commandList[2] = "Shutdown";
-		this.commandList[3] = "GetDebugging";
-		this.commandList[4] = "SetDebugging";
-		this.commandList[5] = "GetCommandPrefix";
-		this.commandList[6] = "SetCommandPrefix";
-		this.commandList[7] = "GetRespondOnPrefix";
-		this.commandList[8] = "SetRespondOnPrefix";
-		this.commandList[9] = "GetRespondOnMention";
-		this.commandList[10] = "SetRespondOnMention";
-		this.commandList[11] = "GetIgnoredChannels";
-		this.commandList[12] = "AddIgnoredChannel";
-		this.commandList[13] = "RemoveIgnoredChannel";
-		this.commandList[14] = "GetIgnoredUsers";
-		this.commandList[15] = "AddIgnoredUser";
-		this.commandList[16] = "RemoveIgnoredUser";
-		this.commandList[17] = "GetModules";
-		this.commandList[18] = "EnableModule";
-		this.commandList[19] = "DisableModule";
+		this.version = Jeeves.version;
+
+		this.commandList = new String[21];
+		this.commandList[0] = "Help";
+		this.commandList[1] = "Version";
+		this.commandList[2] = "Ping";
+		this.commandList[3] = "Shutdown";
+		this.commandList[4] = "GetDebugging";
+		this.commandList[5] = "SetDebugging";
+		this.commandList[6] = "GetCommandPrefix";
+		this.commandList[7] = "SetCommandPrefix";
+		this.commandList[8] = "GetRespondOnPrefix";
+		this.commandList[9] = "SetRespondOnPrefix";
+		this.commandList[10] = "GetRespondOnMention";
+		this.commandList[11] = "SetRespondOnMention";
+		this.commandList[12] = "GetIgnoredChannels";
+		this.commandList[13] = "AddIgnoredChannel";
+		this.commandList[14] = "RemoveIgnoredChannel";
+		this.commandList[15] = "GetIgnoredUsers";
+		this.commandList[16] = "AddIgnoredUser";
+		this.commandList[17] = "RemoveIgnoredUser";
+		this.commandList[18] = "GetModules";
+		this.commandList[19] = "EnableModule";
+		this.commandList[20] = "DisableModule";
+
 		this.defaultConfig.put("commandPrefix", "!");
 		this.defaultConfig.put("respondOnPrefix", "0");
 		this.defaultConfig.put("respondOnMention", "1");
@@ -52,42 +51,12 @@ public class Internal implements BotModule
 	}
 
 	@Override
-	public HashMap<String, Object> getDefaultConfig()
-	{
-		return this.defaultConfig;
-	}
-
-	@Override
-	public String getHelp()
-	{
-		return null;
-	}
-
-	@Override
-	public String getVersion()
-	{
-		return this.version;
-	}
-
-	@Override
-	public String[] getCommands()
-	{
-		return this.commandList;
-	}
-
-	@Override
-	public String getDiscordId()
-	{
-		return null;
-	}
-
-	@Override
 	public boolean canDisable()
 	{
 		return false;
 	}
 
-	public static class Ping implements BotCommand
+	public static class Help extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -97,25 +66,49 @@ public class Internal implements BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public String getParameters()
 		{
-			return null;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
+			String output = "[module]";
+			return output;
 		}
 
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			Jeeves.sendMessage(message.getChannel(), "Pong!");
+			String[] moduleList = Jeeves.getModuleList();
+			String output = "";
+
+			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+			{
+				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
+
+				if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
+				{
+					continue;
+				}
+
+				output += moduleList[moduleIndex] + " functions\n\n";
+				output += module.getHelp() + "\n\n";
+			}
+
+			IChannel channel;
+
+			try
+			{
+				channel = message.getAuthor().getOrCreatePMChannel();
+			}
+			catch (RateLimitException | DiscordException e)
+			{
+				Jeeves.debugException(e);
+				Jeeves.sendMessage(message.getChannel(), output);
+				return;
+			}
+
+			Jeeves.sendMessage(channel, output);
 		}
 	}
 
-	public static class Version implements BotCommand
+	public static class Version extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -125,15 +118,10 @@ public class Internal implements BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public String getParameters()
 		{
+			// TODO Auto-generated method stub
 			return null;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -143,7 +131,7 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class Shutdown implements BotCommand
+	public static class Ping extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -153,8 +141,32 @@ public class Internal implements BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public String getParameters()
 		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			Jeeves.sendMessage(message.getChannel(), "Pong!");
+		}
+	}
+
+	public static class Shutdown extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -180,7 +192,7 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class GetDebugging implements BotCommand
+	public static class GetDebugging extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -190,8 +202,9 @@ public class Internal implements BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public String getParameters()
 		{
+			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -217,7 +230,7 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class SetDebugging implements BotCommand
+	public static class SetDebugging extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -227,8 +240,9 @@ public class Internal implements BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public String getParameters()
 		{
+			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -272,10 +286,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class GetCommandPrefix implements BotCommand
+	public static class GetCommandPrefix extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -287,12 +308,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -303,10 +318,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class SetCommandPrefix implements BotCommand
+	public static class SetCommandPrefix extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -318,12 +340,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -355,10 +371,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class GetRespondOnPrefix implements BotCommand
+	public static class GetRespondOnPrefix extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -370,12 +393,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -394,10 +411,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class SetRespondOnPrefix implements BotCommand
+	public static class SetRespondOnPrefix extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -409,12 +433,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -453,10 +471,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class GetRespondOnMention implements BotCommand
+	public static class GetRespondOnMention extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -468,13 +493,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			// TODO Auto-generated method stub
-			return false;
 		}
 
 		@Override
@@ -493,10 +511,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class SetRespondOnMention implements BotCommand
+	public static class SetRespondOnMention extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -508,13 +533,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			// TODO Auto-generated method stub
-			return false;
 		}
 
 		@Override
@@ -552,10 +570,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class GetIgnoredChannels implements BotCommand
+	public static class GetIgnoredChannels extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -567,12 +592,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -606,10 +625,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class AddIgnoredChannel implements BotCommand
+	public static class AddIgnoredChannel extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -621,12 +647,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -692,10 +712,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class RemoveIgnoredChannel implements BotCommand
+	public static class RemoveIgnoredChannel extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -707,12 +734,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -788,10 +809,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class GetIgnoredUsers implements BotCommand
+	public static class GetIgnoredUsers extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -803,12 +831,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -842,10 +864,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class AddIgnoredUser implements BotCommand
+	public static class AddIgnoredUser extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -857,12 +886,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -928,10 +951,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class RemoveIgnoredUser implements BotCommand
+	public static class RemoveIgnoredUser extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -943,12 +973,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -1024,10 +1048,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class GetModules implements BotCommand
+	public static class GetModules extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -1039,12 +1070,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -1070,10 +1095,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class EnableModule implements BotCommand
+	public static class EnableModule extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -1085,12 +1117,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -1174,10 +1200,17 @@ public class Internal implements BotModule
 		}
 	}
 
-	public static class DisableModule implements BotCommand
+	public static class DisableModule extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -1189,12 +1222,6 @@ public class Internal implements BotModule
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override

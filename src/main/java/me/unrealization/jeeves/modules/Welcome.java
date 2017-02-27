@@ -1,7 +1,5 @@
 package me.unrealization.jeeves.modules;
 
-import java.util.HashMap;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -14,55 +12,17 @@ import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
 
-public class Welcome implements BotModule, UserJoinedHandler
+public class Welcome extends BotModule implements UserJoinedHandler
 {
-	private String version = "1.0";
-	private String[] commandList;
-	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
-
 	public Welcome()
 	{
+		this.version = "1.0";
+
 		this.commandList = new String[2];
 		this.commandList[0] = "GetWelcomeChannel";
 		this.commandList[1] = "SetWelcomeChannel";
+
 		this.defaultConfig.put("welcomeChannel", "");
-	}
-
-	@Override
-	public HashMap<String, Object> getDefaultConfig()
-	{
-		return this.defaultConfig;
-	}
-
-	@Override
-	public String getHelp()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getVersion()
-	{
-		return this.version;
-	}
-
-	@Override
-	public String[] getCommands()
-	{
-		return this.commandList;
-	}
-
-	@Override
-	public String getDiscordId()
-	{
-		return null;
-	}
-
-	@Override
-	public boolean canDisable()
-	{
-		return true;
 	}
 
 	@Override
@@ -97,10 +57,17 @@ public class Welcome implements BotModule, UserJoinedHandler
 		Jeeves.sendMessage(channel, "Welcome to " + event.getGuild().getName() + ", " + event.getUser().mention() + "!");
 	}
 
-	public static class GetWelcomeChannel implements BotCommand
+	public static class GetWelcomeChannel extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -112,12 +79,6 @@ public class Welcome implements BotModule, UserJoinedHandler
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -156,10 +117,17 @@ public class Welcome implements BotModule, UserJoinedHandler
 		}
 	}
 
-	public static class SetWelcomeChannel implements BotCommand
+	public static class SetWelcomeChannel extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -171,12 +139,6 @@ public class Welcome implements BotModule, UserJoinedHandler
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override

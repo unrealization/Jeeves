@@ -1,7 +1,6 @@
 package me.unrealization.jeeves.modules;
 
 import java.util.Date;
-import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -23,55 +22,17 @@ import me.unrealization.jeeves.interfaces.UserJoinedHandler;
 import me.unrealization.jeeves.interfaces.UserLeftHandler;
 import me.unrealization.jeeves.interfaces.UserUpdateHandler;
 
-public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, PresenceUpdateHandler, UserUpdateHandler
+public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHandler, PresenceUpdateHandler, UserUpdateHandler
 {
-	private String version = "0.8";
-	private String[] commandList;
-	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
-
 	public UserLog()
 	{
+		this.version = "0.8";
+
 		this.commandList = new String[2];
 		this.commandList[0] = "GetUserLogChannel";
 		this.commandList[1] = "SetUserLogChannel";
+
 		this.defaultConfig.put("userLogChannel", "");
-	}
-
-	@Override
-	public HashMap<String, Object> getDefaultConfig()
-	{
-		return this.defaultConfig;
-	}
-
-	@Override
-	public String getHelp()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getVersion()
-	{
-		return this.version;
-	}
-
-	@Override
-	public String[] getCommands()
-	{
-		return this.commandList;
-	}
-
-	@Override
-	public String getDiscordId()
-	{
-		return null;
-	}
-
-	@Override
-	public boolean canDisable()
-	{
-		return true;
 	}
 
 	@Override
@@ -199,10 +160,17 @@ public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, P
 		return;
 	}
 
-	public static class GetUserLogChannel implements BotCommand
+	public static class GetUserLogChannel extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -214,12 +182,6 @@ public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, P
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -258,10 +220,17 @@ public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, P
 		}
 	}
 
-	public static class SetUserLogChannel implements BotCommand
+	public static class SetUserLogChannel extends BotCommand
 	{
 		@Override
 		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
 		{
 			// TODO Auto-generated method stub
 			return null;
@@ -273,12 +242,6 @@ public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, P
 			Permissions[] permissionList = new Permissions[1];
 			permissionList[0] = Permissions.MANAGE_SERVER;
 			return permissionList;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override

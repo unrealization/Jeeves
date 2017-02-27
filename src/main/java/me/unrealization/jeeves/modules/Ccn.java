@@ -3,24 +3,22 @@ package me.unrealization.jeeves.modules;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
-import java.util.HashMap;
 
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
 
-public class Ccn implements BotModule, UserJoinedHandler
+public class Ccn extends BotModule implements UserJoinedHandler
 {
-	private String version = "0.1";
-	private String[] commandList;
-	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
-
 	public Ccn()
 	{
+		this.version = "0.1";
+
 		/*this.commandList = new String[2];
 		this.commandList[0] = "GetWelcomeChannel";
 		this.commandList[1] = "SetWelcomeChannel";*/
+
 		this.defaultConfig.put("ccnProximityRole", "");
 		//this.defaultConfig.put("ccnEdsmUseBetaServer", "0");
 		this.defaultConfig.put("ccnEdsmId", "");
@@ -28,40 +26,9 @@ public class Ccn implements BotModule, UserJoinedHandler
 	}
 
 	@Override
-	public HashMap<String, Object> getDefaultConfig()
-	{
-		return this.defaultConfig;
-	}
-
-	@Override
-	public String getHelp() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getVersion()
-	{
-		return this.version;
-	}
-
-	@Override
-	public String[] getCommands()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getDiscordId()
 	{
 		return "209372315673165825";
-	}
-
-	@Override
-	public boolean canDisable()
-	{
-		return true;
 	}
 
 	@Override

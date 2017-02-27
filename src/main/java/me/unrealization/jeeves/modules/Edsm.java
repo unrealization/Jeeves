@@ -1,68 +1,28 @@
 package me.unrealization.jeeves.modules;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.jsonModels.EdsmModels;
 import me.unrealization.jeeves.apis.EdsmApi;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.Permissions;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 
-public class Edsm implements BotModule
+public class Edsm extends BotModule
 {
-	private String version = "0.1";
-	private String[] commandList;
-	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
-
 	public Edsm()
 	{
+		this.version = "0.1";
+
 		this.commandList = new String[2];
 		this.commandList[0] = "GetEDStatus";
 		this.commandList[1] = "Locate";
+
 		this.defaultConfig.put("edsmUseBetaServer", "1");
 	}
 
-	@Override
-	public HashMap<String, Object> getDefaultConfig()
-	{
-		return this.defaultConfig;
-	}
-
-	@Override
-	public String getHelp()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getVersion()
-	{
-		return this.version;
-	}
-
-	@Override
-	public String[] getCommands()
-	{
-		return this.commandList;
-	}
-
-	@Override
-	public String getDiscordId()
-	{
-		return null;
-	}
-
-	@Override
-	public boolean canDisable()
-	{
-		return true;
-	}
-
-	public static class GetEDStatus implements BotCommand
+	public static class GetEDStatus extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -72,15 +32,10 @@ public class Edsm implements BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public String getParameters()
 		{
+			// TODO Auto-generated method stub
 			return null;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
@@ -106,7 +61,7 @@ public class Edsm implements BotModule
 		
 	}
 
-	public static class Locate implements BotCommand
+	public static class Locate extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -116,15 +71,10 @@ public class Edsm implements BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public String getParameters()
 		{
+			// TODO Auto-generated method stub
 			return null;
-		}
-
-		@Override
-		public boolean owner()
-		{
-			return false;
 		}
 
 		@Override
