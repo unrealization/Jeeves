@@ -1,7 +1,6 @@
 package me.unrealization.jeeves.modules;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -1051,13 +1050,12 @@ public class Internal implements BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			Set<String> moduleSet = Jeeves.modules.keySet();
-			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+			String[] moduleList = Jeeves.getModuleList();
 			String output = "The following modules are available:\n\n";
 
 			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 			{
-				BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 				output += "\t" + moduleList[moduleIndex] + " " + module.getVersion();
 
 				if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
@@ -1106,7 +1104,7 @@ public class Internal implements BotModule
 				return;
 			}
 
-			BotModule module = Jeeves.modules.get(moduleName);
+			BotModule module = Jeeves.getModule(moduleName);
 
 			if (module == null)
 			{
@@ -1210,7 +1208,7 @@ public class Internal implements BotModule
 				return;
 			}
 
-			BotModule module = Jeeves.modules.get(moduleName);
+			BotModule module = Jeeves.getModule(moduleName);
 
 			if (module == null)
 			{

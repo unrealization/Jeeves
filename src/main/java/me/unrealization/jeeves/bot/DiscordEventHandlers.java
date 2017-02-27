@@ -9,7 +9,6 @@ import me.unrealization.jeeves.interfaces.UserUpdateHandler;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -106,12 +105,11 @@ public class DiscordEventHandlers
 		public void handle(UserJoinEvent event)
 		{
 			System.out.println("User " + event.getUser().getName() + " has joined " + event.getGuild().getName());
-			Set<String> moduleSet = Jeeves.modules.keySet();
-			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+			String[] moduleList = Jeeves.getModuleList();
 
 			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 			{
-				BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
 				if (Jeeves.isDisabled(event.getGuild().getID(), module) == true)
 				{
@@ -140,12 +138,11 @@ public class DiscordEventHandlers
 		@Override
 		public void handle(UserLeaveEvent event)
 		{
-			Set<String> moduleSet = Jeeves.modules.keySet();
-			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+			String[] moduleList = Jeeves.getModuleList();
 
 			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 			{
-				BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
 				if (Jeeves.isDisabled(event.getGuild().getID(), module) == true)
 				{
@@ -175,8 +172,7 @@ public class DiscordEventHandlers
 		public void handle(UserUpdateEvent event)
 		{
 			List<IGuild> serverList = event.getClient().getGuilds();
-			Set<String> moduleSet = Jeeves.modules.keySet();
-			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+			String[] moduleList = Jeeves.getModuleList();
 
 			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
@@ -185,7 +181,7 @@ public class DiscordEventHandlers
 
 				for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 				{
-					BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
 					if (Jeeves.isDisabled(serverId, module) == true)
 					{
@@ -216,8 +212,7 @@ public class DiscordEventHandlers
 		public void handle(PresenceUpdateEvent event)
 		{
 			List<IGuild> serverList = event.getClient().getGuilds();
-			Set<String> moduleSet = Jeeves.modules.keySet();
-			String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+			String[] moduleList = Jeeves.getModuleList();
 
 			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
@@ -226,7 +221,7 @@ public class DiscordEventHandlers
 
 				for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 				{
-					BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
 					if (Jeeves.isDisabled(serverId, module) == true)
 					{
@@ -343,12 +338,11 @@ public class DiscordEventHandlers
 			arguments[x - 1] = messageParts[x];
 		}
 
-		Set<String> moduleSet = Jeeves.modules.keySet();
-		String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+		String[] moduleList = Jeeves.getModuleList();
 
 		for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 		{
-			BotModule module = Jeeves.modules.get(moduleList[moduleIndex]);
+			BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
 			if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
 			{

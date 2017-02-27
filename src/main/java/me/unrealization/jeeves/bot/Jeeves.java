@@ -35,8 +35,7 @@ public class Jeeves
 	public static IDiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
-	//TODO: Make private
-	public static HashMap<String, BotModule> modules = null;
+	private static HashMap<String, BotModule> modules = null;
 
 	private static IDiscordClient createClient(String token)
 	{
@@ -82,6 +81,13 @@ public class Jeeves
 	{
 		BotModule module = Jeeves.modules.get(moduleName);
 		return module;
+	}
+
+	public static String[] getModuleList()
+	{
+		Set<String> moduleSet = Jeeves.modules.keySet();
+		String[] moduleList = moduleSet.toArray(new String[moduleSet.size()]);
+		return moduleList;
 	}
 
 	public static void checkConfig(String serverId, HashMap<String, Object> defaultConfig) throws ParserConfigurationException, TransformerException
