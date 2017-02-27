@@ -14,7 +14,7 @@ This is the second incarnation of Jeeves, with the first one (https://github.com
 
 Jeeves uses Maven (https://maven.apache.org/) in order to pull in dependencies.
 
-Run `mvn install` to build the JAR.
+Run `mvn package` to build the JAR.
 
 # Configuration
 
