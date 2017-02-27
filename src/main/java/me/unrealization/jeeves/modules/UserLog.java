@@ -9,19 +9,23 @@ import javax.xml.transform.TransformerException;
 import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.UserLeaveEvent;
+import sx.blah.discord.handle.impl.events.UserUpdateEvent;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.handle.obj.Presences;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.PresenceUpdateHandler;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
 import me.unrealization.jeeves.interfaces.UserLeftHandler;
+import me.unrealization.jeeves.interfaces.UserUpdateHandler;
 
-public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, PresenceUpdateHandler
+public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, PresenceUpdateHandler, UserUpdateHandler
 {
-	private String version = "0.4";
+	private String version = "0.8";
 	private String[] commandList;
 	private HashMap<String, Object> defaultConfig = new HashMap<String, Object>();
 
@@ -100,7 +104,6 @@ public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, P
 		}
 
 		Date now = new Date();
-		//Jeeves.sendMessage(channel, now.toGMTString() + ": " + event.getUser().getName() + " has joined the server.");
 		Jeeves.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + " has joined the server.");
 	}
 
@@ -134,26 +137,25 @@ public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, P
 		}
 
 		Date now = new Date();
-		//Jeeves.sendMessage(channel, now.toGMTString() + ": " + event.getUser().getName() + " has left the server.");
 		Jeeves.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + " has left the server.");
 	}
 
 	@Override
-	public void presenceUpdateHandler(PresenceUpdateEvent event)
+	public void presenceUpdateHandler(IGuild server, PresenceUpdateEvent event)
 	{
-		/*String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getID(), "userLogChannel");
+		String channelId = (String)Jeeves.serverConfig.getValue(server.getID(), "userLogChannel");
 
 		if (channelId.isEmpty() == true)
 		{
 			return;
 		}
 
-		IChannel channel = event.getGuild().getChannelByID(channelId);
+		IChannel channel = server.getChannelByID(channelId);
 
 		if (channel == null)
 		{
 			System.out.println("Invalid user log channel.");
-			Jeeves.serverConfig.setValue(event.getGuild().getID(), "userLogChannel", "");
+			Jeeves.serverConfig.setValue(server.getID(), "userLogChannel", "");
 
 			try
 			{
@@ -167,9 +169,34 @@ public class UserLog implements BotModule, UserJoinedHandler, UserLeftHandler, P
 			return;
 		}
 
+		Presences oldPresence = event.getOldPresence();
+		Presences newPresence = event.getNewPresence();
+
+		if (newPresence.equals(oldPresence) == true)
+		{
+			return;
+		}
+
+		if ((oldPresence.equals(Presences.ONLINE) == true) && ((newPresence.equals(Presences.IDLE) == true) || (newPresence.equals(Presences.DND) == true)))
+		{
+			return;
+		}
+
+		if ((newPresence.equals(Presences.ONLINE) == true) && ((oldPresence.equals(Presences.IDLE) == true) || (oldPresence.equals(Presences.DND) == true)))
+		{
+			return;
+		}
+
 		Date now = new Date();
-		//Jeeves.sendMessage(channel, now.toGMTString() + ": " + event.getUser().getName() + " has left the server.");
-		Jeeves.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + " has left the server.");*/
+		Jeeves.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + "'s status has changed from " + oldPresence.name() + " to " + newPresence.name());
+	}
+
+
+	@Override
+	public void userUpdateHandler(IGuild server, UserUpdateEvent event)
+	{
+		// TODO Auto-generated method stub
+		return;
 	}
 
 	public static class GetUserLogChannel implements BotCommand

@@ -177,13 +177,18 @@ public class DiscordEventHandlers
 			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
 				IGuild server = serverList.get(serverIndex);
-				String serverId = server.getID();
+				IUser user = server.getUserByID(event.getNewUser().getID());
+
+				if (user == null)
+				{
+					continue;
+				}
 
 				for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 				{
 					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-					if (Jeeves.isDisabled(serverId, module) == true)
+					if (Jeeves.isDisabled(server.getID(), module) == true)
 					{
 						continue;
 					}
@@ -200,7 +205,7 @@ public class DiscordEventHandlers
 						continue;
 					}
 
-					handler.userUpdateHandler(serverId, event);
+					handler.userUpdateHandler(server, event);
 				}
 			}
 		}
@@ -217,13 +222,18 @@ public class DiscordEventHandlers
 			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
 				IGuild server = serverList.get(serverIndex);
-				String serverId = server.getID();
+				IUser user = server.getUserByID(event.getUser().getID());
+
+				if (user == null)
+				{
+					continue;
+				}
 
 				for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 				{
 					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-					if (Jeeves.isDisabled(serverId, module) == true)
+					if (Jeeves.isDisabled(server.getID(), module) == true)
 					{
 						continue;
 					}
@@ -240,7 +250,7 @@ public class DiscordEventHandlers
 						continue;
 					}
 
-					handler.presenceUpdateHandler(serverId, event);
+					handler.presenceUpdateHandler(server, event);
 				}
 			}
 		}
