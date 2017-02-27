@@ -112,14 +112,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Show the bot's version number.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -135,14 +134,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Check if the bot is alive.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -158,14 +156,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Shut down the bot.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -196,14 +193,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Check if debugging is enabled.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -234,15 +230,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Enable/disable debugging.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<1|0>";
+			return output;
 		}
 
 		@Override
@@ -290,14 +286,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get the current command prefix.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -322,15 +317,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Set the command prefix.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<prefix>";
+			return output;
 		}
 
 		@Override
@@ -344,7 +339,6 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			// TODO Auto-generated method stub
 			String commandPrefix = String.join(" ", arguments).trim();
 
 			if (commandPrefix.isEmpty() == true)
@@ -375,14 +369,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Check if the bot will respond to messages starting with the command prefix.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -415,15 +408,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Set whether or not the bot will respond to messages starting with the command prefix.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<1|0>";
+			return output;
 		}
 
 		@Override
@@ -475,14 +468,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Check if the bot will respond to mentions.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -515,15 +507,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Set whether or not the bot will respond to mentions.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<1|0>";
+			return output;
 		}
 
 		@Override
@@ -574,14 +566,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get the list of ignored channels.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -629,15 +620,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Add a channel to the ignore list.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<channel>";
+			return output;
 		}
 
 		@Override
@@ -716,15 +707,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Remove a channel from the ignore list.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<channel>";
+			return output;
 		}
 
 		@Override
@@ -813,14 +804,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get the list of ignored users.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -868,15 +858,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Add a user to the ignore list.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<user>";
+			return output;
 		}
 
 		@Override
@@ -955,15 +945,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Remove a user from the ignore list.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<user>";
+			return output;
 		}
 
 		@Override
@@ -1052,14 +1042,13 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get the list of available modules.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -1099,15 +1088,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Enable a module.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<module>";
+			return output;
 		}
 
 		@Override
@@ -1204,15 +1193,15 @@ public class Internal extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Disable a module.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<module>";
+			return output;
 		}
 
 		@Override
