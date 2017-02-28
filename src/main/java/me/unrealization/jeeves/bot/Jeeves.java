@@ -3,9 +3,12 @@ package me.unrealization.jeeves.bot;
 import me.unrealization.jeeves.interfaces.BotModule;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -297,6 +300,26 @@ public class Jeeves
 		}
 
 		return false;
+	}
+
+	public static String getUtcTime()
+	{
+		Instant now = Instant.now();
+		String timeString = now.toString();
+		Pattern regEx = Pattern.compile("^([\\d]{4})-([\\d]{2})-([\\d]{2})T([\\d]{2}:[\\d]{2}:[\\d]{2})\\.[\\d]{3}Z$");
+		Matcher regExMatcher = regEx.matcher(timeString);
+
+		if (regExMatcher.matches() == false)
+		{
+			return timeString;
+		}
+
+		String year = regExMatcher.group(1);
+		String month = regExMatcher.group(2);
+		String day = regExMatcher.group(3);
+		String time = regExMatcher.group(4);
+		timeString = year + "-" + month + "-" + day + " " + time;
+		return timeString;
 	}
 
 	public static void main(String[] args)

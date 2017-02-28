@@ -22,29 +22,30 @@ public class Internal extends BotModule
 	{
 		this.version = Jeeves.version;
 
-		this.commandList = new String[22];
+		this.commandList = new String[23];
 		this.commandList[0] = "Help";
 		this.commandList[1] = "Version";
 		this.commandList[2] = "Ping";
-		this.commandList[3] = "Shutdown";
-		this.commandList[4] = "GetDebugging";
-		this.commandList[5] = "SetDebugging";
-		this.commandList[6] = "GetServers";
-		this.commandList[7] = "GetCommandPrefix";
-		this.commandList[8] = "SetCommandPrefix";
-		this.commandList[9] = "GetRespondOnPrefix";
-		this.commandList[10] = "SetRespondOnPrefix";
-		this.commandList[11] = "GetRespondOnMention";
-		this.commandList[12] = "SetRespondOnMention";
-		this.commandList[13] = "GetIgnoredChannels";
-		this.commandList[14] = "AddIgnoredChannel";
-		this.commandList[15] = "RemoveIgnoredChannel";
-		this.commandList[16] = "GetIgnoredUsers";
-		this.commandList[17] = "AddIgnoredUser";
-		this.commandList[18] = "RemoveIgnoredUser";
-		this.commandList[19] = "GetModules";
-		this.commandList[20] = "EnableModule";
-		this.commandList[21] = "DisableModule";
+		this.commandList[3] = "GetUtcTime";
+		this.commandList[4] = "Shutdown";
+		this.commandList[5] = "GetDebugging";
+		this.commandList[6] = "SetDebugging";
+		this.commandList[7] = "GetServers";
+		this.commandList[8] = "GetCommandPrefix";
+		this.commandList[9] = "SetCommandPrefix";
+		this.commandList[10] = "GetRespondOnPrefix";
+		this.commandList[11] = "SetRespondOnPrefix";
+		this.commandList[12] = "GetRespondOnMention";
+		this.commandList[13] = "SetRespondOnMention";
+		this.commandList[14] = "GetIgnoredChannels";
+		this.commandList[15] = "AddIgnoredChannel";
+		this.commandList[16] = "RemoveIgnoredChannel";
+		this.commandList[17] = "GetIgnoredUsers";
+		this.commandList[18] = "AddIgnoredUser";
+		this.commandList[19] = "RemoveIgnoredUser";
+		this.commandList[20] = "GetModules";
+		this.commandList[21] = "EnableModule";
+		this.commandList[22] = "DisableModule";
 
 		this.defaultConfig.put("commandPrefix", "!");
 		this.defaultConfig.put("respondOnPrefix", "0");
@@ -152,6 +153,29 @@ public class Internal extends BotModule
 		public void execute(IMessage message, String[] arguments)
 		{
 			Jeeves.sendMessage(message.getChannel(), "Pong!");
+		}
+	}
+
+	public static class GetUtcTime extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the current UTC time.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String utcTime = Jeeves.getUtcTime();
+			Jeeves.sendMessage(message.getChannel(), "The current UTC time is: " + utcTime);
 		}
 	}
 
