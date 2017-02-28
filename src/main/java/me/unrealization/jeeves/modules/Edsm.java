@@ -52,7 +52,7 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot retrieve the Elite: Dangerous server status.");
+				Jeeves.sendMessage(message.getChannel(), "EDSM communication error.");
 				return;
 			}
 
@@ -98,7 +98,7 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot retrieve the location of " + commanderName);
+				Jeeves.sendMessage(message.getChannel(), "EDSM communication error.");
 				return;
 			}
 
