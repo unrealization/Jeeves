@@ -18,4 +18,17 @@ public class EdsmModels
 		public String firstDiscover;
 		public String date;
 	}
+
+	public static class SystemCoordinates
+	{
+		public static class Coordinates
+		{
+			public String x;
+			public String y;
+			public String z;
+		}
+
+		public String name;
+		public Coordinates coords;
+	}
 }

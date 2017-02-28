@@ -35,10 +35,17 @@ public class EdsmApi implements BotApi
 		return data;
 	}
 
-	public EdsmModels.CommanderLocation locateCommander(String commanderName) throws IOException
+	public EdsmModels.CommanderLocation getCommanderLocation(String commanderName) throws IOException
 	{
 		String response = WebClient.getPage(this.getServerString() + "/api-logs-v1/get-position?commanderName=" + commanderName);
 		EdsmModels.CommanderLocation data = (EdsmModels.CommanderLocation)JSONHandler.parseJSON(response, EdsmModels.CommanderLocation.class);
+		return data;
+	}
+
+	public EdsmModels.SystemCoordinates getSystemCoordinates(String systemName) throws IOException
+	{
+		String response = WebClient.getPage(this.getServerString() + "/api-v1/system?systemName=" + systemName + "&coords=1");
+		EdsmModels.SystemCoordinates data = (EdsmModels.SystemCoordinates)JSONHandler.parseJSON(response, EdsmModels.SystemCoordinates.class);
 		return data;
 	}
 }
