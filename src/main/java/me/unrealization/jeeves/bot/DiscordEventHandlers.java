@@ -384,7 +384,7 @@ public class DiscordEventHandlers
 
 				String discordId = module.getDiscordId();
 
-				if ((discordId != null) && (discordId != message.getGuild().getID()))
+				if ((discordId != null) && (discordId.equals(message.getGuild().getID()) == false))
 				{
 					MessageQueue.sendMessage(message.getChannel(), "This command is not available on this Discord.");
 					return;
