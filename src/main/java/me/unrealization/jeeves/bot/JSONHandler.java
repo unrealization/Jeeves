@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 public class JSONHandler
 {
-	public static Object parseJSON(String jsonData, Class modelClass)
+	public static Object parseJSON(String jsonData, Class<?> modelClass)
 	{
 		Gson gson = new Gson();
 		Object model = gson.fromJson(jsonData, modelClass);
