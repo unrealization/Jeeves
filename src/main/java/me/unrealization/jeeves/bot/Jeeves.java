@@ -16,6 +16,7 @@ import javax.xml.transform.TransformerException;
 import me.unrealization.jeeves.modules.Ccn;
 import me.unrealization.jeeves.modules.Edsm;
 import me.unrealization.jeeves.modules.Internal;
+import me.unrealization.jeeves.modules.Roles;
 import me.unrealization.jeeves.modules.UserLog;
 import me.unrealization.jeeves.modules.Welcome;
 
@@ -77,6 +78,7 @@ public class Jeeves
 		Jeeves.modules.put("ccn", new Ccn());
 		Jeeves.modules.put("edsm", new Edsm());
 		Jeeves.modules.put("internal", new Internal());
+		Jeeves.modules.put("roles", new Roles());
 		Jeeves.modules.put("userLog", new UserLog());
 		Jeeves.modules.put("welcome", new Welcome());
 	}
