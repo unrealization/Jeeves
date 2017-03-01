@@ -19,7 +19,6 @@ public class TaskHandler implements Runnable
 	@Override
 	public void run()
 	{
-		// TODO Auto-generated method stub
 		this.command.execute(message, arguments);
 	}
 
