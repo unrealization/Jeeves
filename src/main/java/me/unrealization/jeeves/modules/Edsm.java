@@ -2,10 +2,14 @@ package me.unrealization.jeeves.modules;
 
 import java.io.IOException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.jsonModels.EdsmModels;
 import me.unrealization.jeeves.apis.EdsmApi;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.Permissions;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 
@@ -15,24 +19,133 @@ public class Edsm extends BotModule
 	{
 		this.version = "0.2";
 
-		this.commandList = new String[3];
-		this.commandList[0] = "GetEDStatus";
-		this.commandList[1] = "Locate";
-		this.commandList[2] = "SysCoords";
+		this.commandList = new String[5];
+		this.commandList[0] = "GetUseEdsmBetaServer";
+		this.commandList[1] = "SetUseEdsmBetaServer";
+		this.commandList[2] = "GetEDStatus";
+		this.commandList[3] = "Locate";
+		this.commandList[4] = "SysCoords";
 
 		this.defaultConfig.put("edsmUseBetaServer", "1");
 	}
 
-	private String sanitizeString(String input)
+	private static String sanitizeString(String input)
 	{
-		String output = "";
+		String output = input.replace(" ", "%20").replace("+", "%2B").replace("'", "%27");
 		return output;
 	}
 
-	private String desanitizeString(String input)
+	/*private static String desanitizeString(String input)
 	{
-		String output = "";
+		String output = input.replace("%20", " ").replace("%2B", "+").replace("%27", "'");
 		return output;
+	}*/
+
+	private static EdsmApi getApiObject(String serverId)
+	{
+		String useBetaServer = (String)Jeeves.serverConfig.getValue(serverId, "edsmUseBetaServer");
+		boolean useBeta = useBetaServer.equals("1");
+		EdsmApi edsmApi = new EdsmApi();
+		edsmApi.setUseBetaServer(useBeta);
+		return edsmApi;
+	}
+
+	public static class GetUseEdsmBetaServer extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Check if the bot uses the EDSM beta server.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String useBetaServer = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "edsmUseBetaServer");
+
+			if (useBetaServer.equals("0") == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "The bot uses the EDSM live server.");
+			}
+			else
+			{
+				Jeeves.sendMessage(message.getChannel(), "The bot uses the EDSM beta server.");
+			}
+		}
+	}
+
+	public static class SetUseEdsmBetaServer extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Set whether or not the bot should use the EDSM beta server.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<1|0>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String useBetaServer = String.join(" ", arguments).trim();
+
+			if ((useBetaServer.equals("0") == false) && (useBetaServer.equals("1") == false))
+			{
+				Jeeves.sendMessage(message.getChannel(), "Invalid value");
+				return;
+			}
+
+			Jeeves.serverConfig.setValue(message.getGuild().getID(), "edsmUseBetaServer", useBetaServer);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			if (useBetaServer.equals("0") == true)
+			{
+				Jeeves.sendMessage(message.getChannel(), "The bot will now use the EDSM live server.");
+			}
+			else
+			{
+				Jeeves.sendMessage(message.getChannel(), "The bot will now use the EDSM beta server.");
+			}
+		}
 	}
 
 	public static class GetEDStatus extends BotCommand
@@ -53,8 +166,7 @@ public class Edsm extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			EdsmApi edsmApi = new EdsmApi();
-			edsmApi.setUseBetaServer(false);
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getID());
 			EdsmModels.EDStatus data;
 
 			try
@@ -99,13 +211,12 @@ public class Edsm extends BotModule
 				return;
 			}
 
-			EdsmApi edsmApi = new EdsmApi();
-			edsmApi.setUseBetaServer(false);
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getID());
 			EdsmModels.CommanderLocation data;
 
 			try
 			{
-				data = edsmApi.getCommanderLocation(commanderName);
+				data = edsmApi.getCommanderLocation(Edsm.sanitizeString(commanderName));
 			}
 			catch (IOException e)
 			{
@@ -164,7 +275,6 @@ public class Edsm extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			// TODO Auto-generated method stub
 			String systemName = String.join(" ", arguments).trim();
 
 			if (systemName.isEmpty() == true)
@@ -173,13 +283,12 @@ public class Edsm extends BotModule
 				return;
 			}
 
-			EdsmApi edsmApi = new EdsmApi();
-			edsmApi.setUseBetaServer(false);
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getID());
 			EdsmModels.SystemCoordinates data;
 
 			try
 			{
-				data = edsmApi.getSystemCoordinates(systemName);
+				data = edsmApi.getSystemCoordinates(Edsm.sanitizeString(systemName));
 			}
 			catch (IOException e)
 			{

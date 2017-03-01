@@ -25,7 +25,7 @@ public class EdsmApi implements BotApi
 
 	public void setUseBetaServer(boolean useBetaServer)
 	{
-		this.useBetaServer =  useBetaServer;
+		this.useBetaServer = useBetaServer;
 	}
 
 	public EdsmModels.EDStatus getEDStatus() throws IOException
