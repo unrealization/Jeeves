@@ -5,9 +5,8 @@ import java.io.IOException;
 import me.unrealization.jeeves.jsonModels.EdsmModels;
 import me.unrealization.jeeves.bot.JSONHandler;
 import me.unrealization.jeeves.bot.WebClient;
-import me.unrealization.jeeves.interfaces.BotApi;
 
-public class EdsmApi implements BotApi
+public class EdsmApi
 {
 	private boolean useBetaServer = true;
 
