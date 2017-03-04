@@ -109,6 +109,7 @@ public class Internal extends BotModule
 			}
 
 			Jeeves.sendMessage(channel, output);
+			Jeeves.sendMessage(message.getChannel(), "Help sent as private message.");
 		}
 	}
 
