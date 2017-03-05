@@ -20,7 +20,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "0.4";
+		this.version = "0.4.1";
 
 		this.commandList = new String[4];
 		this.commandList[0] = "GetRoles";
@@ -46,7 +46,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 		if (role == null)
 		{
-			//reset setting
+			Roles roles = new Roles();
+			Jeeves.serverConfig.setValue(event.getGuild().getID(), "autoRole", roles.getDefaultConfig().get("autoRole"));
 			return;
 		}
 

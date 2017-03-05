@@ -16,7 +16,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 {
 	public Welcome()
 	{
-		this.version = "1.0";
+		this.version = "1.0.1";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetWelcomeChannel";
@@ -40,7 +40,8 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		if (channel == null)
 		{
 			System.out.println("Invalid welcome channel.");
-			Jeeves.serverConfig.setValue(event.getGuild().getID(), "welcomeChannel", "");
+			Welcome welcome = new Welcome();
+			Jeeves.serverConfig.setValue(event.getGuild().getID(), "welcomeChannel", welcome.getDefaultConfig().get("welcomeChannel"));
 
 			try
 			{
