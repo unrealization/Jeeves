@@ -157,8 +157,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Join one of the public roles.";
+			return output;
 		}
 
 		@Override
@@ -234,8 +234,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Leave one of the public roles.";
+			return output;
 		}
 
 		@Override
