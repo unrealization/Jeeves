@@ -51,7 +51,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		{
 			System.out.println("Invalid user log channel.");
 			UserLog userLog = new UserLog();
-			Jeeves.serverConfig.setValue(event.getGuild().getID(), "userLogChannel", userLog.defaultConfig.get("userLogChannel"));
+			Jeeves.serverConfig.setValue(event.getGuild().getID(), "userLogChannel", userLog.getDefaultConfig().get("userLogChannel"));
 
 			try
 			{

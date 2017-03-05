@@ -239,17 +239,8 @@ public class Jeeves
 			return false;
 		}
 
-		String[] ignoredChannelList = (String[])ignoredChannels;
-
-		for (int channelIndex = 0; channelIndex < ignoredChannelList.length; channelIndex++)
-		{
-			if (channel.getID().equals(ignoredChannelList[channelIndex]) == true)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		List<String> ignoredChannelList = (List<String>)ignoredChannels;
+		return ignoredChannelList.contains(channel.getID());
 	}
 
 	public static boolean isIgnored(String serverId, IUser user)
@@ -261,17 +252,8 @@ public class Jeeves
 			return false;
 		}
 
-		String[] ignoredUserList = (String[])ignoredUsers;
-
-		for (int userIndex = 0; userIndex < ignoredUserList.length; userIndex++)
-		{
-			if (user.getID().equals(ignoredUserList[userIndex]) == true)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		List<String> ignoredUserList = (List<String>)ignoredUsers;
+		return ignoredUserList.contains(user.getID());
 	}
 
 	public static boolean isDisabled(String serverId, BotModule module)
@@ -290,18 +272,9 @@ public class Jeeves
 			return false;
 		}
 
-		String[] disabledModuleList = (String[])disabledModules;
 		String moduleName = module.getClass().getSimpleName().toLowerCase();
-
-		for (int moduleIndex = 0; moduleIndex < disabledModuleList.length; moduleIndex++)
-		{
-			if (disabledModuleList[moduleIndex].toLowerCase().equals(moduleName) == true)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		List<String> disabledModuleList = (List<String>)disabledModules;
+		return disabledModuleList.contains(moduleName);
 	}
 
 	public static String getUtcTime()

@@ -2,7 +2,9 @@ package me.unrealization.jeeves.bot;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -68,7 +70,7 @@ public class ClientConfig implements BotConfig
 			}
 			else
 			{
-				configValue = new String[0];
+				List<String> tmpList = new ArrayList<String>();
 
 				for (int itemIndex = 0; itemIndex < itemChildNodes.getLength(); itemIndex++)
 				{
@@ -79,17 +81,10 @@ public class ClientConfig implements BotConfig
 						continue;
 					}
 
-					String[] configArray = (String[])configValue;
-					String[] tmpValues = new String[configArray.length + 1];
-
-					for (int valueIndex = 0; valueIndex < configArray.length; valueIndex++)
-					{
-						tmpValues[valueIndex] = configArray[valueIndex];
-					}
-
-					tmpValues[configArray.length] = itemNode.getTextContent().trim();
-					configValue = tmpValues;
+					tmpList.add(itemNode.getTextContent().trim());
 				}
+
+				configValue= tmpList;
 			}
 
 			this.config.put(configName, configValue);
@@ -125,12 +120,12 @@ public class ClientConfig implements BotConfig
 			}
 			else
 			{
-				String[] configItemList = (String[])configItem;
+				List<String> configItemList = (List<String>)configItem;
 
-				for (int itemIndex = 0; itemIndex < configItemList.length; itemIndex++)
+				for (int itemIndex = 0; itemIndex < configItemList.size(); itemIndex++)
 				{
 					Element item = doc.createElement("entry");
-					item.setTextContent(configItemList[itemIndex]);
+					item.setTextContent(configItemList.get(itemIndex));
 					setting.appendChild(item);
 				}
 			}

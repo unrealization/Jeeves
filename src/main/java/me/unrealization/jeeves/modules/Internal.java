@@ -1,5 +1,6 @@
 package me.unrealization.jeeves.modules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -662,9 +663,9 @@ public class Internal extends BotModule
 				return;
 			}
 
-			String[] ignoredChannelList = (String[])ignoredChannels;
+			List<String> ignoredChannelList = (List<String>)ignoredChannels;
 
-			if (ignoredChannelList.length == 0)
+			if (ignoredChannelList.size() == 0)
 			{
 				Jeeves.sendMessage(message.getChannel(), "No channels are being ignored.");
 				return;
@@ -672,9 +673,9 @@ public class Internal extends BotModule
 
 			String output = "The following channels are being ignored:\n\n";
 
-			for (int channelIndex = 0; channelIndex < ignoredChannelList.length; channelIndex++)
+			for (int channelIndex = 0; channelIndex < ignoredChannelList.size(); channelIndex++)
 			{
-				IChannel channel = message.getGuild().getChannelByID(ignoredChannelList[channelIndex]);
+				IChannel channel = message.getGuild().getChannelByID(ignoredChannelList.get(channelIndex));
 				output += channel.getName() + "\n";
 			}
 
@@ -732,26 +733,18 @@ public class Internal extends BotModule
 			}
 
 			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredChannels");
-			String[] ignoredChannelList;
+			List<String> ignoredChannelList;
 
 			if (ignoredChannels.getClass() == String.class)
 			{
-				ignoredChannelList = new String[0];
+				ignoredChannelList = new ArrayList<String>();
 			}
 			else
 			{
-				ignoredChannelList = (String[])ignoredChannels;
+				ignoredChannelList = (List<String>)ignoredChannels;
 			}
 
-			String[] tmpIgnoredChannelList = new String[ignoredChannelList.length + 1];
-
-			for (int channelIndex = 0; channelIndex < ignoredChannelList.length; channelIndex++)
-			{
-				tmpIgnoredChannelList[channelIndex] = ignoredChannelList[channelIndex];
-			}
-
-			tmpIgnoredChannelList[ignoredChannelList.length] = channel.getID();
-			ignoredChannelList = tmpIgnoredChannelList;
+			ignoredChannelList.add(channel.getID());
 			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredChannels", ignoredChannelList);
 
 			try
@@ -820,27 +813,15 @@ public class Internal extends BotModule
 				return;
 			}
 
-			String[] ignoredChannelList = (String[])ignoredChannels;
-			String[] tmpIgnoredChannelList = new String[ignoredChannelList.length - 1];
-			int tmpIndex = 0;
-			boolean removed = false;
+			List<String> ignoredChannelList = (List<String>)ignoredChannels;
 
-			for (int channelIndex = 0; channelIndex < ignoredChannelList.length; channelIndex++)
+			if (ignoredChannelList.size() == 0)
 			{
-				if (channel.getID().equals(ignoredChannelList[channelIndex]) == true)
-				{
-					removed = true;
-					continue;
-				}
-
-				if (tmpIndex == tmpIgnoredChannelList.length)
-				{
-					break;
-				}
-
-				tmpIgnoredChannelList[tmpIndex] = ignoredChannelList[channelIndex];
-				tmpIndex++;
+				Jeeves.sendMessage(message.getChannel(), "No channels are being ignored.");
+				return;
 			}
+
+			boolean removed = ignoredChannelList.remove(channel.getID());
 
 			if (removed == false)
 			{
@@ -848,7 +829,6 @@ public class Internal extends BotModule
 				return;
 			}
 
-			ignoredChannelList = tmpIgnoredChannelList;
 			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredChannels", ignoredChannelList);
 
 			try
@@ -900,9 +880,9 @@ public class Internal extends BotModule
 				return;
 			}
 
-			String[] ignoredUserList = (String[])ignoredUsers;
+			List<String> ignoredUserList = (List<String>)ignoredUsers;
 
-			if (ignoredUserList.length == 0)
+			if (ignoredUserList.size() == 0)
 			{
 				Jeeves.sendMessage(message.getChannel(), "No users are being ignored.");
 				return;
@@ -910,9 +890,9 @@ public class Internal extends BotModule
 
 			String output = "The following users are being ignored:\n\n";
 
-			for (int userIndex = 0; userIndex < ignoredUserList.length; userIndex++)
+			for (int userIndex = 0; userIndex < ignoredUserList.size(); userIndex++)
 			{
-				IUser user = message.getGuild().getUserByID(ignoredUserList[userIndex]);
+				IUser user = message.getGuild().getUserByID(ignoredUserList.get(userIndex));
 				output += user.getName() + "\n";
 			}
 
@@ -970,26 +950,18 @@ public class Internal extends BotModule
 			}
 
 			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredUsers");
-			String[] ignoredUserList;
+			List<String> ignoredUserList;
 
 			if (ignoredUsers.getClass() == String.class)
 			{
-				ignoredUserList = new String[0];
+				ignoredUserList = new ArrayList<String>();
 			}
 			else
 			{
-				ignoredUserList = (String[])ignoredUsers;
+				ignoredUserList = (List<String>)ignoredUsers;
 			}
 
-			String[] tmpIgnoredUserList = new String[ignoredUserList.length + 1];
-
-			for (int userIndex = 0; userIndex < ignoredUserList.length; userIndex++)
-			{
-				tmpIgnoredUserList[userIndex] = ignoredUserList[userIndex];
-			}
-
-			tmpIgnoredUserList[ignoredUserList.length] = user.getID();
-			ignoredUserList = tmpIgnoredUserList;
+			ignoredUserList.add(user.getID());
 			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredUsers", ignoredUserList);
 
 			try
@@ -1058,27 +1030,15 @@ public class Internal extends BotModule
 				return;
 			}
 
-			String[] ignoredUserList = (String[])ignoredUsers;
-			String[] tmpIgnoredUserList = new String[ignoredUserList.length - 1];
-			int tmpIndex = 0;
-			boolean removed = false;
+			List<String> ignoredUserList = (List<String>)ignoredUsers;
 
-			for (int userIndex = 0; userIndex < ignoredUserList.length; userIndex++)
+			if (ignoredUserList.size() == 0)
 			{
-				if (user.getID().equals(ignoredUserList[userIndex]) == true)
-				{
-					removed = true;
-					continue;
-				}
-
-				if (tmpIndex == tmpIgnoredUserList.length)
-				{
-					break;
-				}
-
-				tmpIgnoredUserList[tmpIndex] = ignoredUserList[userIndex];
-				tmpIndex++;
+				Jeeves.sendMessage(message.getChannel(), "No users are being ignored.");
+				return;
 			}
+
+			boolean removed = ignoredUserList.remove(user.getID());
 
 			if (removed == false)
 			{
@@ -1086,7 +1046,6 @@ public class Internal extends BotModule
 				return;
 			}
 
-			ignoredUserList = tmpIgnoredUserList;
 			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredUsers", ignoredUserList);
 
 			try
@@ -1209,27 +1168,15 @@ public class Internal extends BotModule
 				return;
 			}
 
-			String[] disabledModuleList = (String[])disabledModules;
-			String[] tmpDisabledModuleList = new String[disabledModuleList.length - 1];
-			int tmpIndex = 0;
-			boolean removed = true;
+			List<String> disabledModuleList = (List<String>)disabledModules;
 
-			for (int moduleIndex = 0; moduleIndex < disabledModuleList.length; moduleIndex++)
+			if (disabledModuleList.size() == 0)
 			{
-				if (moduleName.equals(disabledModuleList[moduleIndex]) == true)
-				{
-					removed = true;
-					continue;
-				}
-
-				if (tmpIndex == tmpDisabledModuleList.length)
-				{
-					break;
-				}
-
-				tmpDisabledModuleList[tmpIndex] = disabledModuleList[moduleIndex];
-				tmpIndex++;
+				Jeeves.sendMessage(message.getChannel(), "All available modules are enabled.");
+				return;
 			}
+
+			boolean removed = disabledModuleList.remove(moduleName);
 
 			if (removed == false)
 			{
@@ -1237,7 +1184,6 @@ public class Internal extends BotModule
 				return;
 			}
 
-			disabledModuleList = tmpDisabledModuleList;
 			Jeeves.serverConfig.setValue(message.getGuild().getID(), "disabledModules", disabledModuleList);
 
 			try
@@ -1311,26 +1257,18 @@ public class Internal extends BotModule
 			}
 
 			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().getID(), "disabledModules");
-			String[] disabledModuleList;
+			List<String> disabledModuleList;
 
 			if (disabledModules.getClass() == String.class)
 			{
-				disabledModuleList = new String[0];
+				disabledModuleList = new ArrayList<String>();
 			}
 			else
 			{
-				disabledModuleList = (String[])disabledModules;
+				disabledModuleList = (List<String>)disabledModules;
 			}
 
-			String[] tmpDisabledModuleList = new String[disabledModuleList.length + 1];
-
-			for (int moduleIndex = 0; moduleIndex < disabledModuleList.length; moduleIndex++)
-			{
-				tmpDisabledModuleList[moduleIndex] = disabledModuleList[moduleIndex];
-			}
-
-			tmpDisabledModuleList[disabledModuleList.length] = moduleName;
-			disabledModuleList = tmpDisabledModuleList;
+			disabledModuleList.add(moduleName);
 			Jeeves.serverConfig.setValue(message.getGuild().getID(), "disabledModules", disabledModuleList);
 
 			try
