@@ -120,12 +120,12 @@ public class ClientConfig implements BotConfig
 			}
 			else
 			{
-				List<String> configItemList = (List<String>)configItem;
+				List<String> configItemList = Jeeves.listToStringList((List<?>)configItem);
 
 				for (int itemIndex = 0; itemIndex < configItemList.size(); itemIndex++)
 				{
 					Element item = doc.createElement("entry");
-					item.setTextContent(configItemList.get(itemIndex));
+					item.setTextContent((String)configItemList.get(itemIndex));
 					setting.appendChild(item);
 				}
 			}

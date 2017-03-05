@@ -663,7 +663,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			List<String> ignoredChannelList = (List<String>)ignoredChannels;
+			List<String> ignoredChannelList = Jeeves.listToStringList((List<?>)ignoredChannels);
 
 			if (ignoredChannelList.size() == 0)
 			{
@@ -741,7 +741,7 @@ public class Internal extends BotModule
 			}
 			else
 			{
-				ignoredChannelList = (List<String>)ignoredChannels;
+				ignoredChannelList = Jeeves.listToStringList((List<?>)ignoredChannels);
 			}
 
 			ignoredChannelList.add(channel.getID());
@@ -813,7 +813,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			List<String> ignoredChannelList = (List<String>)ignoredChannels;
+			List<String> ignoredChannelList = Jeeves.listToStringList((List<?>)ignoredChannels);
 
 			if (ignoredChannelList.size() == 0)
 			{
@@ -880,7 +880,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			List<String> ignoredUserList = (List<String>)ignoredUsers;
+			List<String> ignoredUserList = Jeeves.listToStringList((List<?>)ignoredUsers);
 
 			if (ignoredUserList.size() == 0)
 			{
@@ -958,7 +958,7 @@ public class Internal extends BotModule
 			}
 			else
 			{
-				ignoredUserList = (List<String>)ignoredUsers;
+				ignoredUserList = Jeeves.listToStringList((List<?>)ignoredUsers);
 			}
 
 			ignoredUserList.add(user.getID());
@@ -1030,7 +1030,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			List<String> ignoredUserList = (List<String>)ignoredUsers;
+			List<String> ignoredUserList = Jeeves.listToStringList((List<?>)ignoredUsers);
 
 			if (ignoredUserList.size() == 0)
 			{
@@ -1168,7 +1168,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			List<String> disabledModuleList = (List<String>)disabledModules;
+			List<String> disabledModuleList = Jeeves.listToStringList((List<?>)disabledModules);
 
 			if (disabledModuleList.size() == 0)
 			{
@@ -1265,7 +1265,7 @@ public class Internal extends BotModule
 			}
 			else
 			{
-				disabledModuleList = (List<String>)disabledModules;
+				disabledModuleList = Jeeves.listToStringList((List<?>)disabledModules);
 			}
 
 			disabledModuleList.add(moduleName);

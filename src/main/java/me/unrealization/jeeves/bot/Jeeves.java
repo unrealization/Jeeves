@@ -4,6 +4,7 @@ import me.unrealization.jeeves.interfaces.BotModule;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -152,6 +153,26 @@ public class Jeeves
 		return false;
 	}
 
+	public static List<String> listToStringList(List<?> list)
+	{
+		List<String> stringList = new ArrayList<String>();
+
+		for (int listIndex = 0; listIndex < list.size(); listIndex++)
+		{
+			Object item = list.get(listIndex);
+
+			if (item.getClass() != String.class)
+			{
+				continue;
+			}
+
+			String value = (String)item;
+			stringList.add(value);
+		}
+
+		return stringList;
+	}
+
 	public static IChannel findChannel(IGuild server, String channelName)
 	{
 		List<IChannel> channelList = server.getChannelsByName(channelName);
@@ -239,7 +260,7 @@ public class Jeeves
 			return false;
 		}
 
-		List<String> ignoredChannelList = (List<String>)ignoredChannels;
+		List<String> ignoredChannelList = Jeeves.listToStringList((List<?>)ignoredChannels);
 		return ignoredChannelList.contains(channel.getID());
 	}
 
@@ -252,7 +273,7 @@ public class Jeeves
 			return false;
 		}
 
-		List<String> ignoredUserList = (List<String>)ignoredUsers;
+		List<String> ignoredUserList = Jeeves.listToStringList((List<?>)ignoredUsers);
 		return ignoredUserList.contains(user.getID());
 	}
 
@@ -273,7 +294,7 @@ public class Jeeves
 		}
 
 		String moduleName = module.getClass().getSimpleName().toLowerCase();
-		List<String> disabledModuleList = (List<String>)disabledModules;
+		List<String> disabledModuleList = Jeeves.listToStringList((List<?>)disabledModules);
 		return disabledModuleList.contains(moduleName);
 	}
 

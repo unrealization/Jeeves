@@ -165,7 +165,7 @@ public class ServerConfig implements BotConfig
 				}
 				else
 				{
-					List<String> configItemList = (List<String>)configItem;
+					List<String> configItemList = Jeeves.listToStringList((List<?>)configItem);
 
 					for (int itemIndex = 0; itemIndex < configItemList.size(); itemIndex++)
 					{
