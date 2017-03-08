@@ -13,7 +13,6 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.RateLimitException;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 
@@ -97,19 +96,7 @@ public class Internal extends BotModule
 				output += module.getHelp() + "\n";
 			}
 
-			IChannel channel;
-
-			try
-			{
-				channel = message.getAuthor().getOrCreatePMChannel();
-			}
-			catch (RateLimitException | DiscordException e)
-			{
-				Jeeves.debugException(e);
-				channel = message.getChannel();
-			}
-
-			Jeeves.sendMessage(channel, output);
+			Jeeves.sendMessage(message.getAuthor(), output);
 			Jeeves.sendMessage(message.getChannel(), "Help sent as private message.");
 		}
 	}
