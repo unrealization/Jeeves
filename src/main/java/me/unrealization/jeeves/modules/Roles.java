@@ -8,11 +8,9 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
+import me.unrealization.jeeves.bot.RoleQueue;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
@@ -52,14 +50,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 			return;
 		}
 
-		try
-		{
-			event.getUser().addRole(role);
-		}
-		catch (MissingPermissionsException | RateLimitException | DiscordException e)
-		{
-			Jeeves.debugException(e);
-		}
+		RoleQueue.addRoleToUser(role, event.getUser());
 	}
 
 	private static List<IRole> getManageableRoles(IGuild server) throws Exception
@@ -215,18 +206,9 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			try
-			{
-				message.getAuthor().addRole(role);
-			}
-			catch (MissingPermissionsException | RateLimitException | DiscordException e)
-			{
-				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot add the role " + role.getName() + " to " + message.getAuthor().getName());
-				return;
-			}
-
-			MessageQueue.sendMessage(message.getChannel(), "Added the role " + role.getName() + " to " + message.getAuthor().getName());
+			RoleQueue.addRoleToUser(role, message.getAuthor(), message.getChannel());
+			MessageQueue.sendMessage(message.getChannel(), "Queued adding the role " + role.getName() + " to " + message.getAuthor().getName());
+			//MessageQueue.sendMessage(message.getChannel(), "Added the role " + role.getName() + " to " + message.getAuthor().getName());
 		}
 	}
 
@@ -292,18 +274,9 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			try
-			{
-				message.getAuthor().removeRole(role);
-			}
-			catch (MissingPermissionsException | RateLimitException | DiscordException e)
-			{
-				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot remove the role " + role.getName() + " from " + message.getAuthor().getName());
-				return;
-			}
-
-			MessageQueue.sendMessage(message.getChannel(), "Removed the role " + role.getName() + " from " + message.getAuthor().getName());
+			RoleQueue.removeRoleFromUser(role, message.getAuthor(), message.getChannel());
+			MessageQueue.sendMessage(message.getChannel(), "Queued removing the role " + role.getName() + " from " + message.getAuthor().getName());
+			//MessageQueue.sendMessage(message.getChannel(), "Removed the role " + role.getName() + " from " + message.getAuthor().getName());
 		}
 	}
 
