@@ -4,6 +4,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import me.unrealization.jeeves.bot.Jeeves;
+import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
@@ -63,7 +64,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 			return;
 		}
 
-		Jeeves.sendMessage(pmChannel, message);
+		MessageQueue.sendMessage(pmChannel, message);
 	}
 
 	public static class GetCcnProximityRole extends BotCommand
@@ -96,7 +97,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 
 			if (roleId.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No CCN proximity role has been set.");
+				MessageQueue.sendMessage(message.getChannel(), "No CCN proximity role has been set.");
 				return;
 			}
 
@@ -104,7 +105,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 
 			if (role == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "A CCN proximity role has been set, but it does not exist.");
+				MessageQueue.sendMessage(message.getChannel(), "A CCN proximity role has been set, but it does not exist.");
 
 				Ccn ccn = new Ccn();
 				Jeeves.serverConfig.setValue(message.getGuild().getID(), "ccnProximityRole", ccn.getDefaultConfig().get("ccnProximityRole"));
@@ -121,7 +122,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The CCN proximity role is: " + role.getName());
+			MessageQueue.sendMessage(message.getChannel(), "The CCN proximity role is: " + role.getName());
 		}
 	}
 
@@ -165,7 +166,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 
 				if (role == null)
 				{
-					Jeeves.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+					MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
 					return;
 				}
 
@@ -179,17 +180,17 @@ public class Ccn extends BotModule implements UserJoinedHandler
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
 			if (role == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The CCN proximity role has been cleared.");
+				MessageQueue.sendMessage(message.getChannel(), "The CCN proximity role has been cleared.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "The CCN proximity role has been set to: " + role.getName());
+				MessageQueue.sendMessage(message.getChannel(), "The CCN proximity role has been set to: " + role.getName());
 			}
 		}
 	}

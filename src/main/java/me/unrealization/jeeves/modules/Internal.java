@@ -7,6 +7,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import me.unrealization.jeeves.bot.Jeeves;
+import me.unrealization.jeeves.bot.MessageQueue;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -96,8 +97,8 @@ public class Internal extends BotModule
 				output += module.getHelp() + "\n";
 			}
 
-			Jeeves.sendMessage(message.getAuthor(), output);
-			Jeeves.sendMessage(message.getChannel(), "Help sent as private message.");
+			MessageQueue.sendMessage(message.getAuthor(), output);
+			MessageQueue.sendMessage(message.getChannel(), "Help sent as private message.");
 		}
 	}
 
@@ -119,7 +120,7 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			Jeeves.sendMessage(message.getChannel(), "Jeeves " + Jeeves.version);
+			MessageQueue.sendMessage(message.getChannel(), "Jeeves " + Jeeves.version);
 		}
 	}
 
@@ -141,7 +142,7 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			Jeeves.sendMessage(message.getChannel(), "Pong!");
+			MessageQueue.sendMessage(message.getChannel(), "Pong!");
 		}
 	}
 
@@ -164,7 +165,7 @@ public class Internal extends BotModule
 		public void execute(IMessage message, String[] arguments)
 		{
 			String utcTime = Jeeves.getUtcTime();
-			Jeeves.sendMessage(message.getChannel(), "The current UTC time is: " + utcTime);
+			MessageQueue.sendMessage(message.getChannel(), "The current UTC time is: " + utcTime);
 		}
 	}
 
@@ -192,7 +193,7 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			Jeeves.sendMessage(message.getChannel(), "Good bye, cruel world.");
+			MessageQueue.sendMessage(message.getChannel(), "Good bye, cruel world.");
 
 			try
 			{
@@ -233,11 +234,11 @@ public class Internal extends BotModule
 
 			if (debugging.equals("0") == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Debugging is disabled.");
+				MessageQueue.sendMessage(message.getChannel(), "Debugging is disabled.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "Debugging is enabled.");
+				MessageQueue.sendMessage(message.getChannel(), "Debugging is enabled.");
 			}
 		}
 	}
@@ -271,7 +272,7 @@ public class Internal extends BotModule
 
 			if ((debugging.equals("0") == false) && (debugging.equals("1") == false))
 			{
-				Jeeves.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
 			}
 
 			Jeeves.clientConfig.setValue("debugging", debugging);
@@ -283,17 +284,17 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
 			if (debugging.equals("0") == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Debugging has been disabled.");
+				MessageQueue.sendMessage(message.getChannel(), "Debugging has been disabled.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "Debugging has been enabled.");
+				MessageQueue.sendMessage(message.getChannel(), "Debugging has been enabled.");
 			}
 		}
 	}
@@ -332,7 +333,7 @@ public class Internal extends BotModule
 				output += "\t" + server.getName() + "\n";
 			}
 
-			Jeeves.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
 
@@ -363,7 +364,7 @@ public class Internal extends BotModule
 		public void execute(IMessage message, String[] arguments)
 		{
 			String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix");
-			Jeeves.sendMessage(message.getChannel(), "The command prefix is: " + commandPrefix);
+			MessageQueue.sendMessage(message.getChannel(), "The command prefix is: " + commandPrefix);
 		}
 	}
 
@@ -398,7 +399,7 @@ public class Internal extends BotModule
 
 			if (commandPrefix.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The command prefix cannot be empty.");
+				MessageQueue.sendMessage(message.getChannel(), "The command prefix cannot be empty.");
 				return;
 			}
 
@@ -411,11 +412,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The command prefix has been set to: " + commandPrefix);
+			MessageQueue.sendMessage(message.getChannel(), "The command prefix has been set to: " + commandPrefix);
 		}
 	}
 
@@ -449,11 +450,11 @@ public class Internal extends BotModule
 
 			if (respondOnPrefix.equals("0") == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot will not respond to the command prefix.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot will not respond to the command prefix.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot will respond to the command prefix.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot will respond to the command prefix.");
 			}
 		}
 	}
@@ -489,7 +490,7 @@ public class Internal extends BotModule
 
 			if ((respondOnPrefix.equals("0") == false) && (respondOnPrefix.equals("1") == false))
 			{
-				Jeeves.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
 				return;
 			}
 
@@ -503,17 +504,17 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
 			if (respondOnPrefix.equals("0") == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot will no longer respond to the command prefix.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot will no longer respond to the command prefix.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot now responds to the command prefix.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot now responds to the command prefix.");
 			}
 		}
 	}
@@ -548,11 +549,11 @@ public class Internal extends BotModule
 
 			if (respondOnMention.equals("0") == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot will not respond to mentions.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot will not respond to mentions.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot will respond to mentions.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot will respond to mentions.");
 			}
 		}
 	}
@@ -588,7 +589,7 @@ public class Internal extends BotModule
 
 			if ((respondOnMention.equals("0") == false) && (respondOnMention.equals("1") == false))
 			{
-				Jeeves.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
 				return;
 			}
 
@@ -601,17 +602,17 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
 			if (respondOnMention.equals("0") == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot will no longer respond to mentions.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot will no longer respond to mentions.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot now responds to mentions.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot now responds to mentions.");
 			}
 		}
 	}
@@ -646,7 +647,7 @@ public class Internal extends BotModule
 
 			if (ignoredChannels.getClass() == String.class)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No channels are being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "No channels are being ignored.");
 				return;
 			}
 
@@ -654,7 +655,7 @@ public class Internal extends BotModule
 
 			if (ignoredChannelList.size() == 0)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No channels are being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "No channels are being ignored.");
 				return;
 			}
 
@@ -666,7 +667,7 @@ public class Internal extends BotModule
 				output += channel.getName() + "\n";
 			}
 
-			Jeeves.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
 
@@ -701,7 +702,7 @@ public class Internal extends BotModule
 
 			if (channelName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a channel name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a channel name.");
 				return;
 			}
 
@@ -709,13 +710,13 @@ public class Internal extends BotModule
 
 			if (channel == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
 				return;
 			}
 
 			if (Jeeves.isIgnored(channel) == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The channel " + channel.getName() + " is being ignored already.");
+				MessageQueue.sendMessage(message.getChannel(), "The channel " + channel.getName() + " is being ignored already.");
 				return;
 			}
 
@@ -741,11 +742,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The following channel is now being ignored: " + channel.getName());
+			MessageQueue.sendMessage(message.getChannel(), "The following channel is now being ignored: " + channel.getName());
 		}
 	}
 
@@ -780,7 +781,7 @@ public class Internal extends BotModule
 
 			if (channelName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a channel name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a channel name.");
 				return;
 			}
 
@@ -788,7 +789,7 @@ public class Internal extends BotModule
 
 			if (channel == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
 				return;
 			}
 
@@ -796,7 +797,7 @@ public class Internal extends BotModule
 
 			if (ignoredChannels.getClass() == String.class)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No channels are being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "No channels are being ignored.");
 				return;
 			}
 
@@ -804,7 +805,7 @@ public class Internal extends BotModule
 
 			if (ignoredChannelList.size() == 0)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No channels are being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "No channels are being ignored.");
 				return;
 			}
 
@@ -812,7 +813,7 @@ public class Internal extends BotModule
 
 			if (removed == false)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The channel " + channel.getName() + " is not being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "The channel " + channel.getName() + " is not being ignored.");
 				return;
 			}
 
@@ -825,11 +826,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The following channel is no longer being ignored: " + channel.getName());
+			MessageQueue.sendMessage(message.getChannel(), "The following channel is no longer being ignored: " + channel.getName());
 		}
 	}
 
@@ -863,7 +864,7 @@ public class Internal extends BotModule
 
 			if (ignoredUsers.getClass() == String.class)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No users are being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "No users are being ignored.");
 				return;
 			}
 
@@ -871,7 +872,7 @@ public class Internal extends BotModule
 
 			if (ignoredUserList.size() == 0)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No users are being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "No users are being ignored.");
 				return;
 			}
 
@@ -883,7 +884,7 @@ public class Internal extends BotModule
 				output += user.getName() + "\n";
 			}
 
-			Jeeves.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
 
@@ -918,7 +919,7 @@ public class Internal extends BotModule
 
 			if (userName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a user name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a user name.");
 				return;
 			}
 
@@ -926,13 +927,13 @@ public class Internal extends BotModule
 
 			if (user == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
 				return;
 			}
 
 			if (Jeeves.isIgnored(message.getGuild().getID(), user) == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The user " + user.getName() + " is being ignored already.");
+				MessageQueue.sendMessage(message.getChannel(), "The user " + user.getName() + " is being ignored already.");
 				return;
 			}
 
@@ -958,11 +959,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The following user is now being ignored: " + user.getName());
+			MessageQueue.sendMessage(message.getChannel(), "The following user is now being ignored: " + user.getName());
 		}
 	}
 
@@ -997,7 +998,7 @@ public class Internal extends BotModule
 
 			if (userName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a user name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a user name.");
 				return;
 			}
 
@@ -1005,7 +1006,7 @@ public class Internal extends BotModule
 
 			if (user == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
 				return;
 			}
 
@@ -1013,7 +1014,7 @@ public class Internal extends BotModule
 
 			if (ignoredUsers.getClass() == String.class)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No users are being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "No users are being ignored.");
 				return;
 			}
 
@@ -1021,7 +1022,7 @@ public class Internal extends BotModule
 
 			if (ignoredUserList.size() == 0)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No users are being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "No users are being ignored.");
 				return;
 			}
 
@@ -1029,7 +1030,7 @@ public class Internal extends BotModule
 
 			if (removed == false)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The user " + user.getName() + " is not being ignored.");
+				MessageQueue.sendMessage(message.getChannel(), "The user " + user.getName() + " is not being ignored.");
 				return;
 			}
 
@@ -1042,11 +1043,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The following user is no longer being ignored: " + user.getName());
+			MessageQueue.sendMessage(message.getChannel(), "The following user is no longer being ignored: " + user.getName());
 		}
 	}
 
@@ -1092,7 +1093,7 @@ public class Internal extends BotModule
 				output += "\n";
 			}
 
-			Jeeves.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
 
@@ -1127,7 +1128,7 @@ public class Internal extends BotModule
 
 			if (moduleName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a module name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a module name.");
 				return;
 			}
 
@@ -1135,7 +1136,7 @@ public class Internal extends BotModule
 
 			if (module == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Cannot find the module " + moduleName);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the module " + moduleName);
 				return;
 			}
 
@@ -1143,7 +1144,7 @@ public class Internal extends BotModule
 
 			if ((discordId != null) && (message.getGuild().getID().equals(discordId) == false))
 			{
-				Jeeves.sendMessage(message.getChannel(), "The module " + moduleName + " is not available on this server.");
+				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName + " is not available on this server.");
 				return;
 			}
 
@@ -1151,7 +1152,7 @@ public class Internal extends BotModule
 
 			if (disabledModules.getClass() == String.class)
 			{
-				Jeeves.sendMessage(message.getChannel(), "All available modules are enabled.");
+				MessageQueue.sendMessage(message.getChannel(), "All available modules are enabled.");
 				return;
 			}
 
@@ -1159,7 +1160,7 @@ public class Internal extends BotModule
 
 			if (disabledModuleList.size() == 0)
 			{
-				Jeeves.sendMessage(message.getChannel(), "All available modules are enabled.");
+				MessageQueue.sendMessage(message.getChannel(), "All available modules are enabled.");
 				return;
 			}
 
@@ -1167,7 +1168,7 @@ public class Internal extends BotModule
 
 			if (removed == false)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The module " + moduleName +  " is not disabled.");
+				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName +  " is not disabled.");
 				return;
 			}
 
@@ -1180,11 +1181,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The following module has been enabled: " + moduleName);
+			MessageQueue.sendMessage(message.getChannel(), "The following module has been enabled: " + moduleName);
 		}
 	}
 
@@ -1219,7 +1220,7 @@ public class Internal extends BotModule
 
 			if (moduleName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a module name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a module name.");
 				return;
 			}
 
@@ -1227,19 +1228,19 @@ public class Internal extends BotModule
 
 			if (module == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Cannot find the module " + moduleName);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the module " + moduleName);
 				return;
 			}
 
 			if (module.canDisable() == false)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The module " + moduleName + " cannot be disabled.");
+				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName + " cannot be disabled.");
 				return;
 			}
 
 			if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The module " + moduleName + " is disabled already.");
+				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName + " is disabled already.");
 				return;
 			}
 
@@ -1265,11 +1266,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The following module has been disabled: " + moduleName);
+			MessageQueue.sendMessage(message.getChannel(), "The following module has been disabled: " + moduleName);
 		}
 	}
 }

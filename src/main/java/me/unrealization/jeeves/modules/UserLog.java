@@ -15,6 +15,7 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.handle.obj.Presences;
 import me.unrealization.jeeves.bot.Jeeves;
+import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.PresenceUpdateHandler;
@@ -66,7 +67,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		}
 
 		Date now = new Date();
-		Jeeves.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + " has joined the server.");
+		MessageQueue.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + " has joined the server.");
 	}
 
 	@Override
@@ -99,7 +100,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		}
 
 		Date now = new Date();
-		Jeeves.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + " has left the server.");
+		MessageQueue.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + " has left the server.");
 	}
 
 	@Override
@@ -150,7 +151,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		}
 
 		Date now = new Date();
-		Jeeves.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + "'s status has changed from " + oldPresence.name() + " to " + newPresence.name());
+		MessageQueue.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + "'s status has changed from " + oldPresence.name() + " to " + newPresence.name());
 	}
 
 	@Override
@@ -190,7 +191,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 
 			if (channelId.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No user log channel has been set.");
+				MessageQueue.sendMessage(message.getChannel(), "No user log channel has been set.");
 				return;
 			}
 
@@ -198,7 +199,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 
 			if (channel == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "A user log channel has been set, but it does not exist.");
+				MessageQueue.sendMessage(message.getChannel(), "A user log channel has been set, but it does not exist.");
 
 				UserLog userLog = new UserLog();
 				Jeeves.serverConfig.setValue(message.getGuild().getID(), "userLogChannel", userLog.getDefaultConfig().get("userLogChannel"));
@@ -215,7 +216,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "The user log channel is: " + channel.getName());
+			MessageQueue.sendMessage(message.getChannel(), "The user log channel is: " + channel.getName());
 		}
 	}
 
@@ -259,7 +260,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 
 				if (channel == null)
 				{
-					Jeeves.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
+					MessageQueue.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
 					return;
 				}
 
@@ -273,17 +274,17 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
 			if (channel == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The user log channel has been cleared.");
+				MessageQueue.sendMessage(message.getChannel(), "The user log channel has been cleared.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "The user log channel has been set to: " + channel.getName());
+				MessageQueue.sendMessage(message.getChannel(), "The user log channel has been set to: " + channel.getName());
 			}
 		}
 	}

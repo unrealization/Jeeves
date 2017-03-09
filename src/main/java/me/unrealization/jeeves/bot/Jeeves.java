@@ -28,13 +28,9 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MessageBuilder;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
 
 public class Jeeves
 {
@@ -122,40 +118,6 @@ public class Jeeves
 		{
 			Jeeves.serverConfig.saveConfig();
 		}
-	}
-
-	public static boolean sendMessage(IChannel channel, String message)
-	{
-		MessageBuilder messageBuilder = new MessageBuilder(Jeeves.bot);
-
-		try
-		{
-			messageBuilder.withContent(message).withChannel(channel).build();
-		}
-		catch (RateLimitException | DiscordException | MissingPermissionsException e)
-		{
-			Jeeves.debugException(e);
-			return false;
-		}
-
-		return true;
-	}
-
-	public static boolean sendMessage(IUser user, String message)
-	{
-		IPrivateChannel channel;
-
-		try
-		{
-			channel = user.getOrCreatePMChannel();
-		}
-		catch (RateLimitException | DiscordException e)
-		{
-			Jeeves.debugException(e);
-			return false;
-		}
-
-		return Jeeves.sendMessage(channel, message);
 	}
 
 	public static boolean debugException(Exception e)

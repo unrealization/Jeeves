@@ -12,6 +12,7 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 import me.unrealization.jeeves.bot.Jeeves;
+import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
@@ -130,13 +131,13 @@ public class Roles extends BotModule implements UserJoinedHandler
 			catch (Exception e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "The bot does not have the permission to manage roles.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot does not have the permission to manage roles.");
 				return;
 			}
 
 			if (manageableRoles.size() == 0)
 			{
-				Jeeves.sendMessage(message.getChannel(), "No manageable roles found.");
+				MessageQueue.sendMessage(message.getChannel(), "No manageable roles found.");
 				return;
 			}
 
@@ -148,7 +149,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				output += "\t" + role.getName() + "\n";
 			}
 
-			Jeeves.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
 
@@ -175,7 +176,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			if (roleName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a role name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
 				return;
 			}
 
@@ -183,7 +184,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			if (role == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
 				return;
 			}
 
@@ -196,13 +197,13 @@ public class Roles extends BotModule implements UserJoinedHandler
 			catch (Exception e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "The bot does not have the permission to manage roles.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot does not have the permission to manage roles.");
 				return;
 			}
 
 			if (manageableRoles.contains(role) == false)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot is not allowed to manage the role " + role.getName());
+				MessageQueue.sendMessage(message.getChannel(), "The bot is not allowed to manage the role " + role.getName());
 				return;
 			}
 
@@ -210,7 +211,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			if (userRoles.contains(role) == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), message.getAuthor().getName() + " already has the role " + role.getName());
+				MessageQueue.sendMessage(message.getChannel(), message.getAuthor().getName() + " already has the role " + role.getName());
 				return;
 			}
 
@@ -221,11 +222,11 @@ public class Roles extends BotModule implements UserJoinedHandler
 			catch (MissingPermissionsException | RateLimitException | DiscordException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot add the role " + role.getName() + " to " + message.getAuthor().getName());
+				MessageQueue.sendMessage(message.getChannel(), "Cannot add the role " + role.getName() + " to " + message.getAuthor().getName());
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "Added the role " + role.getName() + " to " + message.getAuthor().getName());
+			MessageQueue.sendMessage(message.getChannel(), "Added the role " + role.getName() + " to " + message.getAuthor().getName());
 		}
 	}
 
@@ -252,7 +253,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			if (roleName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a role name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
 				return;
 			}
 
@@ -260,7 +261,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			if (role == null)
 			{
-				Jeeves.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
 				return;
 			}
 
@@ -273,13 +274,13 @@ public class Roles extends BotModule implements UserJoinedHandler
 			catch (Exception e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "The bot does not have the permission to manage roles.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot does not have the permission to manage roles.");
 				return;
 			}
 
 			if (manageableRoles.contains(role) == false)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot is not allowed to manage the role " + role.getName());
+				MessageQueue.sendMessage(message.getChannel(), "The bot is not allowed to manage the role " + role.getName());
 				return;
 			}
 
@@ -287,7 +288,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			if (userRoles.contains(role) == false)
 			{
-				Jeeves.sendMessage(message.getChannel(), message.getAuthor().getName() + " does not have the role " + role.getName());
+				MessageQueue.sendMessage(message.getChannel(), message.getAuthor().getName() + " does not have the role " + role.getName());
 				return;
 			}
 
@@ -298,11 +299,11 @@ public class Roles extends BotModule implements UserJoinedHandler
 			catch (MissingPermissionsException | RateLimitException | DiscordException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot remove the role " + role.getName() + " from " + message.getAuthor().getName());
+				MessageQueue.sendMessage(message.getChannel(), "Cannot remove the role " + role.getName() + " from " + message.getAuthor().getName());
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "Removed the role " + role.getName() + " from " + message.getAuthor().getName());
+			MessageQueue.sendMessage(message.getChannel(), "Removed the role " + role.getName() + " from " + message.getAuthor().getName());
 		}
 	}
 

@@ -387,7 +387,7 @@ public class DiscordEventHandlers
 
 				if ((discordId != null) && (discordId != message.getGuild().getID()))
 				{
-					Jeeves.sendMessage(message.getChannel(), "This command is not available on this Discord.");
+					MessageQueue.sendMessage(message.getChannel(), "This command is not available on this Discord.");
 					return;
 				}
 
@@ -435,7 +435,7 @@ public class DiscordEventHandlers
 
 					if (message.getAuthor().getID().equals(ownerId) == false)
 					{
-						Jeeves.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
+						MessageQueue.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
 						return;
 					}
 				}
@@ -450,7 +450,7 @@ public class DiscordEventHandlers
 					{
 						if (userPermissions.contains(permissionList[permissionIndex]) == false)
 						{
-							Jeeves.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
+							MessageQueue.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
 							return;
 						}
 					}

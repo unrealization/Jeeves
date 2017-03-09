@@ -6,6 +6,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import me.unrealization.jeeves.bot.Jeeves;
+import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.jsonModels.EdsmModels;
 import me.unrealization.jeeves.apis.EdsmApi;
 import sx.blah.discord.handle.obj.IMessage;
@@ -80,11 +81,11 @@ public class Edsm extends BotModule
 
 			if (useBetaServer.equals("0") == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot uses the EDSM live server.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot uses the EDSM live server.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot uses the EDSM beta server.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot uses the EDSM beta server.");
 			}
 		}
 	}
@@ -120,7 +121,7 @@ public class Edsm extends BotModule
 
 			if ((useBetaServer.equals("0") == false) && (useBetaServer.equals("1") == false))
 			{
-				Jeeves.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
 				return;
 			}
 
@@ -133,17 +134,17 @@ public class Edsm extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
 				return;
 			}
 
 			if (useBetaServer.equals("0") == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot will now use the EDSM live server.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot will now use the EDSM live server.");
 			}
 			else
 			{
-				Jeeves.sendMessage(message.getChannel(), "The bot will now use the EDSM beta server.");
+				MessageQueue.sendMessage(message.getChannel(), "The bot will now use the EDSM beta server.");
 			}
 		}
 	}
@@ -176,11 +177,11 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
 				return;
 			}
 
-			Jeeves.sendMessage(message.getChannel(), "Elite: Dangerous Server Status: " + data.message + "\nLast Update: " + data.lastUpdate);
+			MessageQueue.sendMessage(message.getChannel(), "Elite: Dangerous Server Status: " + data.message + "\nLast Update: " + data.lastUpdate);
 		}
 	}
 
@@ -207,7 +208,7 @@ public class Edsm extends BotModule
 
 			if (commanderName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a commander name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander name.");
 				return;
 			}
 
@@ -221,7 +222,7 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
 				return;
 			}
 
@@ -252,7 +253,7 @@ public class Edsm extends BotModule
 				}
 			}
 
-			Jeeves.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
 
@@ -279,7 +280,7 @@ public class Edsm extends BotModule
 
 			if (systemName.isEmpty() == true)
 			{
-				Jeeves.sendMessage(message.getChannel(), "You need to provide a system name.");
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
 				return;
 			}
 
@@ -293,7 +294,7 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				Jeeves.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
 				return;
 			}
 
@@ -308,7 +309,7 @@ public class Edsm extends BotModule
 				output = systemName + " cannot be found in EDSM.";
 			}
 
-			Jeeves.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
 }
