@@ -3,6 +3,9 @@ package me.unrealization.jeeves.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -19,13 +22,15 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "0.4.1";
+		this.version = "0.6";
 
-		this.commandList = new String[4];
+		this.commandList = new String[6];
 		this.commandList[0] = "GetRoles";
 		this.commandList[1] = "Join";
 		this.commandList[2] = "Leave";
 		this.commandList[3] = "Members";
+		this.commandList[4] = "GetAutoRole";
+		this.commandList[5] = "SetAutoRole";
 
 		this.defaultConfig.put("autoRole", "");
 		this.defaultConfig.put("lockedRoles", new String[0]);
@@ -207,8 +212,6 @@ public class Roles extends BotModule implements UserJoinedHandler
 			}
 
 			RoleQueue.addRoleToUser(role, message.getAuthor(), message.getChannel());
-			MessageQueue.sendMessage(message.getChannel(), "Queued adding the role " + role.getName() + " to " + message.getAuthor().getName());
-			//MessageQueue.sendMessage(message.getChannel(), "Added the role " + role.getName() + " to " + message.getAuthor().getName());
 		}
 	}
 
@@ -275,8 +278,6 @@ public class Roles extends BotModule implements UserJoinedHandler
 			}
 
 			RoleQueue.removeRoleFromUser(role, message.getAuthor(), message.getChannel());
-			MessageQueue.sendMessage(message.getChannel(), "Queued removing the role " + role.getName() + " from " + message.getAuthor().getName());
-			//MessageQueue.sendMessage(message.getChannel(), "Removed the role " + role.getName() + " from " + message.getAuthor().getName());
 		}
 	}
 
@@ -292,8 +293,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "<role>";
+			return output;
 		}
 
 		@Override
@@ -301,6 +302,134 @@ public class Roles extends BotModule implements UserJoinedHandler
 		{
 			// TODO Auto-generated method stub
 			
+		}
+	}
+
+	public static class GetAutoRole extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the role automatically assigned to new users.";
+			return output;
+		}
+
+		@Override
+		public String getParameters() 
+		{
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "autoRole");
+
+			if (roleId.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No automatically assigned role has been set.");
+				return;
+			}
+
+			IRole role = message.getGuild().getRoleByID(roleId);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "An automatically assigned role has been set, but it does not exist.");
+
+				Roles roles = new Roles();
+				Jeeves.serverConfig.setValue(message.getGuild().getID(), "autoRole", roles.getDefaultConfig().get("autoRole"));
+
+				try
+				{
+					Jeeves.serverConfig.saveConfig();
+				}
+				catch (ParserConfigurationException | TransformerException e)
+				{
+					Jeeves.debugException(e);
+				}
+
+				return;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), "The automatically assigned role is: " + role.getName());
+		}
+	}
+
+	public static class SetAutoRole extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Set or clear the role automatically assigned to new users.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "[role]";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String roleName = String.join(" ", arguments).trim();
+			IRole role = null;
+
+			if (roleName.isEmpty() == true)
+			{
+				Jeeves.serverConfig.setValue(message.getGuild().getID(), "autoRole", "");
+			}
+			else
+			{
+				role = Jeeves.findRole(message.getGuild(), roleName);
+
+				if (role == null)
+				{
+					MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+					return;
+				}
+
+				Jeeves.serverConfig.setValue(message.getGuild().getID(), "autoRole", role.getID());
+			}
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The automatically assigned role has been cleared.");
+			}
+			else
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The automatically assigned role has been set to: " + role.getName());
+			}
 		}
 	}
 }
