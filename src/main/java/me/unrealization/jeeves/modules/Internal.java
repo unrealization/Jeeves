@@ -8,6 +8,7 @@ import javax.xml.transform.TransformerException;
 
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
+import me.unrealization.jeeves.bot.RoleQueue;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -194,6 +195,13 @@ public class Internal extends BotModule
 		public void execute(IMessage message, String[] arguments)
 		{
 			MessageQueue.sendMessage(message.getChannel(), "Good bye, cruel world.");
+			MessageQueue messageQueue = MessageQueue.getInstance();
+			RoleQueue roleQueue = RoleQueue.getInstance();
+
+			while ((messageQueue.isWorking() == true) || (roleQueue.isWorking() == true))
+			{
+				//wait for the queues to finish processing
+			}
 
 			try
 			{

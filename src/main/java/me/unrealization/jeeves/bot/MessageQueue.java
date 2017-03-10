@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
@@ -15,7 +14,7 @@ public class MessageQueue
 {
 	private static MessageQueue instance = null;
 	private List<MessageQueue.MessageQueueItem> messageList = new ArrayList<MessageQueue.MessageQueueItem>();
-	private QueueWorker worker = null;
+	private Thread worker = null;
 
 	private static class MessageQueueItem
 	{
@@ -26,26 +25,18 @@ public class MessageQueue
 
 	private static class QueueWorker implements Runnable
 	{
-		private boolean stopped = false;
-
 		@Override
 		public void run()
 		{
 			MessageQueue messageQueue = MessageQueue.getInstance();
+			MessageQueueItem queueItem;
 
-			while (this.stopped == false)
+			while ((queueItem = messageQueue.getQueueItem()) != null)
 			{
-				MessageQueueItem queueItem = messageQueue.getQueueItem();
-
-				if (queueItem == null)
-				{
-					continue;
-				}
+				IChannel channel;
 
 				if (queueItem.channel == null)
 				{
-					IPrivateChannel channel;
-
 					try
 					{
 						channel = queueItem.user.getOrCreatePMChannel();
@@ -53,7 +44,17 @@ public class MessageQueue
 					catch (RateLimitException e)
 					{
 						Jeeves.debugException(e);
-						//TODO: sleep
+
+						try
+						{
+							Thread.sleep(5000);
+						}
+						catch (InterruptedException e1)
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+
 						continue;
 					}
 					catch (DiscordException e)
@@ -62,82 +63,53 @@ public class MessageQueue
 						continue;
 					}
 
-					MessageBuilder messageBuilder = new MessageBuilder(Jeeves.bot);
-
-					try
-					{
-						messageBuilder.withContent(queueItem.message).withChannel(channel).build();
-					}
-					catch (DiscordException | MissingPermissionsException e)
-					{
-						Jeeves.debugException(e);
-						continue;
-					}
-					catch (RateLimitException e)
-					{
-						Jeeves.debugException(e);
-
-						try
-						{
-							Thread.sleep(5000);
-						}
-						catch (InterruptedException e1)
-						{
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-
-						continue;
-					}
-
-					messageQueue.removeQueueItem();
 				}
 				else
 				{
-					MessageBuilder messageBuilder = new MessageBuilder(Jeeves.bot);
+					channel = queueItem.channel;
+				}
+
+				MessageBuilder messageBuilder = new MessageBuilder(Jeeves.bot);
+
+				try
+				{
+					messageBuilder.withContent(queueItem.message).withChannel(channel).build();
+				}
+				catch (DiscordException e)
+				{
+					Jeeves.debugException(e);
+					continue;
+				}
+				catch (MissingPermissionsException e)
+				{
+					Jeeves.debugException(e);
+					System.out.println("Missing permissions to send message.");
+				}
+				catch (RateLimitException e)
+				{
+					Jeeves.debugException(e);
 
 					try
 					{
-						messageBuilder.withContent(queueItem.message).withChannel(queueItem.channel).build();
+						Thread.sleep(5000);
 					}
-					catch (DiscordException | MissingPermissionsException e)
+					catch (InterruptedException e1)
 					{
-						Jeeves.debugException(e);
-						continue;
-					}
-					catch (RateLimitException e)
-					{
-						Jeeves.debugException(e);
-
-						try
-						{
-							Thread.sleep(5000);
-						}
-						catch (InterruptedException e1)
-						{
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-
-						continue;
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 
-					messageQueue.removeQueueItem();
+					continue;
 				}
-			}
-		}
 
-		public void stop()
-		{
-			this.stopped = true;
+				messageQueue.removeQueueItem();
+			}
 		}
 	}
 
 	private MessageQueue()
 	{
-		this.worker = new QueueWorker();
-		Thread workerThread = new Thread(this.worker);
-		workerThread.start();
+		//private constructor to prevent multiple instances
 	}
 
 	public static MessageQueue getInstance()
@@ -196,6 +168,12 @@ public class MessageQueue
 	private void addQueueItem(MessageQueueItem queueItem)
 	{
 		this.messageList.add(queueItem);
+
+		if ((this.worker == null) || (this.worker.isAlive() == false))
+		{
+			this.worker = new Thread(new QueueWorker());
+			this.worker.start();
+		}
 	}
 
 	private MessageQueueItem getQueueItem()
@@ -216,5 +194,15 @@ public class MessageQueue
 		}
 
 		this.messageList.remove(0);
+	}
+
+	public boolean isWorking()
+	{
+		if (this.worker == null)
+		{
+			return false;
+		}
+
+		return this.worker.isAlive();
 	}
 }
