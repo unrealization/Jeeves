@@ -52,9 +52,9 @@ public class Internal extends BotModule
 		this.defaultConfig.put("commandPrefix", "!");
 		this.defaultConfig.put("respondOnPrefix", "0");
 		this.defaultConfig.put("respondOnMention", "1");
-		this.defaultConfig.put("ignoredChannels", new String[0]);
-		this.defaultConfig.put("ignoredUsers", new String[0]);
-		this.defaultConfig.put("disabledModules", new String[0]);
+		this.defaultConfig.put("ignoredChannels", new ArrayList<String>());
+		this.defaultConfig.put("ignoredUsers", new ArrayList<String>());
+		this.defaultConfig.put("disabledModules", new ArrayList<String>());
 	}
 
 	@Override

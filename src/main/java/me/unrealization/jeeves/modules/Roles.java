@@ -10,6 +10,7 @@ import sx.blah.discord.handle.impl.events.UserJoinEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
@@ -22,18 +23,19 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "0.6";
+		this.version = "0.8";
 
-		this.commandList = new String[6];
+		this.commandList = new String[7];
 		this.commandList[0] = "GetRoles";
 		this.commandList[1] = "Join";
 		this.commandList[2] = "Leave";
 		this.commandList[3] = "Members";
-		this.commandList[4] = "GetAutoRole";
-		this.commandList[5] = "SetAutoRole";
+		this.commandList[4] = "GetUntaggedUsers";
+		this.commandList[5] = "GetAutoRole";
+		this.commandList[6] = "SetAutoRole";
 
 		this.defaultConfig.put("autoRole", "");
-		this.defaultConfig.put("lockedRoles", new String[0]);
+		this.defaultConfig.put("lockedRoles", new ArrayList<String>());
 	}
 
 	@Override
@@ -298,10 +300,108 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
+			String roleName = String.join(" ", arguments);
+
+			if (roleName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				return;
+			}
+
+			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+			}
+
+			List<IUser> userList = message.getGuild().getUsersByRole(role);
+
+			if (userList.size() == 0)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The role " + role.getName() + " has no members.");
+				return;
+			}
+
+			String output = "The role " + role.getName() + " has the following members:\n";
+
+			for (int userIndex = 0; userIndex < userList.size(); userIndex++)
+			{
+				output += "\t" + userList.get(userIndex).getName() + "\n";
+			}
+
+			MessageQueue.sendMessage(message.getAuthor(), output);
+			MessageQueue.sendMessage(message.getChannel(), "Member list sent as private message.");
+		}
+	}
+
+	public static class GetUntaggedUsers extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
 			// TODO Auto-generated method stub
-			
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			List<IUser> userList = message.getGuild().getUsers();
+			List<IUser> untaggedUsers = new ArrayList<IUser>();
+
+			for (int userIndex = 0; userIndex < userList.size(); userIndex++)
+			{
+				IUser user = userList.get(userIndex);
+				List<IRole> roleList = user.getRolesForGuild(message.getGuild());
+
+				if (roleList.size() == 0)
+				{
+					continue;
+				}
+
+				untaggedUsers.add(user);
+			}
+
+			if (untaggedUsers.size() == 0)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "There are no untagged users on this Discord.");
+				return;
+			}
+
+			String output = "The following users have no role:\n";
+
+			for (int userIndex = 0; userIndex < untaggedUsers.size(); userIndex++)
+			{
+				output += "\t" + untaggedUsers.get(userIndex).getName() + "\n";
+			}
+
+			MessageQueue.sendMessage(message.getAuthor(), output);
+			MessageQueue.sendMessage(message.getChannel(), "User list sent as private message.");
 		}
 	}
 

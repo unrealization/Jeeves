@@ -34,7 +34,7 @@ import sx.blah.discord.util.DiscordException;
 
 public class Jeeves
 {
-	public static String version = "0.7.1";
+	public static String version = "0.7.5";
 	public static IDiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
