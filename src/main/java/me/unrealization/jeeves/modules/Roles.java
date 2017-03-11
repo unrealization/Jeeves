@@ -23,16 +23,17 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "0.8";
+		this.version = "0.9";
 
-		this.commandList = new String[7];
+		this.commandList = new String[8];
 		this.commandList[0] = "GetRoles";
 		this.commandList[1] = "Join";
 		this.commandList[2] = "Leave";
 		this.commandList[3] = "Members";
-		this.commandList[4] = "GetUntaggedUsers";
-		this.commandList[5] = "GetAutoRole";
-		this.commandList[6] = "SetAutoRole";
+		this.commandList[4] = "MissingRole";
+		this.commandList[5] = "GetUntaggedUsers";
+		this.commandList[6] = "GetAutoRole";
+		this.commandList[7] = "SetAutoRole";
 
 		this.defaultConfig.put("autoRole", "");
 		this.defaultConfig.put("lockedRoles", new ArrayList<String>());
@@ -345,6 +346,82 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 	}
 
+	public static class MissingRole extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<role>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String roleName = String.join(" ", arguments);
+
+			if (roleName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				return;
+			}
+
+			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+			}
+
+			List<IUser> userList = message.getGuild().getUsers();
+			List<IUser> usersMissingRole = new ArrayList<IUser>();
+
+			for (int userIndex = 0; userIndex < userList.size(); userIndex++)
+			{
+				IUser user = userList.get(userIndex);
+				List<IRole> userRoles = user.getRolesForGuild(message.getGuild());
+
+				if (userRoles.contains(role) == true)
+				{
+					continue;
+				}
+
+				usersMissingRole.add(user);
+			}
+
+			if (usersMissingRole.size() == 0)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No users are missing the role " + role.getName());
+				return;
+			}
+
+			String output = "The following users are missing the role " + role.getName() + "\n";
+
+			for (int userIndex = 0; userIndex < usersMissingRole.size(); userIndex++)
+			{
+				output += "\t" + usersMissingRole.get(userIndex).getName() + "\n";
+			}
+
+			MessageQueue.sendMessage(message.getAuthor(), output);
+			MessageQueue.sendMessage(message.getChannel(), "User list sent as private message.");
+		}
+	}
+
 	public static class GetUntaggedUsers extends BotCommand
 	{
 		@Override
@@ -379,7 +456,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				IUser user = userList.get(userIndex);
 				List<IRole> roleList = user.getRolesForGuild(message.getGuild());
 
-				if (roleList.size() == 0)
+				if (roleList.size() > 0)
 				{
 					continue;
 				}
