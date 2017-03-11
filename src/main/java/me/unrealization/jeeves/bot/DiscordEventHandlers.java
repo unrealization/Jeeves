@@ -458,8 +458,6 @@ public class DiscordEventHandlers
 
 				System.out.println("Executing " + command.getClass().getSimpleName() + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ": " + message.getChannel().getName() + ")");
 				command.execute(message, arguments);
-				//TaskHandler executor = new TaskHandler(message, command, arguments);
-				//executor.start();
 			}
 		}
 	}
