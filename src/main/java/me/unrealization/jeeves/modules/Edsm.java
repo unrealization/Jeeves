@@ -345,7 +345,7 @@ public class Edsm extends BotModule
 		@Override
 		public String getParameters()
 		{
-			String output = "<commander>";
+			String output = "[commander]";
 			return output;
 		}
 
