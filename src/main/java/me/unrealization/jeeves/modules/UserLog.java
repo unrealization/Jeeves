@@ -1,7 +1,5 @@
 package me.unrealization.jeeves.modules;
 
-import java.util.Date;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -27,7 +25,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 {
 	public UserLog()
 	{
-		this.version = "0.9.1";
+		this.version = "0.9.5";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetUserLogChannel";
@@ -66,8 +64,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			return;
 		}
 
-		Date now = new Date();
-		MessageQueue.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + " has joined the server.");
+		MessageQueue.sendMessage(channel, Jeeves.getUtcTime() + ": " + event.getUser().getName() + " has joined the server.");
 	}
 
 	@Override
@@ -99,8 +96,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			return;
 		}
 
-		Date now = new Date();
-		MessageQueue.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + " has left the server.");
+		MessageQueue.sendMessage(channel, Jeeves.getUtcTime() + ": " + event.getUser().getName() + " has left the server.");
 	}
 
 	@Override
@@ -150,8 +146,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			return;
 		}
 
-		Date now = new Date();
-		MessageQueue.sendMessage(channel, now.toString() + ": " + event.getUser().getName() + "'s status has changed from " + oldPresence.name() + " to " + newPresence.name());
+		MessageQueue.sendMessage(channel, Jeeves.getUtcTime() + ": " + event.getUser().getName() + "'s status has changed from " + oldPresence.name() + " to " + newPresence.name());
 	}
 
 	@Override

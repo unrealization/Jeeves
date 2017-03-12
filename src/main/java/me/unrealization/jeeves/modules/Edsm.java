@@ -356,7 +356,7 @@ public class Edsm extends BotModule
 
 			if (commanderName.isEmpty() == true)
 			{
-				if (!Edsm.edsmUserList.hasKey(message.getAuthor().getID()))
+				if (Edsm.edsmUserList.hasKey(message.getAuthor().getID()) == false)
 				{
 					MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander name or register your EDSM username.");
 					return;
