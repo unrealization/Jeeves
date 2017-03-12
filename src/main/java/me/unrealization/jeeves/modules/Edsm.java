@@ -22,7 +22,7 @@ public class Edsm extends BotModule
 {
 	public Edsm()
 	{
-		this.version = "0.2";
+		this.version = "0.3";
 
 		this.commandList = new String[8];
 		this.commandList[0] = "GetUseEdsmBetaServer";
