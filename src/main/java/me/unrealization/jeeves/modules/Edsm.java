@@ -20,9 +20,11 @@ import me.unrealization.jeeves.interfaces.BotModule;
 
 public class Edsm extends BotModule
 {
-	public Edsm()
+	private static EdsmUserList edsmUserList = null;
+
+	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.3";
+		this.version = "0.4";
 
 		this.commandList = new String[8];
 		this.commandList[0] = "GetUseEdsmBetaServer";
@@ -35,6 +37,8 @@ public class Edsm extends BotModule
 		this.commandList[7] = "SysCoords";
 
 		this.defaultConfig.put("edsmUseBetaServer", "1");
+
+		Edsm.edsmUserList = new EdsmUserList();
 	}
 
 	private static String sanitizeString(String input)
@@ -183,24 +187,11 @@ public class Edsm extends BotModule
 				return;
 			}
 
-			EdsmUserList edsmUserList;
+			Edsm.edsmUserList.setValue(message.getAuthor().getID(), edsmUserName);
 
 			try
 			{
-				edsmUserList = new EdsmUserList();
-			}
-			catch (ParserConfigurationException | SAXException e1)
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				return;
-			}
-
-			edsmUserList.setValue(message.getAuthor().getID(), edsmUserName);
-
-			try
-			{
-				edsmUserList.saveConfig();
+				Edsm.edsmUserList.saveConfig();
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
@@ -231,26 +222,13 @@ public class Edsm extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			EdsmUserList edsmUserList;
-
-			try
-			{
-				edsmUserList = new EdsmUserList();
-			}
-			catch (ParserConfigurationException | SAXException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
-			}
-
-			if (edsmUserList.hasKey(message.getAuthor().getID()) == false)
+			if (Edsm.edsmUserList.hasKey(message.getAuthor().getID()) == false)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You have not registered an EDSM username.");
 				return;
 			}
 
-			edsmUserList.removeValue(message.getAuthor().getID());
+			Edsm.edsmUserList.removeValue(message.getAuthor().getID());
 			MessageQueue.sendMessage(message.getChannel(), "Your EDSM username has been removed.");
 		}
 	}
@@ -292,20 +270,7 @@ public class Edsm extends BotModule
 				}
 			}
 
-			EdsmUserList edsmUserList;
-
-			try
-			{
-				edsmUserList = new EdsmUserList();
-			}
-			catch (ParserConfigurationException | SAXException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
-			}
-
-			if (edsmUserList.hasKey(user.getID()) == false)
+			if (Edsm.edsmUserList.hasKey(user.getID()) == false)
 			{
 				if (userName.isEmpty() == true)
 				{
@@ -319,7 +284,7 @@ public class Edsm extends BotModule
 				return;
 			}
 
-			String edsmUserName = (String)edsmUserList.getValue(user.getID());
+			String edsmUserName = (String)Edsm.edsmUserList.getValue(user.getID());
 
 			if (userName.isEmpty() == true)
 			{
@@ -391,8 +356,13 @@ public class Edsm extends BotModule
 
 			if (commanderName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander name.");
-				return;
+				if (!Edsm.edsmUserList.hasKey(message.getAuthor().getID()))
+				{
+					MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander name or register your EDSM username.");
+					return;
+				}
+
+				commanderName = (String)Edsm.edsmUserList.getValue(message.getAuthor().getID());
 			}
 
 			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getID());

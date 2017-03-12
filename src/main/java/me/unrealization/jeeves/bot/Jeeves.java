@@ -74,7 +74,16 @@ public class Jeeves
 	{
 		Jeeves.modules = new HashMap< String, BotModule>();
 		Jeeves.modules.put("ccn", new Ccn());
-		Jeeves.modules.put("edsm", new Edsm());
+
+		try
+		{
+			Jeeves.modules.put("edsm", new Edsm());
+		}
+		catch (ParserConfigurationException | SAXException e)
+		{
+			Jeeves.debugException(e);
+		}
+
 		Jeeves.modules.put("internal", new Internal());
 		Jeeves.modules.put("roles", new Roles());
 		Jeeves.modules.put("userLog", new UserLog());
