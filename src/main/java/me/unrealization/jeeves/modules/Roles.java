@@ -23,9 +23,9 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "0.9";
+		this.version = "0.9.7";
 
-		this.commandList = new String[8];
+		this.commandList = new String[11];
 		this.commandList[0] = "GetRoles";
 		this.commandList[1] = "Join";
 		this.commandList[2] = "Leave";
@@ -34,6 +34,9 @@ public class Roles extends BotModule implements UserJoinedHandler
 		this.commandList[5] = "GetUntaggedUsers";
 		this.commandList[6] = "GetAutoRole";
 		this.commandList[7] = "SetAutoRole";
+		this.commandList[8] = "LockRole";
+		this.commandList[9] = "UnlockRole";
+		this.commandList[10] = "AssignRole";
 
 		this.defaultConfig.put("autoRole", "");
 		this.defaultConfig.put("lockedRoles", new ArrayList<String>());
@@ -103,6 +106,19 @@ public class Roles extends BotModule implements UserJoinedHandler
 		return manageableRoles;
 	}
 
+	private static boolean isLocked(IRole role)
+	{
+		Object lockedRoles = Jeeves.serverConfig.getValue(role.getGuild().getID(), "lockedRoles");
+
+		if (lockedRoles.getClass() == String.class)
+		{
+			return false;
+		}
+
+		List<String> lockedRoleList = Jeeves.listToStringList((List<?>)lockedRoles);
+		return lockedRoleList.contains(role.getID());
+	}
+
 	public static class GetRoles extends BotCommand
 	{
 		@Override
@@ -145,7 +161,14 @@ public class Roles extends BotModule implements UserJoinedHandler
 			for (int roleIndex = 0; roleIndex < manageableRoles.size(); roleIndex++)
 			{
 				IRole role = manageableRoles.get(roleIndex);
-				output += "\t" + role.getName() + "\n";
+				output += "\t" + role.getName();
+
+				if (Roles.isLocked(role) == true)
+				{
+					output += " (locked)";
+				}
+
+				output += "\n";
 			}
 
 			MessageQueue.sendMessage(message.getChannel(), output);
@@ -607,6 +630,201 @@ public class Roles extends BotModule implements UserJoinedHandler
 			{
 				MessageQueue.sendMessage(message.getChannel(), "The automatically assigned role has been set to: " + role.getName());
 			}
+		}
+	}
+
+	public static class LockRole extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<role>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String roleName = String.join(" ", arguments).trim();
+
+			if (roleName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				return;
+			}
+
+			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				return;
+			}
+
+			if (Roles.isLocked(role) == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The role " + role.getName() + " is locked already.");
+				return;
+			}
+
+			Object lockedRoles = Jeeves.serverConfig.getValue(message.getGuild().getID(), "lockedRoles");
+			List<String> lockedRoleList;
+
+			if (lockedRoles.getClass() == String.class)
+			{
+				lockedRoleList = new ArrayList<String>();
+			}
+			else
+			{
+				lockedRoleList = Jeeves.listToStringList((List<?>)lockedRoles);
+			}
+
+			lockedRoleList.add(role.getID());
+			Jeeves.serverConfig.setValue(message.getGuild().getID(), "lockedRoles", lockedRoleList);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), "The following role has been locked: " + role.getName());
+		}
+	}
+
+	public static class UnlockRole extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<role>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String roleName = String.join(" ", arguments).trim();
+
+			if (roleName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				return;
+			}
+
+			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				return;
+			}
+
+			Object lockedRoles = Jeeves.serverConfig.getValue(message.getGuild().getID(), "lockedRoles");
+
+			if (lockedRoles.getClass() == String.class)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No roles are locked.");
+				return;
+			}
+
+			List<String> lockedRoleList = Jeeves.listToStringList((List<?>)lockedRoles);
+
+			if (lockedRoleList.size() == 0)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No roles are locked.");
+				return;
+			}
+
+			boolean removed = lockedRoleList.remove(role.getID());
+
+			if (removed == false)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The role " + role.getName() + " is not locked.");
+				return;
+			}
+
+			Jeeves.serverConfig.setValue(message.getGuild().getID(), "lockedRoles", lockedRoleList);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), "The following role has been unlocked: " + role.getName());
+		}
+	}
+
+	public static class AssignRole extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<user> <role>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_ROLES;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			// TODO Auto-generated method stub
+			
 		}
 	}
 }
