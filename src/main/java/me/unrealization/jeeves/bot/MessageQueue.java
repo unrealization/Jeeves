@@ -156,9 +156,24 @@ public class MessageQueue
 
 		while (message.length() > 2000)
 		{
-			String messagePart = message.substring(0, 2000);
-			messageList.add(messagePart);
-			message = message.substring(2000);
+			String[] messageParts = message.split("\n");
+			String tmpMessage = "";
+
+			while ((messageParts.length > 0) && (tmpMessage.length() + messageParts[0].length() < 1950))
+			{
+				tmpMessage += messageParts[0] + "\n";
+				String[] tmpParts = new String[messageParts.length - 1];
+
+				for (int partIndex = 1; partIndex < messageParts.length; partIndex++)
+				{
+					tmpParts[partIndex - 1] = messageParts[partIndex];
+				}
+
+				messageParts = tmpParts;
+			}
+
+			messageList.add(tmpMessage);
+			message = String.join("\n", messageParts);
 		}
 
 		messageList.add(message);
