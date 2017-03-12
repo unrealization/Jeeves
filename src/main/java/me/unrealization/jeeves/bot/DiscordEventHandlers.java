@@ -124,7 +124,7 @@ public class DiscordEventHandlers
 				}
 				catch (Exception e)
 				{
-					Jeeves.debugException(e);
+					//Jeeves.debugException(e);
 					continue;
 				}
 
@@ -157,7 +157,7 @@ public class DiscordEventHandlers
 				}
 				catch (Exception e)
 				{
-					Jeeves.debugException(e);
+					//Jeeves.debugException(e);
 					continue;
 				}
 
@@ -201,7 +201,7 @@ public class DiscordEventHandlers
 					}
 					catch (Exception e)
 					{
-						Jeeves.debugException(e);
+						//Jeeves.debugException(e);
 						continue;
 					}
 
@@ -246,7 +246,7 @@ public class DiscordEventHandlers
 					}
 					catch (Exception e)
 					{
-						Jeeves.debugException(e);
+						//Jeeves.debugException(e);
 						continue;
 					}
 
@@ -261,7 +261,6 @@ public class DiscordEventHandlers
 		@Override
 		public void handle(GuildCreateEvent event)
 		{
-			System.out.println("Creating default config for " + event.getGuild().getName());
 			Internal internal = new Internal();
 
 			try

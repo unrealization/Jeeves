@@ -1,4 +1,4 @@
-package me.unrealization.jeeves.bot;
+package me.unrealization.jeeves.dataLists;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,48 +17,54 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.interfaces.BotConfig;
 
-public class ClientConfig implements BotConfig
+public class EdsmUserList implements BotConfig
 {
 	private HashMap<String, Object> config = new HashMap<String, Object>();
 
-	public ClientConfig() throws ParserConfigurationException, SAXException, IOException
+	public EdsmUserList() throws ParserConfigurationException, SAXException
 	{
 		this.loadConfig();
 	}
 
 	@Override
-	public void loadConfig(String fileName) throws ParserConfigurationException, SAXException, IOException
+	public void loadConfig(String fileName) throws ParserConfigurationException, SAXException
 	{
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		docFactory.setIgnoringComments(true);
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
 		File xmlFile = new File(fileName);
-		Document doc = docBuilder.parse(xmlFile);
+		Document doc;
 
-		Node docRoot = doc.getElementsByTagName("config").item(0);
-		NodeList clientConfigList = docRoot.getChildNodes();
-
-		for (int configIndex = 0; configIndex < clientConfigList.getLength(); configIndex++)
+		try
 		{
-			Node configNode = clientConfigList.item(configIndex);
+			doc = docBuilder.parse(xmlFile);
+		}
+		catch (IOException e)
+		{
+			Jeeves.debugException(e);
+			this.config = new HashMap<String, Object>();
+			return;
+		}
 
-			if (configNode.getNodeType() != Node.ELEMENT_NODE)
-			{
-				continue;
-			}
+		NodeList users = doc.getElementsByTagName("user");
 
-			String configName = configNode.getNodeName();
+		for (int userIndex = 0; userIndex < users.getLength(); userIndex++)
+		{
+			Element user = (Element)users.item(userIndex);
+			String userId = user.getAttribute("userId");
+			NodeList itemChildNodes = user.getChildNodes();
 			Object configValue;
-			NodeList itemChildNodes = configNode.getChildNodes();
 
 			if (itemChildNodes.getLength() == 0)
 			{
@@ -66,7 +72,7 @@ public class ClientConfig implements BotConfig
 			}
 			else if (itemChildNodes.getLength() == 1)
 			{
-				configValue = configNode.getTextContent().trim();
+				configValue = user.getTextContent().trim();
 			}
 			else
 			{
@@ -84,16 +90,16 @@ public class ClientConfig implements BotConfig
 					tmpList.add(itemNode.getTextContent().trim());
 				}
 
-				configValue= tmpList;
+				configValue = tmpList;
 			}
 
-			this.config.put(configName, configValue);
+			this.config.put(userId, configValue);
 		}
 	}
 
-	public void loadConfig() throws ParserConfigurationException, SAXException, IOException
+	public void loadConfig() throws ParserConfigurationException, SAXException
 	{
-		this.loadConfig("clientConfig.xml");
+		this.loadConfig("edsmUserList.xml");
 	}
 
 	@Override
@@ -111,12 +117,15 @@ public class ClientConfig implements BotConfig
 
 		for (int keyIndex = 0; keyIndex < configKeyList.length; keyIndex++)
 		{
-			Element setting = doc.createElement(configKeyList[keyIndex]);
+			Element user = doc.createElement("user");
+			Attr userId = doc.createAttribute("userId");
+			userId.setValue(configKeyList[keyIndex]);
+			user.setAttributeNode(userId);
 			Object configItem = this.config.get(configKeyList[keyIndex]);
 
 			if (configItem.getClass() == String.class)
 			{
-				setting.setTextContent((String)configItem);
+				user.setTextContent((String)configItem);
 			}
 			else
 			{
@@ -126,11 +135,11 @@ public class ClientConfig implements BotConfig
 				{
 					Element item = doc.createElement("entry");
 					item.setTextContent((String)configItemList.get(itemIndex));
-					setting.appendChild(item);
+					user.appendChild(item);
 				}
 			}
 
-			docRoot.appendChild(setting);
+			docRoot.appendChild(user);
 		}
 
 		DOMSource domSource = new DOMSource(doc);
@@ -145,7 +154,7 @@ public class ClientConfig implements BotConfig
 
 	public void saveConfig() throws ParserConfigurationException, TransformerException
 	{
-		this.saveConfig("clientConfig.xml");
+		this.saveConfig("edsmUserList.xml");
 	}
 
 	@Override

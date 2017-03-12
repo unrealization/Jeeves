@@ -232,6 +232,22 @@ public class ServerConfig implements BotConfig
 	}
 
 	@Override
+	public void removeValue(String serverId, String key)
+	{
+		if (this.config.containsKey(serverId) == false)
+		{
+			return;
+		}
+
+		this.config.get(serverId).remove(key);
+
+		if (this.config.get(serverId).size() == 0)
+		{
+			this.config.remove(serverId);
+		}
+	}
+
+	@Override
 	public String[] getKeyList(String serverId)
 	{
 		HashMap<String, Object> serverConfig = this.config.get(serverId);

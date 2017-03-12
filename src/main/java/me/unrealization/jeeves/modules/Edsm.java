@@ -5,11 +5,15 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.xml.sax.SAXException;
+
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
+import me.unrealization.jeeves.dataLists.EdsmUserList;
 import me.unrealization.jeeves.jsonModels.EdsmModels;
 import me.unrealization.jeeves.apis.EdsmApi;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
@@ -20,12 +24,15 @@ public class Edsm extends BotModule
 	{
 		this.version = "0.2";
 
-		this.commandList = new String[5];
+		this.commandList = new String[8];
 		this.commandList[0] = "GetUseEdsmBetaServer";
 		this.commandList[1] = "SetUseEdsmBetaServer";
-		this.commandList[2] = "GetEDStatus";
-		this.commandList[3] = "Locate";
-		this.commandList[4] = "SysCoords";
+		this.commandList[2] = "Register";
+		this.commandList[3] = "Unregister";
+		this.commandList[4] = "GetEdsmUser";
+		this.commandList[5] = "GetEDStatus";
+		this.commandList[6] = "Locate";
+		this.commandList[7] = "SysCoords";
 
 		this.defaultConfig.put("edsmUseBetaServer", "1");
 	}
@@ -145,6 +152,182 @@ public class Edsm extends BotModule
 			else
 			{
 				MessageQueue.sendMessage(message.getChannel(), "The bot will now use the EDSM beta server.");
+			}
+		}
+	}
+
+	public static class Register extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<edsmUserName>";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String edsmUserName = String.join(" ", arguments).trim();
+
+			if (edsmUserName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide an EDSM username");
+				return;
+			}
+
+			EdsmUserList edsmUserList;
+
+			try
+			{
+				edsmUserList = new EdsmUserList();
+			}
+			catch (ParserConfigurationException | SAXException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				return;
+			}
+
+			edsmUserList.setValue(message.getAuthor().getID(), edsmUserName);
+
+			try
+			{
+				edsmUserList.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), "Your EDSM username has been set to: " + edsmUserName);
+		}
+	}
+
+	public static class Unregister extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			EdsmUserList edsmUserList;
+
+			try
+			{
+				edsmUserList = new EdsmUserList();
+			}
+			catch (ParserConfigurationException | SAXException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+
+			if (edsmUserList.hasKey(message.getAuthor().getID()) == false)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You have not registered an EDSM username.");
+				return;
+			}
+
+			edsmUserList.removeValue(message.getAuthor().getID());
+			MessageQueue.sendMessage(message.getChannel(), "Your EDSM username has been removed.");
+		}
+	}
+
+	public static class GetEdsmUser extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String userName = String.join(" ", arguments);
+			IUser user;
+
+			if (userName.isEmpty() == true)
+			{
+				user = message.getAuthor();
+			}
+			else
+			{
+				user = Jeeves.findUser(message.getGuild(), userName);
+
+				if (user == null)
+				{
+					MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+					return;
+				}
+			}
+
+			EdsmUserList edsmUserList;
+
+			try
+			{
+				edsmUserList = new EdsmUserList();
+			}
+			catch (ParserConfigurationException | SAXException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+
+			if (edsmUserList.hasKey(user.getID()) == false)
+			{
+				if (userName.isEmpty() == true)
+				{
+					MessageQueue.sendMessage(message.getChannel(), "You have not registered an EDSM username.");
+				}
+				else
+				{
+					MessageQueue.sendMessage(message.getChannel(), user.getName() + " has not registered an EDSM username.");
+				}
+
+				return;
+			}
+
+			String edsmUserName = (String)edsmUserList.getValue(user.getID());
+
+			if (userName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Your EDSM username is: " + edsmUserName);
+			}
+			else
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The EDSM username for " + user.getName() + " is: " + edsmUserName);
 			}
 		}
 	}

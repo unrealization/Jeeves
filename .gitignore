@@ -3,9 +3,10 @@
 /.classpath
 /.project
 /.settings/
-/clientConfig.xml
-/serverConfig.xml
 /doc/
 /target/
 /modules/
 /dependency-reduced-pom.xml
+/clientConfig.xml
+/serverConfig.xml
+/edsmUserList.xml

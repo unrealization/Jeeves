@@ -43,6 +43,13 @@ public interface BotConfig
 	public void setValue(String serverId, String key, Object value);
 
 	/**
+	 * Remove a configuration value for a specific Discord server
+	 * @param serverId The id of the Discord server
+	 * @param key The configuration key to remove
+	 */
+	public void removeValue(String serverId, String key);
+
+	/**
 	 * Get the list of available configuration keys for the given Discord server
 	 * @param serverId The id of the Discord server
 	 * @return A list of key names for the server configuration
