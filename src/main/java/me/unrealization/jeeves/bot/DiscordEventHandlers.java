@@ -2,6 +2,8 @@ package me.unrealization.jeeves.bot;
 
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
+import me.unrealization.jeeves.interfaces.MessageDeleteHandler;
+import me.unrealization.jeeves.interfaces.MessageUpdateHandler;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
 import me.unrealization.jeeves.interfaces.PresenceUpdateHandler;
 import me.unrealization.jeeves.interfaces.UserLeftHandler;
@@ -19,7 +21,9 @@ import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.MentionEvent;
+import sx.blah.discord.handle.impl.events.MessageDeleteEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.MessageUpdateEvent;
 import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
@@ -48,6 +52,8 @@ public class DiscordEventHandlers
 			dispatcher.registerListener(new UserUpdateListener());
 			dispatcher.registerListener(new UserPresenceListener());
 			dispatcher.registerListener(new GuildCreateListener());
+			dispatcher.registerListener(new MessageUpdateListener());
+			dispatcher.registerListener(new MessageDeleteListener());
 
 			IUser botUser = bot.getOurUser();
 			System.out.println("Logged in as " + botUser.getName() + " (" + Jeeves.version + ")");
@@ -275,6 +281,72 @@ public class DiscordEventHandlers
 				{
 					System.out.println("Cannot create default config for " + event.getGuild().getName());
 				}
+			}
+		}
+	}
+
+	private static class MessageUpdateListener implements IListener<MessageUpdateEvent>
+	{
+		@Override
+		public void handle(MessageUpdateEvent event)
+		{
+			String[] moduleList = Jeeves.getModuleList();
+
+			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+			{
+				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
+
+				if (Jeeves.isDisabled(event.getNewMessage().getGuild().getID(), module) == true)
+				{
+					continue;
+				}
+
+				MessageUpdateHandler handler;
+
+				try
+				{
+					handler = (MessageUpdateHandler)module;
+				}
+				catch (Exception e)
+				{
+					//Jeeves.debugException(e);
+					continue;
+				}
+
+				handler.messageUpdateHandler(event);
+			}
+		}
+	}
+
+	private static class MessageDeleteListener implements IListener<MessageDeleteEvent>
+	{
+		@Override
+		public void handle(MessageDeleteEvent event)
+		{
+			String[] moduleList = Jeeves.getModuleList();
+
+			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+			{
+				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
+
+				if (Jeeves.isDisabled(event.getMessage().getGuild().getID(), module) == true)
+				{
+					continue;
+				}
+
+				MessageDeleteHandler handler;
+
+				try
+				{
+					handler = (MessageDeleteHandler)module;
+				}
+				catch (Exception e)
+				{
+					//Jeeves.debugException(e);
+					continue;
+				}
+
+				handler.messageDeleteHandler(event);
 			}
 		}
 	}

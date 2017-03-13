@@ -17,6 +17,7 @@ import javax.xml.transform.TransformerException;
 import me.unrealization.jeeves.modules.Ccn;
 import me.unrealization.jeeves.modules.Edsm;
 import me.unrealization.jeeves.modules.Internal;
+import me.unrealization.jeeves.modules.ModLog;
 import me.unrealization.jeeves.modules.Roles;
 import me.unrealization.jeeves.modules.UserLog;
 import me.unrealization.jeeves.modules.Welcome;
@@ -34,7 +35,7 @@ import sx.blah.discord.util.DiscordException;
 
 public class Jeeves
 {
-	public static String version = "0.7.5";
+	public static String version = "0.8";
 	public static IDiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
@@ -85,6 +86,7 @@ public class Jeeves
 		}
 
 		Jeeves.modules.put("internal", new Internal());
+		Jeeves.modules.put("modLog", new ModLog());
 		Jeeves.modules.put("roles", new Roles());
 		Jeeves.modules.put("userLog", new UserLog());
 		Jeeves.modules.put("welcome", new Welcome());
