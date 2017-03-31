@@ -35,7 +35,7 @@ import sx.blah.discord.util.DiscordException;
 
 public class Jeeves
 {
-	public static String version = "0.8";
+	public static String version = "0.9";
 	public static IDiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
@@ -309,6 +309,27 @@ public class Jeeves
 		return timeString;
 	}
 
+	private static class ShutdownHook extends Thread
+	{
+		@Override
+		public void run()
+		{
+			if (Jeeves.bot.isLoggedIn() == true)
+			{
+				System.out.println("Logging out.");
+
+				try
+				{
+					Jeeves.bot.logout();
+				}
+				catch (DiscordException e)
+				{
+					Jeeves.debugException(e);
+				}
+			}
+		}
+	}
+
 	public static void main(String[] args)
 	{
 		try
@@ -331,6 +352,7 @@ public class Jeeves
 			return;
 		}
 
+		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		Jeeves.loadModules();
 		Jeeves.bot = Jeeves.createClient((String)Jeeves.clientConfig.getValue("loginToken"));
 		EventDispatcher dispatcher = Jeeves.bot.getDispatcher();
