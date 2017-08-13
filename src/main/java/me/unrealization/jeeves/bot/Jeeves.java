@@ -15,6 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import me.unrealization.jeeves.modules.Ccn;
+import me.unrealization.jeeves.modules.Cron;
 import me.unrealization.jeeves.modules.Edsm;
 import me.unrealization.jeeves.modules.Internal;
 import me.unrealization.jeeves.modules.ModLog;
@@ -22,6 +23,9 @@ import me.unrealization.jeeves.modules.Roles;
 import me.unrealization.jeeves.modules.UserLog;
 import me.unrealization.jeeves.modules.Welcome;
 
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.StdSchedulerFactory;
 import org.xml.sax.SAXException;
 
 import sx.blah.discord.api.ClientBuilder;
@@ -75,6 +79,15 @@ public class Jeeves
 	{
 		Jeeves.modules = new HashMap< String, BotModule>();
 		Jeeves.modules.put("ccn", new Ccn());
+
+		try
+		{
+			Jeeves.modules.put("cron", new Cron());
+		}
+		catch (ParserConfigurationException | SAXException e)
+		{
+			Jeeves.debugException(e);
+		}
 
 		try
 		{
@@ -314,6 +327,16 @@ public class Jeeves
 		@Override
 		public void run()
 		{
+			try
+			{
+				Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+				scheduler.shutdown();
+			}
+			catch (SchedulerException e)
+			{
+				Jeeves.debugException(e);
+			}
+
 			if (Jeeves.bot.isLoggedIn() == true)
 			{
 				System.out.println("Logging out.");

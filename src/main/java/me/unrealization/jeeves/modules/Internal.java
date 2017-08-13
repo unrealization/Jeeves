@@ -6,6 +6,10 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.StdSchedulerFactory;
+
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.bot.RoleQueue;
@@ -194,6 +198,16 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
+			try
+			{
+				Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+				scheduler.shutdown();
+			}
+			catch (SchedulerException e)
+			{
+				Jeeves.debugException(e);
+			}
+
 			MessageQueue.sendMessage(message.getChannel(), "Good bye, cruel world.");
 			MessageQueue messageQueue = MessageQueue.getInstance();
 			RoleQueue roleQueue = RoleQueue.getInstance();

@@ -15,6 +15,10 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.StdSchedulerFactory;
+
 import me.unrealization.jeeves.modules.Internal;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
@@ -57,6 +61,21 @@ public class DiscordEventHandlers
 
 			IUser botUser = bot.getOurUser();
 			System.out.println("Logged in as " + botUser.getName() + " (" + Jeeves.version + ")");
+
+			try
+			{
+				Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+
+				if (scheduler.isStarted() == false)
+				{
+					scheduler.start();
+				}
+			}
+			catch (SchedulerException e)
+			{
+				Jeeves.debugException(e);
+			}
+
 		}
 	}
 
@@ -351,7 +370,12 @@ public class DiscordEventHandlers
 		}
 	}
 
-	private static void handleMessage(IMessage message)
+	public static void handleMessage(IMessage message)
+	{
+		DiscordEventHandlers.handleMessage(message, false);
+	}
+
+	public static void handleMessage(IMessage message, boolean cronJob)
 	{
 		if (Jeeves.isIgnored(message.getChannel()) == true)
 		{
@@ -513,7 +537,7 @@ public class DiscordEventHandlers
 
 				Permissions[] permissionList = command.permissions();
 
-				if (permissionList != null)
+				if ((permissionList != null) && (cronJob == false))
 				{
 					EnumSet<Permissions> userPermissions = message.getAuthor().getPermissionsForGuild(message.getGuild());
 
