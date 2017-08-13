@@ -76,6 +76,7 @@ public class EdsmUserList implements BotConfig
 			}
 			else
 			{
+				System.out.println("EdsmUserList wants to load an array.");
 				List<String> tmpList = new ArrayList<String>();
 
 				for (int itemIndex = 0; itemIndex < itemChildNodes.getLength(); itemIndex++)
@@ -129,14 +130,15 @@ public class EdsmUserList implements BotConfig
 			}
 			else
 			{
-				List<String> configItemList = Jeeves.listToStringList((List<?>)configItem);
+				System.out.println("EdsmUserList wants to store an array.");
+				/*List<String> configItemList = Jeeves.listToStringList((List<?>)configItem);
 
 				for (int itemIndex = 0; itemIndex < configItemList.size(); itemIndex++)
 				{
 					Element item = doc.createElement("entry");
 					item.setTextContent((String)configItemList.get(itemIndex));
 					user.appendChild(item);
-				}
+				}*/
 			}
 
 			docRoot.appendChild(user);
