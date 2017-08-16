@@ -66,7 +66,7 @@ public class CronJobList implements BotConfig
 				System.out.println("Running cron command " + command);
 				IChannel channel = Jeeves.bot.getChannelByID(channelId);
 				String commandPrefix = (String)Jeeves.serverConfig.getValue(channel.getGuild().getID(), "commandPrefix");
-				Message commandMessage = new Message(Jeeves.bot, "", commandPrefix + command, Jeeves.bot.getOurUser(), channel, null, null, false, null, null, null, false, null, null, null);
+				Message commandMessage = new Message(Jeeves.bot, 0, commandPrefix + command, Jeeves.bot.getOurUser(), channel, null, null, false, null, null, null, false, null, null, 0);
 				DiscordEventHandlers.handleMessage(commandMessage, true);
 			}
 		}

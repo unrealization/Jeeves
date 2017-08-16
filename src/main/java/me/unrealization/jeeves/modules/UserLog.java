@@ -10,6 +10,7 @@ import sx.blah.discord.handle.impl.events.UserUpdateEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IPresence;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.handle.obj.Presences;
 import me.unrealization.jeeves.bot.Jeeves;
@@ -128,8 +129,8 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			return;
 		}
 
-		Presences oldPresence = event.getOldPresence();
-		Presences newPresence = event.getNewPresence();
+		IPresence oldPresence = event.getOldPresence();
+		IPresence newPresence = event.getNewPresence();
 
 		if (newPresence.equals(oldPresence) == true)
 		{
@@ -146,7 +147,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			return;
 		}
 
-		MessageQueue.sendMessage(channel, Jeeves.getUtcTime() + ": " + event.getUser().getName() + "'s status has changed from " + oldPresence.name() + " to " + newPresence.name());
+		MessageQueue.sendMessage(channel, Jeeves.getUtcTime() + ": " + event.getUser().getName() + "'s status has changed from " + oldPresence.getStatus().name() + " to " + newPresence.getStatus().name());
 	}
 
 	@Override
