@@ -23,7 +23,7 @@ public class Cron extends BotModule
 
 	public Cron() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.9";
+		this.version = "1.0";
 
 		this.commandList = new String[3];
 		this.commandList[0] = "GetCronJobs";
@@ -80,7 +80,7 @@ public class Cron extends BotModule
 			for (int cronJobIndex = 0; cronJobIndex < cronJobList.size(); cronJobIndex++)
 			{
 				CronJobList.CronJob cronJob = cronJobList.get(cronJobIndex);
-				output += cronJob.getSchedule() + " " + cronJob.getCommand() + " (" + cronJob.getChannelId() + ")";
+				output += cronJob.getSchedule() + " " + cronJob.getCommand() + " (" + cronJob.getChannelId() + ")\n";
 			}
 
 			MessageQueue.sendMessage(message.getChannel(), output);
