@@ -43,7 +43,6 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import me.unrealization.jeeves.bot.DiscordEventHandlers;
 import me.unrealization.jeeves.bot.Jeeves;
-import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.interfaces.BotConfig;
 
 public class CronJobList implements BotConfig
