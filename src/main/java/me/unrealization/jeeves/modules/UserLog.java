@@ -38,7 +38,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 	@Override
 	public void userJoinedHandler(UserJoinEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getID(), "userLogChannel");
+		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "userLogChannel");
 
 		if (channelId.isEmpty() == true)
 		{
@@ -51,7 +51,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		{
 			System.out.println("Invalid user log channel.");
 			UserLog userLog = new UserLog();
-			Jeeves.serverConfig.setValue(event.getGuild().getID(), "userLogChannel", userLog.getDefaultConfig().get("userLogChannel"));
+			Jeeves.serverConfig.setValue(event.getGuild().getLongID(), "userLogChannel", userLog.getDefaultConfig().get("userLogChannel"));
 
 			try
 			{
@@ -71,7 +71,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 	@Override
 	public void userLeftHandler(UserLeaveEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getID(), "userLogChannel");
+		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "userLogChannel");
 
 		if (channelId.isEmpty() == true)
 		{
@@ -83,7 +83,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		if (channel == null)
 		{
 			System.out.println("Invalid user log channel.");
-			Jeeves.serverConfig.setValue(event.getGuild().getID(), "userLogChannel", "");
+			Jeeves.serverConfig.setValue(event.getGuild().getLongID(), "userLogChannel", "");
 
 			try
 			{
@@ -103,7 +103,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 	@Override
 	public void presenceUpdateHandler(IGuild server, PresenceUpdateEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(server.getID(), "userLogChannel");
+		String channelId = (String)Jeeves.serverConfig.getValue(server.getLongID(), "userLogChannel");
 
 		if (channelId.isEmpty() == true)
 		{
@@ -115,7 +115,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		if (channel == null)
 		{
 			System.out.println("Invalid user log channel.");
-			Jeeves.serverConfig.setValue(server.getID(), "userLogChannel", "");
+			Jeeves.serverConfig.setValue(server.getLongID(), "userLogChannel", "");
 
 			try
 			{
@@ -183,7 +183,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "userLogChannel");
+			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "userLogChannel");
 
 			if (channelId.isEmpty() == true)
 			{
@@ -198,7 +198,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 				MessageQueue.sendMessage(message.getChannel(), "A user log channel has been set, but it does not exist.");
 
 				UserLog userLog = new UserLog();
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "userLogChannel", userLog.getDefaultConfig().get("userLogChannel"));
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "userLogChannel", userLog.getDefaultConfig().get("userLogChannel"));
 
 				try
 				{
@@ -248,7 +248,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 
 			if (channelName.isEmpty() == true)
 			{
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "userLogChannel", "");
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "userLogChannel", "");
 			}
 			else
 			{
@@ -260,7 +260,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "userLogChannel", channel.getID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "userLogChannel", channel.getID());
 			}
 
 			try

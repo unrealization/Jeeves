@@ -93,7 +93,7 @@ public class Internal extends BotModule
 			{
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
+				if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
 				{
 					continue;
 				}
@@ -385,7 +385,7 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix");
+			String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "commandPrefix");
 			MessageQueue.sendMessage(message.getChannel(), "The command prefix is: " + commandPrefix);
 		}
 	}
@@ -425,7 +425,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "commandPrefix", commandPrefix);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "commandPrefix", commandPrefix);
 
 			try
 			{
@@ -468,7 +468,7 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "respondOnPrefix");
+			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnPrefix");
 
 			if (respondOnPrefix.equals("0") == true)
 			{
@@ -517,7 +517,7 @@ public class Internal extends BotModule
 			}
 
 			System.out.println(respondOnPrefix);
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "respondOnPrefix", respondOnPrefix);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "respondOnPrefix", respondOnPrefix);
 
 			try
 			{
@@ -567,7 +567,7 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String respondOnMention = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "respondOnMention");
+			String respondOnMention = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnMention");
 
 			if (respondOnMention.equals("0") == true)
 			{
@@ -615,7 +615,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "respondOnMention", respondOnMention);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "respondOnMention", respondOnMention);
 
 			try
 			{
@@ -665,7 +665,7 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredChannels");
+			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredChannels");
 
 			if (ignoredChannels.getClass() == String.class)
 			{
@@ -742,7 +742,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredChannels");
+			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredChannels");
 			List<String> ignoredChannelList;
 
 			if (ignoredChannels.getClass() == String.class)
@@ -755,7 +755,7 @@ public class Internal extends BotModule
 			}
 
 			ignoredChannelList.add(channel.getID());
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredChannels", ignoredChannelList);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredChannels", ignoredChannelList);
 
 			try
 			{
@@ -815,7 +815,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredChannels");
+			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredChannels");
 
 			if (ignoredChannels.getClass() == String.class)
 			{
@@ -839,7 +839,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredChannels", ignoredChannelList);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredChannels", ignoredChannelList);
 
 			try
 			{
@@ -882,7 +882,7 @@ public class Internal extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredUsers");
+			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredUsers");
 
 			if (ignoredUsers.getClass() == String.class)
 			{
@@ -953,13 +953,13 @@ public class Internal extends BotModule
 				return;
 			}
 
-			if (Jeeves.isIgnored(message.getGuild().getID(), user) == true)
+			if (Jeeves.isIgnored(message.getGuild().getLongID(), user) == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "The user " + user.getName() + " is being ignored already.");
 				return;
 			}
 
-			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredUsers");
+			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredUsers");
 			List<String> ignoredUserList;
 
 			if (ignoredUsers.getClass() == String.class)
@@ -972,7 +972,7 @@ public class Internal extends BotModule
 			}
 
 			ignoredUserList.add(user.getID());
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredUsers", ignoredUserList);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredUsers", ignoredUserList);
 
 			try
 			{
@@ -1032,7 +1032,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getID(), "ignoredUsers");
+			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredUsers");
 
 			if (ignoredUsers.getClass() == String.class)
 			{
@@ -1056,7 +1056,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "ignoredUsers", ignoredUserList);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredUsers", ignoredUserList);
 
 			try
 			{
@@ -1107,7 +1107,7 @@ public class Internal extends BotModule
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 				output += "\t" + moduleList[moduleIndex] + " " + module.getVersion();
 
-				if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
+				if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
 				{
 					output += " (disabled)";
 				}
@@ -1170,7 +1170,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().getID(), "disabledModules");
+			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "disabledModules");
 
 			if (disabledModules.getClass() == String.class)
 			{
@@ -1194,7 +1194,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "disabledModules", disabledModuleList);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "disabledModules", disabledModuleList);
 
 			try
 			{
@@ -1260,13 +1260,13 @@ public class Internal extends BotModule
 				return;
 			}
 
-			if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
+			if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName + " is disabled already.");
 				return;
 			}
 
-			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().getID(), "disabledModules");
+			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "disabledModules");
 			List<String> disabledModuleList;
 
 			if (disabledModules.getClass() == String.class)
@@ -1279,7 +1279,7 @@ public class Internal extends BotModule
 			}
 
 			disabledModuleList.add(moduleName);
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "disabledModules", disabledModuleList);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "disabledModules", disabledModuleList);
 
 			try
 			{

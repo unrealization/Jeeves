@@ -112,7 +112,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "ccnProximityRole");
+			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRole");
 
 			if (roleId.isEmpty() == true)
 			{
@@ -129,7 +129,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			String ccnEdsmId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "ccnEdsmId");
+			String ccnEdsmId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnEdsmId");
 
 			if (ccnEdsmId.isEmpty() == true)
 			{
@@ -137,7 +137,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			String ccnEdsmApiKey = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "ccnEdsmApiKey");
+			String ccnEdsmApiKey = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnEdsmApiKey");
 
 			if (ccnEdsmApiKey.isEmpty() == true)
 			{
@@ -145,7 +145,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			String ccnProximityRadius = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "ccnProximityRadius");
+			String ccnProximityRadius = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRadius");
 
 			if (ccnProximityRadius.isEmpty() == true)
 			{
@@ -253,7 +253,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "ccnProximityRole");
+			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRole");
 
 			if (roleId.isEmpty() == true)
 			{
@@ -268,7 +268,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 				MessageQueue.sendMessage(message.getChannel(), "A CCN proximity role has been set, but it does not exist.");
 
 				Ccn ccn = new Ccn();
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "ccnProximityRole", ccn.getDefaultConfig().get("ccnProximityRole"));
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnProximityRole", ccn.getDefaultConfig().get("ccnProximityRole"));
 
 				try
 				{
@@ -318,7 +318,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 
 			if (roleName.isEmpty() == true)
 			{
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "ccnProximityRole", "");
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnProximityRole", "");
 			}
 			else
 			{
@@ -330,7 +330,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "ccnProximityRole", role.getID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnProximityRole", role.getID());
 			}
 
 			try

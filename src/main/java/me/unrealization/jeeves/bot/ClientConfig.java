@@ -149,7 +149,7 @@ public class ClientConfig implements BotConfig
 	}
 
 	@Override
-	public Object getValue(String serverId, String key)
+	public Object getValue(long serverId, String key)
 	{
 		return this.getValue(key);
 	}
@@ -166,7 +166,7 @@ public class ClientConfig implements BotConfig
 	}
 
 	@Override
-	public void setValue(String serverId, String key, Object value)
+	public void setValue(long serverId, String key, Object value)
 	{
 		this.setValue(key, value);
 	}
@@ -177,7 +177,7 @@ public class ClientConfig implements BotConfig
 	}
 
 	@Override
-	public void removeValue(String serverId, String key)
+	public void removeValue(long serverId, String key)
 	{
 		this.removeValue(key);
 	}
@@ -188,7 +188,7 @@ public class ClientConfig implements BotConfig
 	}
 
 	@Override
-	public String[] getKeyList(String serverId)
+	public String[] getKeyList(long serverId)
 	{
 		return this.getKeyList();
 	}
@@ -201,7 +201,7 @@ public class ClientConfig implements BotConfig
 	}
 
 	@Override
-	public boolean hasKey(String serverId, String key)
+	public boolean hasKey(long serverId, String key)
 	{
 		return this.hasKey(key);
 	}

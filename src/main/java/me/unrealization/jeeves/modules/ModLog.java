@@ -31,7 +31,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 	@Override
 	public void messageUpdateHandler(MessageUpdateEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getNewMessage().getGuild().getID(), "modLogChannel");
+		String channelId = (String)Jeeves.serverConfig.getValue(event.getNewMessage().getGuild().getLongID(), "modLogChannel");
 
 		if (channelId.isEmpty() == true)
 		{
@@ -44,7 +44,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		{
 			System.out.println("Invalid mod log channel.");
 			ModLog modLog = new ModLog();
-			Jeeves.serverConfig.setValue(event.getNewMessage().getGuild().getID(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
+			Jeeves.serverConfig.setValue(event.getNewMessage().getGuild().getLongID(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
 
 			try
 			{
@@ -87,7 +87,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 	@Override
 	public void messageDeleteHandler(MessageDeleteEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getMessage().getGuild().getID(), "modLogChannel");
+		String channelId = (String)Jeeves.serverConfig.getValue(event.getMessage().getGuild().getLongID(), "modLogChannel");
 
 		if (channelId.isEmpty() == true)
 		{
@@ -100,7 +100,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		{
 			System.out.println("Invalid mod log channel.");
 			ModLog modLog = new ModLog();
-			Jeeves.serverConfig.setValue(event.getMessage().getGuild().getID(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
+			Jeeves.serverConfig.setValue(event.getMessage().getGuild().getLongID(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
 
 			try
 			{
@@ -147,7 +147,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "modLogChannel");
+			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "modLogChannel");
 
 			if (channelId.isEmpty() == true)
 			{
@@ -162,7 +162,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 				MessageQueue.sendMessage(message.getChannel(), "A mod log channel has been set, but it does not exist.");
 
 				ModLog modLog = new ModLog();
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
 
 				try
 				{
@@ -212,7 +212,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 
 			if (channelName.isEmpty() == true)
 			{
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "modLogChannel", "");
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "modLogChannel", "");
 			}
 			else
 			{
@@ -224,7 +224,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "modLogChannel", channel.getID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "modLogChannel", channel.getID());
 			}
 
 			try

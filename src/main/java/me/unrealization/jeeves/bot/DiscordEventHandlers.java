@@ -85,7 +85,7 @@ public class DiscordEventHandlers
 		public void handle(MessageReceivedEvent event)
 		{
 			IMessage message = event.getMessage();
-			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "respondOnPrefix");
+			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnPrefix");
 
 			if (respondOnPrefix.equals("0") == true)
 			{
@@ -94,7 +94,7 @@ public class DiscordEventHandlers
 
 			String messageContent = message.getContent();
 
-			if (messageContent.startsWith((String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix")) == true)
+			if (messageContent.startsWith((String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "commandPrefix")) == true)
 			{
 				DiscordEventHandlers.handleMessage(message);
 			}
@@ -107,7 +107,7 @@ public class DiscordEventHandlers
 		public void handle(MentionEvent event)
 		{
 			IMessage message = event.getMessage();
-			String respondOnMention = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "respondOnMention");
+			String respondOnMention = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnMention");
 
 			if (respondOnMention.equals("0"))
 			{
@@ -136,7 +136,7 @@ public class DiscordEventHandlers
 			{
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(event.getGuild().getID(), module) == true)
+				if (Jeeves.isDisabled(event.getGuild().getLongID(), module) == true)
 				{
 					continue;
 				}
@@ -169,7 +169,7 @@ public class DiscordEventHandlers
 			{
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(event.getGuild().getID(), module) == true)
+				if (Jeeves.isDisabled(event.getGuild().getLongID(), module) == true)
 				{
 					continue;
 				}
@@ -213,7 +213,7 @@ public class DiscordEventHandlers
 				{
 					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-					if (Jeeves.isDisabled(server.getID(), module) == true)
+					if (Jeeves.isDisabled(server.getLongID(), module) == true)
 					{
 						continue;
 					}
@@ -258,7 +258,7 @@ public class DiscordEventHandlers
 				{
 					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-					if (Jeeves.isDisabled(server.getID(), module) == true)
+					if (Jeeves.isDisabled(server.getLongID(), module) == true)
 					{
 						continue;
 					}
@@ -290,7 +290,7 @@ public class DiscordEventHandlers
 
 			try
 			{
-				Jeeves.checkConfig(event.getGuild().getID(), internal.getDefaultConfig());
+				Jeeves.checkConfig(event.getGuild().getLongID(), internal.getDefaultConfig());
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
@@ -315,7 +315,7 @@ public class DiscordEventHandlers
 			{
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(event.getNewMessage().getGuild().getID(), module) == true)
+				if (Jeeves.isDisabled(event.getNewMessage().getGuild().getLongID(), module) == true)
 				{
 					continue;
 				}
@@ -348,7 +348,7 @@ public class DiscordEventHandlers
 			{
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(event.getMessage().getGuild().getID(), module) == true)
+				if (Jeeves.isDisabled(event.getMessage().getGuild().getLongID(), module) == true)
 				{
 					continue;
 				}
@@ -382,7 +382,7 @@ public class DiscordEventHandlers
 			return;
 		}
 
-		if (Jeeves.isIgnored(message.getGuild().getID(), message.getAuthor()) == true)
+		if (Jeeves.isIgnored(message.getGuild().getLongID(), message.getAuthor()) == true)
 		{
 			return;
 		}
@@ -390,7 +390,7 @@ public class DiscordEventHandlers
 		String messageContent = message.getContent();
 		IUser botUser = message.getClient().getOurUser();
 		int cutLength = 0;
-		String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "commandPrefix");
+		String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "commandPrefix");
 
 		if (messageContent.startsWith(commandPrefix))
 		{
@@ -449,7 +449,7 @@ public class DiscordEventHandlers
 		{
 			BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-			if (Jeeves.isDisabled(message.getGuild().getID(), module) == true)
+			if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
 			{
 				continue;
 			}
@@ -470,7 +470,7 @@ public class DiscordEventHandlers
 
 				try
 				{
-					Jeeves.checkConfig(message.getGuild().getID(), module.getDefaultConfig());
+					Jeeves.checkConfig(message.getGuild().getLongID(), module.getDefaultConfig());
 				}
 				catch (ParserConfigurationException | TransformerException e)
 				{

@@ -29,7 +29,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 	@Override
 	public void userJoinedHandler(UserJoinEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getID(), "welcomeChannel");
+		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "welcomeChannel");
 
 		if (channelId.isEmpty() == true)
 		{
@@ -42,7 +42,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		{
 			System.out.println("Invalid welcome channel.");
 			Welcome welcome = new Welcome();
-			Jeeves.serverConfig.setValue(event.getGuild().getID(), "welcomeChannel", welcome.getDefaultConfig().get("welcomeChannel"));
+			Jeeves.serverConfig.setValue(event.getGuild().getLongID(), "welcomeChannel", welcome.getDefaultConfig().get("welcomeChannel"));
 
 			try
 			{
@@ -85,7 +85,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "welcomeChannel");
+			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "welcomeChannel");
 
 			if (channelId.isEmpty() == true)
 			{
@@ -100,7 +100,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 				MessageQueue.sendMessage(message.getChannel(), "A welcome channel has been set, but it does not exist.");
 
 				Welcome welcome = new Welcome();
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "welcomeChannel", welcome.getDefaultConfig().get("welcomeChannel"));
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "welcomeChannel", welcome.getDefaultConfig().get("welcomeChannel"));
 
 				try
 				{
@@ -150,7 +150,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 
 			if (channelName.isEmpty() == true)
 			{
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "welcomeChannel", "");
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "welcomeChannel", "");
 			}
 			else
 			{
@@ -162,7 +162,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "welcomeChannel", channel.getID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "welcomeChannel", channel.getID());
 			}
 
 			try

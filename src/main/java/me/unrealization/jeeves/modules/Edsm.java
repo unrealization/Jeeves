@@ -53,7 +53,7 @@ public class Edsm extends BotModule
 		return output;
 	}*/
 
-	private static EdsmApi getApiObject(String serverId)
+	private static EdsmApi getApiObject(long serverId)
 	{
 		String useBetaServer = (String)Jeeves.serverConfig.getValue(serverId, "edsmUseBetaServer");
 		boolean useBeta = useBetaServer.equals("1");
@@ -88,7 +88,7 @@ public class Edsm extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String useBetaServer = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "edsmUseBetaServer");
+			String useBetaServer = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "edsmUseBetaServer");
 
 			if (useBetaServer.equals("0") == true)
 			{
@@ -136,7 +136,7 @@ public class Edsm extends BotModule
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "edsmUseBetaServer", useBetaServer);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "edsmUseBetaServer", useBetaServer);
 
 			try
 			{
@@ -315,7 +315,7 @@ public class Edsm extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
 			EdsmModels.EDStatus data;
 
 			try
@@ -365,7 +365,7 @@ public class Edsm extends BotModule
 				commanderName = (String)Edsm.edsmUserList.getValue(message.getAuthor().getID());
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
 			EdsmModels.CommanderLocation data;
 
 			try
@@ -437,7 +437,7 @@ public class Edsm extends BotModule
 				return;
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
 			EdsmModels.SystemCoordinates data;
 
 			try

@@ -31,7 +31,7 @@ import sx.blah.discord.handle.obj.IGuild;
 
 public class ServerConfig implements BotConfig
 {
-	private HashMap<String, HashMap<String, Object>> config = new HashMap<String, HashMap<String, Object>>();
+	private HashMap<Long, HashMap<String, Object>> config = new HashMap<Long, HashMap<String, Object>>();
 
 	public ServerConfig() throws ParserConfigurationException, SAXException
 	{
@@ -55,7 +55,7 @@ public class ServerConfig implements BotConfig
 		catch (IOException e)
 		{
 			Jeeves.debugException(e);
-			this.config = new HashMap<String, HashMap<String, Object>>();
+			this.config = new HashMap<Long, HashMap<String, Object>>();
 			return;
 		}
 
@@ -65,7 +65,8 @@ public class ServerConfig implements BotConfig
 		{
 			Element server = (Element)servers.item(serverIndex);
 			NodeList serverConfigList = server.getChildNodes();
-			String serverId = server.getAttribute("serverId");
+			String serverIdString = server.getAttribute("serverId");
+			long serverId = Long.parseLong(serverIdString);
 			HashMap<String, Object> config = new HashMap<String, Object>();
 
 			for (int configIndex = 0; configIndex < serverConfigList.getLength(); configIndex++)
@@ -124,8 +125,8 @@ public class ServerConfig implements BotConfig
 	@Override
 	public void saveConfig(String fileName) throws ParserConfigurationException, TransformerException
 	{
-		Set<String> serverIdSet = this.config.keySet();
-		String[] serverIdList = serverIdSet.toArray(new String[serverIdSet.size()]);
+		Set<Long> serverIdSet = this.config.keySet();
+		Long[] serverIdList = serverIdSet.toArray(new Long[serverIdSet.size()]);
 
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -140,7 +141,7 @@ public class ServerConfig implements BotConfig
 
 			Element server = doc.createElement("server");
 			Attr serverId = doc.createAttribute("serverId");
-			serverId.setValue(serverIdList[serverIndex]);
+			serverId.setValue(Long.toString(serverIdList[serverIndex]));
 			server.setAttributeNode(serverId);
 			docRoot.appendChild(server);
 
@@ -195,7 +196,7 @@ public class ServerConfig implements BotConfig
 	}
 
 	@Override
-	public Object getValue(String serverId, String key)
+	public Object getValue(long serverId, String key)
 	{
 		if (this.config.containsKey(serverId) == false)
 		{
@@ -214,7 +215,7 @@ public class ServerConfig implements BotConfig
 	}
 
 	@Override
-	public void setValue(String serverId, String key, Object value)
+	public void setValue(long serverId, String key, Object value)
 	{
 		HashMap<String, Object> serverConfig;
 
@@ -232,7 +233,7 @@ public class ServerConfig implements BotConfig
 	}
 
 	@Override
-	public void removeValue(String serverId, String key)
+	public void removeValue(long serverId, String key)
 	{
 		if (this.config.containsKey(serverId) == false)
 		{
@@ -248,7 +249,7 @@ public class ServerConfig implements BotConfig
 	}
 
 	@Override
-	public String[] getKeyList(String serverId)
+	public String[] getKeyList(long serverId)
 	{
 		HashMap<String, Object> serverConfig = this.config.get(serverId);
 
@@ -263,7 +264,7 @@ public class ServerConfig implements BotConfig
 	}
 
 	@Override
-	public boolean hasKey(String serverId, String key)
+	public boolean hasKey(long serverId, String key)
 	{
 		String[] keyList = this.getKeyList(serverId);
 

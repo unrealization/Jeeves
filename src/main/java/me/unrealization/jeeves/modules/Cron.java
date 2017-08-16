@@ -59,7 +59,7 @@ public class Cron extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getID(), "cronJobs");
+			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getLongID(), "cronJobs");
 
 			if (cronJobs.getClass() == String.class)
 			{
@@ -203,7 +203,7 @@ public class Cron extends BotModule
 				return;
 			}
 
-			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getID(), "cronJobs");
+			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getLongID(), "cronJobs");
 			List<CronJobList.CronJob> cronJobList;
 
 			if (cronJobs.getClass() == String.class)
@@ -216,7 +216,7 @@ public class Cron extends BotModule
 			}
 
 			cronJobList.add(cronJob);
-			Cron.cronJobList.setValue(message.getGuild().getID(), "cronJobs", cronJobList);
+			Cron.cronJobList.setValue(message.getGuild().getLongID(), "cronJobs", cronJobList);
 
 			try
 			{
@@ -274,7 +274,7 @@ public class Cron extends BotModule
 				return;
 			}
 
-			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getID(), "cronJobs");
+			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getLongID(), "cronJobs");
 
 			if (cronJobs.getClass() == String.class)
 			{
@@ -299,7 +299,7 @@ public class Cron extends BotModule
 			}
 
 			removedCron.stop();
-			Cron.cronJobList.setValue(message.getGuild().getID(), "cronJobs", cronJobList);
+			Cron.cronJobList.setValue(message.getGuild().getLongID(), "cronJobs", cronJobList);
 
 			try
 			{

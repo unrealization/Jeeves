@@ -45,7 +45,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 	@Override
 	public void userJoinedHandler(UserJoinEvent event)
 	{
-		String roleId = (String)Jeeves.serverConfig.getValue(event.getGuild().getID(), "autoRole");
+		String roleId = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "autoRole");
 
 		if (roleId.isEmpty() == true)
 		{
@@ -57,7 +57,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 		if (role == null)
 		{
 			Roles roles = new Roles();
-			Jeeves.serverConfig.setValue(event.getGuild().getID(), "autoRole", roles.getDefaultConfig().get("autoRole"));
+			Jeeves.serverConfig.setValue(event.getGuild().getLongID(), "autoRole", roles.getDefaultConfig().get("autoRole"));
 			return;
 		}
 
@@ -108,7 +108,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 	private static boolean isLocked(IRole role)
 	{
-		Object lockedRoles = Jeeves.serverConfig.getValue(role.getGuild().getID(), "lockedRoles");
+		Object lockedRoles = Jeeves.serverConfig.getValue(role.getGuild().getLongID(), "lockedRoles");
 
 		if (lockedRoles.getClass() == String.class)
 		{
@@ -531,7 +531,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getID(), "autoRole");
+			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "autoRole");
 
 			if (roleId.isEmpty() == true)
 			{
@@ -546,7 +546,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				MessageQueue.sendMessage(message.getChannel(), "An automatically assigned role has been set, but it does not exist.");
 
 				Roles roles = new Roles();
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "autoRole", roles.getDefaultConfig().get("autoRole"));
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "autoRole", roles.getDefaultConfig().get("autoRole"));
 
 				try
 				{
@@ -596,7 +596,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			if (roleName.isEmpty() == true)
 			{
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "autoRole", "");
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "autoRole", "");
 			}
 			else
 			{
@@ -608,7 +608,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getID(), "autoRole", role.getID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "autoRole", role.getID());
 			}
 
 			try
@@ -682,7 +682,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			Object lockedRoles = Jeeves.serverConfig.getValue(message.getGuild().getID(), "lockedRoles");
+			Object lockedRoles = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "lockedRoles");
 			List<String> lockedRoleList;
 
 			if (lockedRoles.getClass() == String.class)
@@ -695,7 +695,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 			}
 
 			lockedRoleList.add(role.getID());
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "lockedRoles", lockedRoleList);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "lockedRoles", lockedRoleList);
 
 			try
 			{
@@ -755,7 +755,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			Object lockedRoles = Jeeves.serverConfig.getValue(message.getGuild().getID(), "lockedRoles");
+			Object lockedRoles = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "lockedRoles");
 
 			if (lockedRoles.getClass() == String.class)
 			{
@@ -779,7 +779,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getID(), "lockedRoles", lockedRoleList);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "lockedRoles", lockedRoleList);
 
 			try
 			{

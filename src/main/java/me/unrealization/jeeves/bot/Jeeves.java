@@ -118,7 +118,7 @@ public class Jeeves
 		return moduleList;
 	}
 
-	public static void checkConfig(String serverId, HashMap<String, Object> defaultConfig) throws ParserConfigurationException, TransformerException
+	public static void checkConfig(long serverId, HashMap<String, Object> defaultConfig) throws ParserConfigurationException, TransformerException
 	{
 		if (defaultConfig == null)
 		{
@@ -257,7 +257,7 @@ public class Jeeves
 
 	public static boolean isIgnored(IChannel channel)
 	{
-		Object ignoredChannels = Jeeves.serverConfig.getValue(channel.getGuild().getID(), "ignoredChannels");
+		Object ignoredChannels = Jeeves.serverConfig.getValue(channel.getGuild().getLongID(), "ignoredChannels");
 
 		if (ignoredChannels.getClass() == String.class)
 		{
@@ -265,10 +265,10 @@ public class Jeeves
 		}
 
 		List<String> ignoredChannelList = Jeeves.listToStringList((List<?>)ignoredChannels);
-		return ignoredChannelList.contains(channel.getID());
+		return ignoredChannelList.contains(Long.toString(channel.getLongID()));
 	}
 
-	public static boolean isIgnored(String serverId, IUser user)
+	public static boolean isIgnored(long serverId, IUser user)
 	{
 		Object ignoredUsers = Jeeves.serverConfig.getValue(serverId, "ignoredUsers");
 
@@ -278,10 +278,10 @@ public class Jeeves
 		}
 
 		List<String> ignoredUserList = Jeeves.listToStringList((List<?>)ignoredUsers);
-		return ignoredUserList.contains(user.getID());
+		return ignoredUserList.contains(Long.toString(user.getLongID()));
 	}
 
-	public static boolean isDisabled(String serverId, BotModule module)
+	public static boolean isDisabled(long serverId, BotModule module)
 	{
 		String discordId = module.getDiscordId();
 

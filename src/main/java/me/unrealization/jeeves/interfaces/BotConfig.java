@@ -32,7 +32,7 @@ public interface BotConfig
 	 * @param key The configuration key to query
 	 * @return A string or array of strings containing the configuration values
 	 */
-	public Object getValue(String serverId, String key);
+	public Object getValue(long serverId, String key);
 
 	/**
 	 * Set a configuration value for a specific Discord server
@@ -40,21 +40,21 @@ public interface BotConfig
 	 * @param key The configuration key to set
 	 * @param value The value 
 	 */
-	public void setValue(String serverId, String key, Object value);
+	public void setValue(long serverId, String key, Object value);
 
 	/**
 	 * Remove a configuration value for a specific Discord server
 	 * @param serverId The id of the Discord server
 	 * @param key The configuration key to remove
 	 */
-	public void removeValue(String serverId, String key);
+	public void removeValue(long serverId, String key);
 
 	/**
 	 * Get the list of available configuration keys for the given Discord server
 	 * @param serverId The id of the Discord server
 	 * @return A list of key names for the server configuration
 	 */
-	public String[] getKeyList(String serverId);
+	public String[] getKeyList(long serverId);
 
 	/**
 	 * Check if a given configuration key is available on a specific Discord server
@@ -62,5 +62,5 @@ public interface BotConfig
 	 * @param key The key to check for
 	 * @return True if the key is available, false if it is not
 	 */
-	public boolean hasKey(String serverId, String key);
+	public boolean hasKey(long serverId, String key);
 }
