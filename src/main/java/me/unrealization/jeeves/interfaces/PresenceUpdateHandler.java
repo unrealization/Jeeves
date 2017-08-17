@@ -1,6 +1,6 @@
 package me.unrealization.jeeves.interfaces;
 
-import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
+import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
 
 public interface PresenceUpdateHandler

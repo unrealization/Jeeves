@@ -17,7 +17,7 @@ import me.unrealization.jeeves.dataLists.EdsmUserList;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
-import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
@@ -42,9 +42,9 @@ public class Ccn extends BotModule implements UserJoinedHandler
 	}
 
 	@Override
-	public String getDiscordId()
+	public Long getDiscordId()
 	{
-		return "209372315673165825";
+		return Long.parseLong("209372315673165825");
 	}
 
 	@Override
@@ -112,14 +112,15 @@ public class Ccn extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRole");
+			String roleIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRole");
 
-			if (roleId.isEmpty() == true)
+			if (roleIdString.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "No CCN proximity role has been set.");
 				return;
 			}
 
+			long roleId = Long.parseLong(roleIdString);
 			IRole role = message.getGuild().getRoleByID(roleId);
 
 			if (role == null)
@@ -174,13 +175,14 @@ public class Ccn extends BotModule implements UserJoinedHandler
 			for (int userIndex = 0; userIndex < userList.size(); userIndex++)
 			{
 				IUser user = userList.get(userIndex);
+				String userIdString = Long.toString(user.getLongID());
 
-				if (edsmUserList.hasKey(user.getID()) == false)
+				if (edsmUserList.hasKey(userIdString) == false)
 				{
 					continue;
 				}
 
-				String edsmUserName = (String)edsmUserList.getValue(user.getID());
+				String edsmUserName = (String)edsmUserList.getValue(userIdString);
 				List<IRole> userRoles = user.getRolesForGuild(message.getGuild());
 
 				if (userRoles.contains(role) == true)
@@ -253,14 +255,15 @@ public class Ccn extends BotModule implements UserJoinedHandler
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRole");
+			String roleIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRole");
 
-			if (roleId.isEmpty() == true)
+			if (roleIdString.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "No CCN proximity role has been set.");
 				return;
 			}
 
+			long roleId = Long.parseLong(roleIdString);
 			IRole role = message.getGuild().getRoleByID(roleId);
 
 			if (role == null)
@@ -330,7 +333,8 @@ public class Ccn extends BotModule implements UserJoinedHandler
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnProximityRole", role.getID());
+				String roleIdString = Long.toString(role.getLongID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnProximityRole", roleIdString);
 			}
 
 			try

@@ -1,6 +1,6 @@
 package me.unrealization.jeeves.interfaces;
 
-import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 
 public interface UserJoinedHandler
 {

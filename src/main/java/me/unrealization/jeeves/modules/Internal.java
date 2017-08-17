@@ -685,7 +685,8 @@ public class Internal extends BotModule
 
 			for (int channelIndex = 0; channelIndex < ignoredChannelList.size(); channelIndex++)
 			{
-				IChannel channel = message.getGuild().getChannelByID(ignoredChannelList.get(channelIndex));
+				Long channelId = Long.parseLong(ignoredChannelList.get(channelIndex));
+				IChannel channel = message.getGuild().getChannelByID(channelId);
 				output += channel.getName() + "\n";
 			}
 
@@ -754,7 +755,8 @@ public class Internal extends BotModule
 				ignoredChannelList = Jeeves.listToStringList((List<?>)ignoredChannels);
 			}
 
-			ignoredChannelList.add(channel.getID());
+			String channelIdString = Long.toString(channel.getLongID());
+			ignoredChannelList.add(channelIdString);
 			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredChannels", ignoredChannelList);
 
 			try
@@ -831,7 +833,8 @@ public class Internal extends BotModule
 				return;
 			}
 
-			boolean removed = ignoredChannelList.remove(channel.getID());
+			String channelIdString = Long.toString(channel.getLongID());
+			boolean removed = ignoredChannelList.remove(channelIdString);
 
 			if (removed == false)
 			{
@@ -902,7 +905,8 @@ public class Internal extends BotModule
 
 			for (int userIndex = 0; userIndex < ignoredUserList.size(); userIndex++)
 			{
-				IUser user = message.getGuild().getUserByID(ignoredUserList.get(userIndex));
+				long userId = Long.parseLong(ignoredUserList.get(userIndex));
+				IUser user = message.getGuild().getUserByID(userId);
 				output += user.getName() + "\n";
 			}
 
@@ -971,7 +975,8 @@ public class Internal extends BotModule
 				ignoredUserList = Jeeves.listToStringList((List<?>)ignoredUsers);
 			}
 
-			ignoredUserList.add(user.getID());
+			String userIdString = Long.toString(user.getLongID());
+			ignoredUserList.add(userIdString);
 			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredUsers", ignoredUserList);
 
 			try
@@ -1048,7 +1053,8 @@ public class Internal extends BotModule
 				return;
 			}
 
-			boolean removed = ignoredUserList.remove(user.getID());
+			String userIdString = Long.toString(user.getLongID());
+			boolean removed = ignoredUserList.remove(userIdString);
 
 			if (removed == false)
 			{
@@ -1162,9 +1168,9 @@ public class Internal extends BotModule
 				return;
 			}
 
-			String discordId = module.getDiscordId();
+			Long discordId = module.getDiscordId();
 
-			if ((discordId != null) && (message.getGuild().getID().equals(discordId) == false))
+			if ((discordId != null) && (discordId.equals(message.getGuild().getLongID()) == false))
 			{
 				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName + " is not available on this server.");
 				return;

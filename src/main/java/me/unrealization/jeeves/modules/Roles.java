@@ -6,7 +6,7 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
@@ -45,13 +45,14 @@ public class Roles extends BotModule implements UserJoinedHandler
 	@Override
 	public void userJoinedHandler(UserJoinEvent event)
 	{
-		String roleId = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "autoRole");
+		String roleIdString = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "autoRole");
 
-		if (roleId.isEmpty() == true)
+		if (roleIdString.isEmpty() == true)
 		{
 			return;
 		}
 
+		long roleId = Long.parseLong(roleIdString);
 		IRole role = event.getGuild().getRoleByID(roleId);
 
 		if (role == null)
@@ -116,7 +117,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		List<String> lockedRoleList = Jeeves.listToStringList((List<?>)lockedRoles);
-		return lockedRoleList.contains(role.getID());
+		String roleIdString = Long.toString(role.getLongID());
+		return lockedRoleList.contains(roleIdString);
 	}
 
 	public static class GetRoles extends BotCommand
@@ -531,14 +533,15 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String roleId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "autoRole");
+			String roleIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "autoRole");
 
-			if (roleId.isEmpty() == true)
+			if (roleIdString.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "No automatically assigned role has been set.");
 				return;
 			}
 
+			long roleId = Long.parseLong(roleIdString);
 			IRole role = message.getGuild().getRoleByID(roleId);
 
 			if (role == null)
@@ -608,7 +611,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "autoRole", role.getID());
+				String roleIdString = Long.toString(role.getLongID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "autoRole", roleIdString);
 			}
 
 			try
@@ -694,7 +698,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 				lockedRoleList = Jeeves.listToStringList((List<?>)lockedRoles);
 			}
 
-			lockedRoleList.add(role.getID());
+			String roleIdString = Long.toString(role.getLongID());
+			lockedRoleList.add(roleIdString);
 			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "lockedRoles", lockedRoleList);
 
 			try
@@ -771,7 +776,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			boolean removed = lockedRoleList.remove(role.getID());
+			String roleIdString = Long.toString(role.getLongID());
+			boolean removed = lockedRoleList.remove(roleIdString);
 
 			if (removed == false)
 			{

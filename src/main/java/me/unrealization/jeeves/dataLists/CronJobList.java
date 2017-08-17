@@ -51,7 +51,7 @@ public class CronJobList implements BotConfig
 	{
 		private String schedule = "";
 		private String command = "";
-		private String channelId = "";
+		private Long channelId = null;
 		private JobKey jobKey = null;
 
 		public static class CronTask implements Job
@@ -61,9 +61,10 @@ public class CronJobList implements BotConfig
 			{
 				JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 				String command = jobDataMap.getString("command");
-				String channelId = jobDataMap.getString("channelId");
+				Long channelId = jobDataMap.getLong("channelId");
 
 				System.out.println("Running cron command " + command);
+
 				IChannel channel = Jeeves.bot.getChannelByID(channelId);
 				String commandPrefix = (String)Jeeves.serverConfig.getValue(channel.getGuild().getLongID(), "commandPrefix");
 				Message commandMessage = new Message(Jeeves.bot, 0, commandPrefix + command, Jeeves.bot.getOurUser(), channel, null, null, false, null, null, null, false, null, null, 0);
@@ -121,12 +122,12 @@ public class CronJobList implements BotConfig
 			this.command = command;
 		}
 
-		public String getChannelId()
+		public Long getChannelId()
 		{
 			return this.channelId;
 		}
 
-		public void setChannelId(String channelId)
+		public void setChannelId(long channelId)
 		{
 			this.channelId = channelId;
 		}
@@ -221,7 +222,9 @@ public class CronJobList implements BotConfig
 							switch (property.getNodeName())
 							{
 							case "channelId":
-								cronJob.setChannelId(property.getTextContent().trim());
+								String channelIdString = property.getTextContent().trim();
+								long channelId = Long.parseLong(channelIdString);
+								cronJob.setChannelId(channelId);
 								break;
 							case "command":
 								cronJob.setCommand(property.getTextContent().trim());
@@ -315,7 +318,8 @@ public class CronJobList implements BotConfig
 						CronJob cronJob = configItemList.get(itemIndex);
 
 						Element channel = doc.createElement("channelId");
-						channel.setTextContent(cronJob.getChannelId());
+						String channelIdString = Long.toString(cronJob.getChannelId());
+						channel.setTextContent(channelIdString);
 						item.appendChild(channel);
 
 						Element command = doc.createElement("command");

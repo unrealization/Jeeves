@@ -23,16 +23,16 @@ import me.unrealization.jeeves.modules.Internal;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.GuildCreateEvent;
-import sx.blah.discord.handle.impl.events.MentionEvent;
-import sx.blah.discord.handle.impl.events.MessageDeleteEvent;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.MessageUpdateEvent;
-import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
+import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageUpdateEvent;
+import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.impl.events.UserJoinEvent;
-import sx.blah.discord.handle.impl.events.UserLeaveEvent;
-import sx.blah.discord.handle.impl.events.UserUpdateEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
+import sx.blah.discord.handle.impl.events.user.UserUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -202,7 +202,7 @@ public class DiscordEventHandlers
 			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
 				IGuild server = serverList.get(serverIndex);
-				IUser user = server.getUserByID(event.getNewUser().getID());
+				IUser user = server.getUserByID(event.getNewUser().getLongID());
 
 				if (user == null)
 				{
@@ -247,7 +247,7 @@ public class DiscordEventHandlers
 			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
 				IGuild server = serverList.get(serverIndex);
-				IUser user = server.getUserByID(event.getUser().getID());
+				IUser user = server.getUserByID(event.getUser().getLongID());
 
 				if (user == null)
 				{
@@ -478,9 +478,9 @@ public class DiscordEventHandlers
 					return;
 				}
 
-				String discordId = module.getDiscordId();
+				Long discordId = module.getDiscordId();
 
-				if ((discordId != null) && (discordId.equals(message.getGuild().getID()) == false))
+				if ((discordId != null) && (discordId.equals(message.getGuild().getLongID()) == false))
 				{
 					MessageQueue.sendMessage(message.getChannel(), "This command is not available on this Discord.");
 					return;
@@ -517,18 +517,18 @@ public class DiscordEventHandlers
 
 				if (command.owner() == true)
 				{
-					String ownerId = "";
+					Long ownerId = null;
 
 					try
 					{
-						ownerId = message.getClient().getApplicationOwner().getID();
+						ownerId = message.getClient().getApplicationOwner().getLongID();
 					}
 					catch (DiscordException e)
 					{
 						Jeeves.debugException(e);
 					}
 
-					if (message.getAuthor().getID().equals(ownerId) == false)
+					if ((ownerId != null) && (ownerId.equals(message.getAuthor().getLongID()) == false))
 					{
 						MessageQueue.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
 						return;

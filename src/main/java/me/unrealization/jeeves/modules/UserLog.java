@@ -3,16 +3,16 @@ package me.unrealization.jeeves.modules;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
-import sx.blah.discord.handle.impl.events.UserJoinEvent;
-import sx.blah.discord.handle.impl.events.UserLeaveEvent;
-import sx.blah.discord.handle.impl.events.UserUpdateEvent;
+import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
+import sx.blah.discord.handle.impl.events.user.UserUpdateEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPresence;
 import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.handle.obj.Presences;
+import sx.blah.discord.handle.obj.StatusType;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.interfaces.BotCommand;
@@ -38,13 +38,14 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 	@Override
 	public void userJoinedHandler(UserJoinEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "userLogChannel");
+		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "userLogChannel");
 
-		if (channelId.isEmpty() == true)
+		if (channelIdString.isEmpty() == true)
 		{
 			return;
 		}
 
+		long channelId = Long.parseLong(channelIdString);
 		IChannel channel = event.getGuild().getChannelByID(channelId);
 
 		if (channel == null)
@@ -71,13 +72,14 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 	@Override
 	public void userLeftHandler(UserLeaveEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "userLogChannel");
+		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "userLogChannel");
 
-		if (channelId.isEmpty() == true)
+		if (channelIdString.isEmpty() == true)
 		{
 			return;
 		}
 
+		long channelId = Long.parseLong(channelIdString);
 		IChannel channel = event.getGuild().getChannelByID(channelId);
 
 		if (channel == null)
@@ -103,13 +105,14 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 	@Override
 	public void presenceUpdateHandler(IGuild server, PresenceUpdateEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(server.getLongID(), "userLogChannel");
+		String channelIdString = (String)Jeeves.serverConfig.getValue(server.getLongID(), "userLogChannel");
 
-		if (channelId.isEmpty() == true)
+		if (channelIdString.isEmpty() == true)
 		{
 			return;
 		}
 
+		long channelId = Long.parseLong(channelIdString);
 		IChannel channel = server.getChannelByID(channelId);
 
 		if (channel == null)
@@ -137,12 +140,12 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			return;
 		}
 
-		if ((oldPresence.equals(Presences.ONLINE) == true) && ((newPresence.equals(Presences.IDLE) == true) || (newPresence.equals(Presences.DND) == true)))
+		if ((oldPresence.equals(StatusType.ONLINE) == true) && ((newPresence.equals(StatusType.IDLE) == true) || (newPresence.equals(StatusType.DND) == true)))
 		{
 			return;
 		}
 
-		if ((newPresence.equals(Presences.ONLINE) == true) && ((oldPresence.equals(Presences.IDLE) == true) || (oldPresence.equals(Presences.DND) == true)))
+		if ((newPresence.equals(StatusType.ONLINE) == true) && ((oldPresence.equals(StatusType.IDLE) == true) || (oldPresence.equals(StatusType.DND) == true)))
 		{
 			return;
 		}
@@ -183,14 +186,15 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "userLogChannel");
+			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "userLogChannel");
 
-			if (channelId.isEmpty() == true)
+			if (channelIdString.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "No user log channel has been set.");
 				return;
 			}
 
+			long channelId = Long.parseLong(channelIdString);
 			IChannel channel = message.getGuild().getChannelByID(channelId);
 
 			if (channel == null)
@@ -260,7 +264,8 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "userLogChannel", channel.getID());
+				String channelIdString = Long.toString(channel.getLongID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "userLogChannel", channelIdString);
 			}
 
 			try

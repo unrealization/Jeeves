@@ -3,8 +3,8 @@ package me.unrealization.jeeves.modules;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import sx.blah.discord.handle.impl.events.MessageDeleteEvent;
-import sx.blah.discord.handle.impl.events.MessageUpdateEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageUpdateEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;
@@ -31,13 +31,14 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 	@Override
 	public void messageUpdateHandler(MessageUpdateEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getNewMessage().getGuild().getLongID(), "modLogChannel");
+		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getNewMessage().getGuild().getLongID(), "modLogChannel");
 
-		if (channelId.isEmpty() == true)
+		if (channelIdString.isEmpty() == true)
 		{
 			return;
 		}
 
+		long channelId = Long.parseLong(channelIdString);
 		IChannel channel = event.getNewMessage().getGuild().getChannelByID(channelId);
 
 		if (channel == null)
@@ -87,13 +88,14 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 	@Override
 	public void messageDeleteHandler(MessageDeleteEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getMessage().getGuild().getLongID(), "modLogChannel");
+		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getMessage().getGuild().getLongID(), "modLogChannel");
 
-		if (channelId.isEmpty() == true)
+		if (channelIdString.isEmpty() == true)
 		{
 			return;
 		}
 
+		long channelId = Long.parseLong(channelIdString);
 		IChannel channel = event.getMessage().getGuild().getChannelByID(channelId);
 
 		if (channel == null)
@@ -147,14 +149,15 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "modLogChannel");
+			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "modLogChannel");
 
-			if (channelId.isEmpty() == true)
+			if (channelIdString.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "No mod log channel has been set.");
 				return;
 			}
 
+			long channelId = Long.parseLong(channelIdString);
 			IChannel channel = message.getGuild().getChannelByID(channelId);
 
 			if (channel == null)
@@ -224,7 +227,8 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "modLogChannel", channel.getID());
+				String channelIdString = Long.toString(channel.getLongID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "modLogChannel", channelIdString);
 			}
 
 			try

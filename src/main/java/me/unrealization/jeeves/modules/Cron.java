@@ -188,7 +188,7 @@ public class Cron extends BotModule
 			}
 
 			CronJobList.CronJob cronJob = new CronJobList.CronJob();
-			cronJob.setChannelId(message.getChannel().getID());
+			cronJob.setChannelId(message.getChannel().getLongID());
 			cronJob.setCommand(command);
 			cronJob.setSchedule(schedule);
 

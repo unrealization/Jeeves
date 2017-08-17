@@ -97,7 +97,7 @@ public abstract class BotModule
 	 * Get the id of the Discord server this module is limited to
 	 * @return If the module is limited to a specific Discord server its id will be returned, otherwise this should return null
 	 */
-	public String getDiscordId()
+	public Long getDiscordId()
 	{
 		return null;
 	}

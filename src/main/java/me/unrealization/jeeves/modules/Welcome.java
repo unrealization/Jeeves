@@ -5,7 +5,7 @@ import javax.xml.transform.TransformerException;
 
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
-import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.Permissions;
@@ -29,13 +29,14 @@ public class Welcome extends BotModule implements UserJoinedHandler
 	@Override
 	public void userJoinedHandler(UserJoinEvent event)
 	{
-		String channelId = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "welcomeChannel");
+		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "welcomeChannel");
 
-		if (channelId.isEmpty() == true)
+		if (channelIdString.isEmpty() == true)
 		{
 			return;
 		}
 
+		long channelId = Long.parseLong(channelIdString);
 		IChannel channel = event.getGuild().getChannelByID(channelId);
 
 		if (channel == null)
@@ -85,14 +86,15 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			String channelId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "welcomeChannel");
+			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "welcomeChannel");
 
-			if (channelId.isEmpty() == true)
+			if (channelIdString.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "No welcome channel has been set.");
 				return;
 			}
 
+			long channelId = Long.parseLong(channelIdString);
 			IChannel channel = message.getGuild().getChannelByID(channelId);
 
 			if (channel == null)
@@ -162,7 +164,8 @@ public class Welcome extends BotModule implements UserJoinedHandler
 					return;
 				}
 
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "welcomeChannel", channel.getID());
+				String channelIdString = Long.toString(channel.getLongID());
+				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "welcomeChannel", channelIdString);
 			}
 
 			try

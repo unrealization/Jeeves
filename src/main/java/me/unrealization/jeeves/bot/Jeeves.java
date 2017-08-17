@@ -283,7 +283,7 @@ public class Jeeves
 
 	public static boolean isDisabled(long serverId, BotModule module)
 	{
-		String discordId = module.getDiscordId();
+		Long discordId = module.getDiscordId();
 
 		if ((discordId != null) && (discordId.equals(serverId) == false))
 		{

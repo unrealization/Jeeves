@@ -187,7 +187,8 @@ public class Edsm extends BotModule
 				return;
 			}
 
-			Edsm.edsmUserList.setValue(message.getAuthor().getID(), edsmUserName);
+			String userIdString = Long.toString(message.getAuthor().getLongID());
+			Edsm.edsmUserList.setValue(userIdString, edsmUserName);
 
 			try
 			{
@@ -222,13 +223,15 @@ public class Edsm extends BotModule
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
-			if (Edsm.edsmUserList.hasKey(message.getAuthor().getID()) == false)
+			String userIdString = Long.toString(message.getAuthor().getLongID());
+
+			if (Edsm.edsmUserList.hasKey(userIdString) == false)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You have not registered an EDSM username.");
 				return;
 			}
 
-			Edsm.edsmUserList.removeValue(message.getAuthor().getID());
+			Edsm.edsmUserList.removeValue(userIdString);
 			MessageQueue.sendMessage(message.getChannel(), "Your EDSM username has been removed.");
 		}
 	}
@@ -270,7 +273,9 @@ public class Edsm extends BotModule
 				}
 			}
 
-			if (Edsm.edsmUserList.hasKey(user.getID()) == false)
+			String userIdString = Long.toString(user.getLongID());
+
+			if (Edsm.edsmUserList.hasKey(userIdString) == false)
 			{
 				if (userName.isEmpty() == true)
 				{
@@ -284,7 +289,7 @@ public class Edsm extends BotModule
 				return;
 			}
 
-			String edsmUserName = (String)Edsm.edsmUserList.getValue(user.getID());
+			String edsmUserName = (String)Edsm.edsmUserList.getValue(userIdString);
 
 			if (userName.isEmpty() == true)
 			{
@@ -356,13 +361,15 @@ public class Edsm extends BotModule
 
 			if (commanderName.isEmpty() == true)
 			{
-				if (Edsm.edsmUserList.hasKey(message.getAuthor().getID()) == false)
+				String userIdString = Long.toString(message.getAuthor().getLongID());
+
+				if (Edsm.edsmUserList.hasKey(userIdString) == false)
 				{
 					MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander name or register your EDSM username.");
 					return;
 				}
 
-				commanderName = (String)Edsm.edsmUserList.getValue(message.getAuthor().getID());
+				commanderName = (String)Edsm.edsmUserList.getValue(userIdString);
 			}
 
 			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
