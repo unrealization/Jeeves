@@ -80,7 +80,7 @@ public class Cron extends BotModule
 			for (int cronJobIndex = 0; cronJobIndex < cronJobList.size(); cronJobIndex++)
 			{
 				CronJobList.CronJob cronJob = cronJobList.get(cronJobIndex);
-				output += cronJob.getSchedule() + " " + cronJob.getCommand() + " (" + cronJob.getChannelId() + ")\n";
+				output += "[" + Integer.toString(cronJobIndex) + "] " + cronJob.getSchedule() + " " + cronJob.getCommand() + " (" + cronJob.getChannelId() + ")\n";
 			}
 
 			MessageQueue.sendMessage(message.getChannel(), output);
