@@ -4,6 +4,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEditEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageUpdateEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
@@ -31,6 +32,11 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 	@Override
 	public void messageUpdateHandler(MessageUpdateEvent event)
 	{
+		if (event.getClass() != MessageEditEvent.class)
+		{
+			return;
+		}
+
 		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getNewMessage().getGuild().getLongID(), "modLogChannel");
 
 		if (channelIdString.isEmpty() == true)
@@ -65,7 +71,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 
 		if (oldAuthor.equals(newAuthor) == true)
 		{
-			output += "his";
+			output += "their";
 		}
 		else
 		{

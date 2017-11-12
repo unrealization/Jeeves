@@ -67,7 +67,7 @@ public class CronJobList implements BotConfig
 
 				IChannel channel = Jeeves.bot.getChannelByID(channelId);
 				String commandPrefix = (String)Jeeves.serverConfig.getValue(channel.getGuild().getLongID(), "commandPrefix");
-				Message commandMessage = new Message(Jeeves.bot, 0, commandPrefix + command, Jeeves.bot.getOurUser(), channel, null, null, false, null, null, null, false, null, null, 0);
+				Message commandMessage = new Message(Jeeves.bot, 0, commandPrefix + command, Jeeves.bot.getOurUser(), channel, null, null, false, null, null, null, false, null, null, 0, null);
 				DiscordEventHandlers.handleMessage(commandMessage, true);
 			}
 		}
