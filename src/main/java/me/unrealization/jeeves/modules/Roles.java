@@ -231,9 +231,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			List<IRole> userRoles = message.getAuthor().getRolesForGuild(message.getGuild());
-
-			if (userRoles.contains(role) == true)
+			if (message.getAuthor().hasRole(role) == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), message.getAuthor().getName() + " already has the role " + role.getName());
 				return;
@@ -297,9 +295,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			List<IRole> userRoles = message.getAuthor().getRolesForGuild(message.getGuild());
-
-			if (userRoles.contains(role) == false)
+			if (message.getAuthor().hasRole(role) == false)
 			{
 				MessageQueue.sendMessage(message.getChannel(), message.getAuthor().getName() + " does not have the role " + role.getName());
 				return;
@@ -419,9 +415,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 			for (int userIndex = 0; userIndex < userList.size(); userIndex++)
 			{
 				IUser user = userList.get(userIndex);
-				List<IRole> userRoles = user.getRolesForGuild(message.getGuild());
 
-				if (userRoles.contains(role) == true)
+				if (user.hasRole(role) == true)
 				{
 					continue;
 				}

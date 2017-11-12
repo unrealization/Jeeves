@@ -183,9 +183,8 @@ public class Ccn extends BotModule implements UserJoinedHandler
 				}
 
 				String edsmUserName = (String)edsmUserList.getValue(userIdString);
-				List<IRole> userRoles = user.getRolesForGuild(message.getGuild());
 
-				if (userRoles.contains(role) == true)
+				if (user.hasRole(role) == true)
 				{
 					boolean found = false;
 
