@@ -27,18 +27,21 @@ public class Ccn extends BotModule implements UserJoinedHandler
 {
 	public Ccn()
 	{
-		this.version = "0.7.0";
+		this.version = "0.8.0";
 
-		this.commandList = new String[3];
-		this.commandList[0] = "ProximityCheck";
+		this.commandList = new String[5];
+		this.commandList[0] = "CcnProximityCheck";
 		this.commandList[1] = "GetCcnProximityRole";
 		this.commandList[2] = "SetCcnProximityRole";
+		this.commandList[3] = "GetCcnWelcomeMessageEnabled";
+		this.commandList[4] = "SetCcnWelcomeMessageEnabled";
 
 		this.defaultConfig.put("ccnProximityRole", "");
 		//this.defaultConfig.put("ccnEdsmUseBetaServer", "0");
 		this.defaultConfig.put("ccnEdsmId", "");
 		this.defaultConfig.put("ccnEdsmApiKey", "");
 		this.defaultConfig.put("ccnProximityRadius", "1000");
+		this.defaultConfig.put("ccnWelcomeMessageEnabled", "0");
 	}
 
 	@Override
@@ -50,18 +53,23 @@ public class Ccn extends BotModule implements UserJoinedHandler
 	@Override
 	public void userJoinedHandler(UserJoinEvent event)
 	{
-		/*String message = "Welcome to the Colonia Citizens Network, " + event.getUser().getName() + "\n\n";
-		message += "In order to make the most out of your experience here we have set up a number of roles which you can assign to yourself, using our bot Jeeves in our **#bots** channel. These roles allow access to special channels dedicated to different topics, where you can meet players who share your interests.\n\n";
-		message += "The bot commands ``roles``, ``join`` and ``leave`` will help you to find out which roles are currently available for you to use, and allow you to give yourself a role, or take it away again.\n\n";
-		message += "Please note that all bot commands have to be prefixed by pinging the bot using ``@Jeeves``\n\n";
-		message += "To query what roles are available, type:\n\t``@Jeeves roles``\n\n";
-		message += "To assign the role **Exploration Wing Member**:\n\t``@Jeeves join Exploration Wing Member``\n\n";
-		message += "To remove the role **Exploration Wing Member**:\n\t``@Jeeves leave Exploration Wing Member``\n\n";
-		message += "Our bot can also do quite a few other things to help you. Feel free to ask him for help using ``@Jeeves help``\n\n";
-		message += "Have a pleasant stay on the Colonia Citizens Network Discord!\n";
-		message += "The CCN Team";
+		String ccnWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "ccnWelcomeMessageEnabled");
 
-		MessageQueue.sendMessage(event.getUser(), message);*/
+		if (ccnWelcomeMessageEnabled.equals("1") == true)
+		{
+			String message = "Welcome to the Colonia Citizens Network, " + event.getUser().getName() + "\n\n";
+			message += "In order to make the most out of your experience here we have set up a number of roles which you can assign to yourself, using our bot Jeeves in our **#bots** channel. These roles allow access to special channels dedicated to different topics, where you can meet players who share your interests.\n\n";
+			message += "The bot commands ``roles``, ``join`` and ``leave`` will help you to find out which roles are currently available for you to use, and allow you to give yourself a role, or take it away again.\n\n";
+			message += "Please note that all bot commands have to be prefixed by pinging the bot using ``@Jeeves``\n\n";
+			message += "To query what roles are available, type:\n\t``@Jeeves roles``\n\n";
+			message += "To assign the role **Exploration Wing Member**:\n\t``@Jeeves join Exploration Wing Member``\n\n";
+			message += "To remove the role **Exploration Wing Member**:\n\t``@Jeeves leave Exploration Wing Member``\n\n";
+			message += "Our bot can also do quite a few other things to help you. Feel free to ask him for help using ``@Jeeves help``\n\n";
+			message += "Have a pleasant stay on the Colonia Citizens Network Discord!\n";
+			message += "The CCN Team";
+
+			MessageQueue.sendMessage(event.getUser(), message);
+		}
 	}
 
 	private static class ProximityCheckModel
@@ -73,7 +81,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 		public String[] commanders;
 	}
 
-	public static class ProximityCheck extends BotCommand
+	public static class CcnProximityCheck extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -354,6 +362,104 @@ public class Ccn extends BotModule implements UserJoinedHandler
 			else
 			{
 				MessageQueue.sendMessage(message.getChannel(), "The CCN proximity role has been set to: " + role.getName());
+			}
+		}
+	}
+
+	public static class GetCcnWelcomeMessageEnabled extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Check if the CCN welcome message is enabled.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String ccnWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnWelcomeMessageEnabled");
+
+			if (ccnWelcomeMessageEnabled.equals("0") == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The CCN welcome message is disabled.");
+			}
+			else
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The CCN welcome message is enabled.");
+			}
+		}
+	}
+
+	public static class SetCcnWelcomeMessageEnabled extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Enable/disable the CCN welcome message.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<1|0>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String ccnWelcomeMessageEnabled = String.join(" ", arguments).trim();
+
+			if ((ccnWelcomeMessageEnabled.equals("0") == false) && (ccnWelcomeMessageEnabled.equals("1") == false))
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
+				return;
+			}
+
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnWelcomeMessageEnabled", ccnWelcomeMessageEnabled);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			if (ccnWelcomeMessageEnabled.equals("0") == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The CCN welcome message has been disabled.");
+			}
+			else
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The CCN welcome message has ben enabled.");
 			}
 		}
 	}
