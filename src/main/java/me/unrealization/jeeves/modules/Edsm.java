@@ -24,7 +24,7 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.4";
+		this.version = "0.4.0";
 
 		this.commandList = new String[8];
 		this.commandList[0] = "GetUseEdsmBetaServer";

@@ -27,7 +27,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 {
 	public Ccn()
 	{
-		this.version = "0.7";
+		this.version = "0.7.0";
 
 		this.commandList = new String[3];
 		this.commandList[0] = "ProximityCheck";

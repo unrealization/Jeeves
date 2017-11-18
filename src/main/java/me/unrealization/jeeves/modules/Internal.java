@@ -295,6 +295,7 @@ public class Internal extends BotModule
 			if ((debugging.equals("0") == false) && (debugging.equals("1") == false))
 			{
 				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
+				return;
 			}
 
 			Jeeves.clientConfig.setValue("debugging", debugging);

@@ -20,7 +20,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 {
 	public ModLog()
 	{
-		this.version = "1.0";
+		this.version = "1.0.0";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetModLogChannel";

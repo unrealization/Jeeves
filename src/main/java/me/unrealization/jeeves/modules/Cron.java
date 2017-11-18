@@ -23,7 +23,7 @@ public class Cron extends BotModule
 
 	public Cron() throws ParserConfigurationException, SAXException
 	{
-		this.version = "1.0";
+		this.version = "1.0.0";
 
 		this.commandList = new String[3];
 		this.commandList[0] = "GetCronJobs";

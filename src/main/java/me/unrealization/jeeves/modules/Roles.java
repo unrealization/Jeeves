@@ -23,9 +23,9 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "0.9.7";
+		this.version = "1.0.0";
 
-		this.commandList = new String[11];
+		this.commandList = new String[12];
 		this.commandList[0] = "GetRoles";
 		this.commandList[1] = "Join";
 		this.commandList[2] = "Leave";
@@ -37,6 +37,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 		this.commandList[8] = "LockRole";
 		this.commandList[9] = "UnlockRole";
 		this.commandList[10] = "AssignRole";
+		this.commandList[11] = "UnassignRole";
 
 		this.defaultConfig.put("autoRole", "");
 		this.defaultConfig.put("lockedRoles", new ArrayList<String>());
@@ -231,6 +232,12 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
+			if (Roles.isLocked(role) == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The role " + role.getName() + " is locked.");
+				return;
+			}
+
 			if (message.getAuthor().hasRole(role) == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), message.getAuthor().getName() + " already has the role " + role.getName());
@@ -292,6 +299,12 @@ public class Roles extends BotModule implements UserJoinedHandler
 			if (manageableRoles.contains(role) == false)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "The bot is not allowed to manage the role " + role.getName());
+				return;
+			}
+
+			if (Roles.isLocked(role) == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The role " + role.getName() + " is locked.");
 				return;
 			}
 
@@ -809,7 +822,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getParameters()
 		{
-			String output = "<user> <role>";
+			String output = "<user> : <role>";
 			return output;
 		}
 
@@ -824,8 +837,168 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
+			arguments = String.join(" ", arguments).split(":");
+
+			if (arguments.length < 2)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Insufficient amount of parameters.\n" + this.getParameters());
+				return;
+			}
+
+			String userName = arguments[0].trim();
+			IUser user;
+
+			if (userName.isEmpty() == true)
+			{
+				user = message.getAuthor();
+			}
+			else
+			{
+				user = Jeeves.findUser(message.getGuild(), userName);
+			}
+
+			if (user == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+			}
+
+			String roleName = arguments[1].trim();
+
+			if (roleName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				return;
+			}
+
+			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+			}
+
+			List<IRole> manageableRoles;
+
+			try
+			{
+				manageableRoles = Roles.getManageableRoles(message.getGuild());
+			}
+			catch (Exception e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "The bot does not have the permission to manage roles.");
+				return;
+			}
+
+			if (manageableRoles.contains(role) == false)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The bot is not allowed to manage the role " + role.getName());
+				return;
+			}
+
+			if (user.hasRole(role) == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), user.getName() + " already has the role " + role.getName());
+				return;
+			}
+
+			RoleQueue.addRoleToUser(role, user, message.getChannel());
+		}
+	}
+
+	public static class UnassignRole extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
 			// TODO Auto-generated method stub
-			
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<user> : <role>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_ROLES;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			arguments = String.join(" ", arguments).split(":");
+
+			if (arguments.length < 2)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Insufficient amount of parameters.\n" + this.getParameters());
+				return;
+			}
+
+			String userName = arguments[0].trim();
+			IUser user;
+
+			if (userName.isEmpty() == true)
+			{
+				user = message.getAuthor();
+			}
+			else
+			{
+				user = Jeeves.findUser(message.getGuild(), userName);
+			}
+
+			if (user == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+			}
+
+			String roleName = arguments[1].trim();
+
+			if (roleName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				return;
+			}
+
+			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+			}
+
+			List<IRole> manageableRoles;
+
+			try
+			{
+				manageableRoles = Roles.getManageableRoles(message.getGuild());
+			}
+			catch (Exception e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "The bot does not have the permission to manage roles.");
+				return;
+			}
+
+			if (manageableRoles.contains(role) == false)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The bot is not allowed to manage the role " + role.getName());
+				return;
+			}
+
+			if (user.hasRole(role) == false)
+			{
+				MessageQueue.sendMessage(message.getChannel(), user.getName() + " does not have the role " + role.getName());
+				return;
+			}
+
+			RoleQueue.removeRoleFromUser(role, user, message.getChannel());
 		}
 	}
 }
