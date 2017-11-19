@@ -79,7 +79,7 @@ public class DiscordEventHandlers
 		}
 	}
 
-	public static class MessageReceivedListener implements IListener<MessageReceivedEvent>
+	private static class MessageReceivedListener implements IListener<MessageReceivedEvent>
 	{
 		@Override
 		public void handle(MessageReceivedEvent event)
@@ -101,7 +101,7 @@ public class DiscordEventHandlers
 		}
 	}
 
-	public static class MentionListener implements IListener<MentionEvent>
+	private static class MentionListener implements IListener<MentionEvent>
 	{
 		@Override
 		public void handle(MentionEvent event)
@@ -124,7 +124,7 @@ public class DiscordEventHandlers
 		}
 	}
 
-	public static class UserJoinedListener implements IListener<UserJoinEvent>
+	private static class UserJoinedListener implements IListener<UserJoinEvent>
 	{
 		@Override
 		public void handle(UserJoinEvent event)
@@ -158,7 +158,7 @@ public class DiscordEventHandlers
 		}
 	}
 
-	public static class UserLeftListener implements IListener<UserLeaveEvent>
+	private static class UserLeftListener implements IListener<UserLeaveEvent>
 	{
 		@Override
 		public void handle(UserLeaveEvent event)
@@ -191,7 +191,7 @@ public class DiscordEventHandlers
 		}
 	}
 
-	public static class UserUpdateListener implements IListener<UserUpdateEvent>
+	private static class UserUpdateListener implements IListener<UserUpdateEvent>
 	{
 		@Override
 		public void handle(UserUpdateEvent event)
@@ -236,7 +236,7 @@ public class DiscordEventHandlers
 		}
 	}
 
-	public static class UserPresenceListener implements IListener<PresenceUpdateEvent>
+	private static class UserPresenceListener implements IListener<PresenceUpdateEvent>
 	{
 		@Override
 		public void handle(PresenceUpdateEvent event)
@@ -281,7 +281,7 @@ public class DiscordEventHandlers
 		}
 	}
 
-	public static class GuildCreateListener implements IListener<GuildCreateEvent>
+	private static class GuildCreateListener implements IListener<GuildCreateEvent>
 	{
 		@Override
 		public void handle(GuildCreateEvent event)

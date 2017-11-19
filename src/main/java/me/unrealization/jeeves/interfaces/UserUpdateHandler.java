@@ -10,5 +10,5 @@ public interface UserUpdateHandler
 	 * @param server Since this event is not tied to a specific server the server the module needs to work on needs to be provided
 	 * @param event The user update event that needs handling
 	 */
-	public void userUpdateHandler(IGuild serverId, UserUpdateEvent event);
+	public void userUpdateHandler(IGuild server, UserUpdateEvent event);
 }
