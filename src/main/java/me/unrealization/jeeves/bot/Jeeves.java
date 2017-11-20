@@ -359,7 +359,7 @@ public class Jeeves
 
 		if (Jeeves.version == null)
 		{
-			Jeeves.version = "dev";
+			Jeeves.version = "Testing";
 		}
 
 		try
