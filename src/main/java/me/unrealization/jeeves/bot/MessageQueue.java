@@ -47,7 +47,7 @@ public class MessageQueue
 
 						try
 						{
-							Thread.sleep(5000);
+							Thread.sleep(e.getRetryDelay());
 						}
 						catch (InterruptedException e1)
 						{
@@ -91,7 +91,8 @@ public class MessageQueue
 
 					try
 					{
-						Thread.sleep(5000);
+						System.out.println("Sleeping " + String.valueOf(e.getRetryDelay()) + "ms on message send");
+						Thread.sleep(e.getRetryDelay());
 					}
 					catch (InterruptedException e1)
 					{

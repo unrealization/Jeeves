@@ -75,7 +75,7 @@ public class RoleQueue
 
 					try
 					{
-						Thread.sleep(5000);
+						Thread.sleep(e.getRetryDelay());
 					}
 					catch (InterruptedException e1)
 					{
