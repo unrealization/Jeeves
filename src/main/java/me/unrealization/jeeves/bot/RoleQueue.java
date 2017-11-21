@@ -59,16 +59,6 @@ public class RoleQueue
 						break;
 					}
 				}
-				catch (DiscordException e)
-				{
-					Jeeves.debugException(e);
-					continue;
-				}
-				catch (MissingPermissionsException e)
-				{
-					Jeeves.debugException(e);
-					System.out.println("Missing permissions to apply role change.");
-				}
 				catch (RateLimitException e)
 				{
 					Jeeves.debugException(e);
@@ -83,6 +73,16 @@ public class RoleQueue
 						e1.printStackTrace();
 					}
 
+					continue;
+				}
+				catch (MissingPermissionsException e)
+				{
+					Jeeves.debugException(e);
+					System.out.println("Missing permissions to apply role change. Discarding.");
+				}
+				catch (DiscordException e)
+				{
+					Jeeves.debugException(e);
 					continue;
 				}
 

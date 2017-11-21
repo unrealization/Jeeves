@@ -75,23 +75,12 @@ public class MessageQueue
 				{
 					messageBuilder.withContent(queueItem.message).withChannel(channel).build();
 				}
-				catch (DiscordException e)
-				{
-					Jeeves.debugException(e);
-					continue;
-				}
-				catch (MissingPermissionsException e)
-				{
-					Jeeves.debugException(e);
-					System.out.println("Missing permissions to send message.");
-				}
 				catch (RateLimitException e)
 				{
 					Jeeves.debugException(e);
 
 					try
 					{
-						System.out.println("Sleeping " + String.valueOf(e.getRetryDelay()) + "ms on message send");
 						Thread.sleep(e.getRetryDelay());
 					}
 					catch (InterruptedException e1)
@@ -100,6 +89,16 @@ public class MessageQueue
 						e1.printStackTrace();
 					}
 
+					continue;
+				}
+				catch (MissingPermissionsException e)
+				{
+					Jeeves.debugException(e);
+					System.out.println("Missing permissions to send message. Discarding.");
+				}
+				catch (DiscordException e)
+				{
+					Jeeves.debugException(e);
 					continue;
 				}
 
