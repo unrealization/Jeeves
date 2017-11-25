@@ -25,10 +25,24 @@ public abstract class BotModule
 	 */
 	final public String getHelp()
 	{
+		return this.getHelp(null);
+	}
+
+	/**
+	 * Get information about the module or a single command
+	 * @return A text compiled from the help information of the module's commands, or a single command
+	 */
+	final public String getHelp(String commandName)
+	{
 		String output = "";
 
 		for (int commandIndex = 0; commandIndex < this.commandList.length; commandIndex++)
 		{
+			if ((commandName != null) && (commandName.equals(this.commandList[commandIndex]) == false))
+			{
+				continue;
+			}
+
 			Class<?> commandClass;
 
 			try

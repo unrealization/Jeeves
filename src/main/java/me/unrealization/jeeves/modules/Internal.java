@@ -79,18 +79,25 @@ public class Internal extends BotModule
 		@Override
 		public String getParameters()
 		{
-			String output = "[module]";
+			String output = "[module|command]";
 			return output;
 		}
 
 		@Override
 		public void execute(IMessage message, String[] arguments)
 		{
+			boolean sendInChannel = false;
+			String searchName = String.join(" ", arguments).trim();
 			String[] moduleList = Jeeves.getModuleList();
 			String output = "";
 
 			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 			{
+				if ((searchName.isEmpty() == false) && (searchName.equals(moduleList[moduleIndex]) == false))
+				{
+					continue;
+				}
+
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
 				if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
@@ -100,6 +107,50 @@ public class Internal extends BotModule
 
 				output += "**" + moduleList[moduleIndex] + " functions**\n\n";
 				output += module.getHelp() + "\n";
+			}
+
+			if (output.isEmpty() == true)
+			{
+				sendInChannel = true;
+
+				for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
+				{
+					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
+
+					if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
+					{
+						continue;
+					}
+
+					String[] commandList = module.getCommands();
+
+					if (commandList == null)
+					{
+						continue;
+					}
+
+					for (int commandIndex = 0; commandIndex < commandList.length; commandIndex++)
+					{
+						if (commandList[commandIndex].toLowerCase().equals(searchName.toLowerCase()) == false)
+						{
+							continue;
+						}
+
+						output += module.getHelp(commandList[commandIndex]);
+					}
+				}
+			}
+
+			if (output.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "I'm sorry, but I cannot help you with " + searchName);
+				return;
+			}
+
+			if (sendInChannel == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), output);
+				return;
 			}
 
 			MessageQueue.sendMessage(message.getAuthor(), output);
