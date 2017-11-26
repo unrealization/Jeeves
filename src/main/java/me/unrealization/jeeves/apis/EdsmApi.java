@@ -36,15 +36,44 @@ public class EdsmApi
 
 	public EdsmModels.CommanderLocation getCommanderLocation(String commanderName) throws IOException
 	{
-		String response = WebClient.getPage(this.getServerString() + "/api-logs-v1/get-position?commanderName=" + commanderName);
+		String response = WebClient.getPage(this.getServerString() + "/api-logs-v1/get-position?commanderName=" + commanderName + "&showCoordinate=1");
 		EdsmModels.CommanderLocation data = (EdsmModels.CommanderLocation)JSONHandler.parseJSON(response, EdsmModels.CommanderLocation.class);
 		return data;
 	}
 
+	@Deprecated
 	public EdsmModels.SystemCoordinates getSystemCoordinates(String systemName) throws IOException
 	{
 		String response = WebClient.getPage(this.getServerString() + "/api-v1/system?systemName=" + systemName + "&coords=1");
 		EdsmModels.SystemCoordinates data = (EdsmModels.SystemCoordinates)JSONHandler.parseJSON(response, EdsmModels.SystemCoordinates.class);
+		return data;
+	}
+
+	public EdsmModels.SystemInfo getSystemInfo(String systemName) throws IOException
+	{
+		String response = WebClient.getPage(this.getServerString() + "/api-v1/system?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1");
+		EdsmModels.SystemInfo data = (EdsmModels.SystemInfo)JSONHandler.parseJSON(response, EdsmModels.SystemInfo.class);
+		return data;
+	}
+
+	public EdsmModels.SystemBodies getSystemBodies(String systemName) throws IOException
+	{
+		String response = WebClient.getPage(this.getServerString() + "/api-system-v1/bodies?systemName=" + systemName);
+		EdsmModels.SystemBodies data = (EdsmModels.SystemBodies)JSONHandler.parseJSON(response, EdsmModels.SystemBodies.class);
+		return data;
+	}
+
+	public EdsmModels.SystemStations getSystemStations(String systemName) throws IOException
+	{
+		String response = WebClient.getPage(this.getServerString() + "/api-system-v1/stations?systemName=" + systemName);
+		EdsmModels.SystemStations data = (EdsmModels.SystemStations)JSONHandler.parseJSON(response, EdsmModels.SystemStations.class);
+		return data;
+	}
+
+	public EdsmModels.SystemFactions getSystemFactions(String systemName) throws IOException
+	{
+		String response = WebClient.getPage(this.getServerString() + "/api-system-v1/factions?systemName=" + systemName);
+		EdsmModels.SystemFactions data = (EdsmModels.SystemFactions)JSONHandler.parseJSON(response, EdsmModels.SystemFactions.class);
 		return data;
 	}
 }
