@@ -24,9 +24,9 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.4.0";
+		this.version = "0.5.0";
 
-		this.commandList = new String[8];
+		this.commandList = new String[9];
 		this.commandList[0] = "GetUseEdsmBetaServer";
 		this.commandList[1] = "SetUseEdsmBetaServer";
 		this.commandList[2] = "Register";
@@ -35,6 +35,7 @@ public class Edsm extends BotModule
 		this.commandList[5] = "GetEDStatus";
 		this.commandList[6] = "Locate";
 		this.commandList[7] = "SysCoords";
+		this.commandList[8] = "CmdrCoords";
 
 		this.defaultConfig.put("edsmUseBetaServer", "1");
 
@@ -445,11 +446,12 @@ public class Edsm extends BotModule
 			}
 
 			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
-			EdsmModels.SystemCoordinates data;
+			//EdsmModels.SystemCoordinates data;
+			EdsmModels.SystemInfo data;
 
 			try
 			{
-				data = edsmApi.getSystemCoordinates(Edsm.sanitizeString(systemName));
+				data = edsmApi.getSystemInfo(Edsm.sanitizeString(systemName));
 			}
 			catch (IOException e)
 			{
@@ -467,6 +469,80 @@ public class Edsm extends BotModule
 			else
 			{
 				output = systemName + " cannot be found in EDSM.";
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class CmdrCoords extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "[commander]";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String[] arguments)
+		{
+			String commanderName = String.join(" ", arguments).trim();
+
+			if (commanderName.isEmpty() == true)
+			{
+				String userIdString = Long.toString(message.getAuthor().getLongID());
+
+				if (Edsm.edsmUserList.hasKey(userIdString) == false)
+				{
+					MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander name or register your ESDM username.");
+					return;
+				}
+
+				commanderName = (String)Edsm.edsmUserList.getValue(userIdString);
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmModels.CommanderLocation data;
+
+			try
+			{
+				data = edsmApi.getCommanderLocation(Edsm.sanitizeString(commanderName));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			String output;
+
+			if (data.system != null)
+			{
+				output = "System: " + data.system + " [ " + data.coordinates.x + " : " + data.coordinates.y + " : " + data.coordinates.z + " ]";
+			}
+			else
+			{
+				switch (data.msgnum)
+				{
+				case "100":
+					output = commanderName + " cannot be located.";
+					break;
+				case "203":
+					output = commanderName + " does not seem to be using EDSM.";
+					break;
+				default:
+					output = data.msg;
+					break;
+				}
 			}
 
 			MessageQueue.sendMessage(message.getChannel(), output);

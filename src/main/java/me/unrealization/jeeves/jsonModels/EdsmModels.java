@@ -23,13 +23,6 @@ public class EdsmModels
 		public String url;
 	}
 
-	@Deprecated
-	public static class SystemCoordinates
-	{
-		public String name;
-		public EdsmModels.SystemInfo.Coordinates coords;
-	}
-
 	public static class SystemBodies
 	{
 		public static class Body

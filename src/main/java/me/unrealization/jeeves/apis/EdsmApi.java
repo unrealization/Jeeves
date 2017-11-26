@@ -36,16 +36,8 @@ public class EdsmApi
 
 	public EdsmModels.CommanderLocation getCommanderLocation(String commanderName) throws IOException
 	{
-		String response = WebClient.getPage(this.getServerString() + "/api-logs-v1/get-position?commanderName=" + commanderName + "&showCoordinate=1");
+		String response = WebClient.getPage(this.getServerString() + "/api-logs-v1/get-position?commanderName=" + commanderName + "&showCoordinates=1");
 		EdsmModels.CommanderLocation data = (EdsmModels.CommanderLocation)JSONHandler.parseJSON(response, EdsmModels.CommanderLocation.class);
-		return data;
-	}
-
-	@Deprecated
-	public EdsmModels.SystemCoordinates getSystemCoordinates(String systemName) throws IOException
-	{
-		String response = WebClient.getPage(this.getServerString() + "/api-v1/system?systemName=" + systemName + "&coords=1");
-		EdsmModels.SystemCoordinates data = (EdsmModels.SystemCoordinates)JSONHandler.parseJSON(response, EdsmModels.SystemCoordinates.class);
 		return data;
 	}
 
