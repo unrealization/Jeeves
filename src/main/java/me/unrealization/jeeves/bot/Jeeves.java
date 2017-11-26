@@ -322,6 +322,32 @@ public class Jeeves
 		return timeString;
 	}
 
+	public static String[] makeArguments(String[] arguments)
+	{
+		return Jeeves.makeArguments(arguments, false);
+	}
+
+	public static String[] makeArguments(String[] arguments, boolean split)
+	{
+		String argumentString = String.join(" ", arguments);
+
+		if (split == false)
+		{
+			String[] argumentList = new String[1];
+			argumentList[0] = argumentString;
+			return argumentList;
+		}
+
+		String[] argumentList = argumentString.split(":");
+
+		for (int index = 0; index < argumentList.length; index++)
+		{
+			argumentList[index] = argumentList[index].trim();
+		}
+
+		return argumentList;
+	}
+
 	private static class ShutdownHook extends Thread
 	{
 		@Override
