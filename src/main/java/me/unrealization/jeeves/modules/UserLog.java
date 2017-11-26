@@ -26,7 +26,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 {
 	public UserLog()
 	{
-		this.version = "0.9.5";
+		this.version = "0.9.6";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetUserLogChannel";
@@ -140,12 +140,12 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			return;
 		}
 
-		if ((oldPresence.equals(StatusType.ONLINE) == true) && ((newPresence.equals(StatusType.IDLE) == true) || (newPresence.equals(StatusType.DND) == true)))
+		if ((oldPresence.getStatus().equals(StatusType.ONLINE) == true) && ((newPresence.getStatus().equals(StatusType.IDLE) == true) || (newPresence.getStatus().equals(StatusType.DND) == true)))
 		{
 			return;
 		}
 
-		if ((newPresence.equals(StatusType.ONLINE) == true) && ((oldPresence.equals(StatusType.IDLE) == true) || (oldPresence.equals(StatusType.DND) == true)))
+		if ((newPresence.getStatus().equals(StatusType.ONLINE) == true) && ((oldPresence.getStatus().equals(StatusType.IDLE) == true) || (oldPresence.getStatus().equals(StatusType.DND) == true)))
 		{
 			return;
 		}
