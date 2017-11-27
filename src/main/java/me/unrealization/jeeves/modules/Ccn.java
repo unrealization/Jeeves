@@ -27,7 +27,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 {
 	public Ccn()
 	{
-		this.version = "0.8.0";
+		this.version = "0.8.1";
 
 		this.commandList = new String[5];
 		this.commandList[0] = "CcnProximityCheck";
@@ -105,7 +105,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			EdsmUserList edsmUserList;
 
@@ -260,7 +260,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String roleIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRole");
 
@@ -321,9 +321,8 @@ public class Ccn extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String roleName)
 		{
-			String roleName = String.join(" ", arguments).trim();
 			IRole role = null;
 
 			if (roleName.isEmpty() == true)
@@ -390,7 +389,7 @@ public class Ccn extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String ccnWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnWelcomeMessageEnabled");
 
@@ -430,10 +429,8 @@ public class Ccn extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String ccnWelcomeMessageEnabled)
 		{
-			String ccnWelcomeMessageEnabled = String.join(" ", arguments).trim();
-
 			if ((ccnWelcomeMessageEnabled.equals("0") == false) && (ccnWelcomeMessageEnabled.equals("1") == false))
 			{
 				MessageQueue.sendMessage(message.getChannel(), "Invalid value");

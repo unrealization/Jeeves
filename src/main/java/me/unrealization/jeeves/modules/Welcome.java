@@ -17,7 +17,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 {
 	public Welcome()
 	{
-		this.version = "1.0.1";
+		this.version = "1.0.2";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetWelcomeChannel";
@@ -84,7 +84,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "welcomeChannel");
 
@@ -145,9 +145,8 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String channelName)
 		{
-			String channelName = String.join(" ", arguments).trim();
 			IChannel channel = null;
 
 			if (channelName.isEmpty() == true)

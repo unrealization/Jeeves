@@ -387,7 +387,7 @@ public class DiscordEventHandlers
 			return;
 		}
 
-		String messageContent = message.getContent();
+		String messageContent = message.getContent().trim();
 		IUser botUser = message.getClient().getOurUser();
 		int cutLength = 0;
 		String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "commandPrefix");
@@ -416,23 +416,39 @@ public class DiscordEventHandlers
 		}
 
 		String[] messageParts = messageContent.split(" ");
+		int nonEmptyParts = 0;
 
-		while ((messageParts.length > 0) && (messageParts[0].length() == 0))
+		for (int index = 0; index < messageParts.length; index++)
 		{
-			String[] tmpParts = new String[messageParts.length - 1];
-
-			for (int x = 1; x < messageParts.length; x++)
+			if (messageParts[index].isEmpty() == false)
 			{
-				tmpParts[x - 1] = messageParts[x];
+				nonEmptyParts++;
 			}
-			
-			messageParts = tmpParts;
 		}
 
-		if (messageParts.length == 0)
+		if (nonEmptyParts == 0)
 		{
 			System.out.println("Empty");
 			return;
+		}
+
+		if (nonEmptyParts != messageParts.length)
+		{
+			String tmpParts[] = new String[nonEmptyParts];
+			int tmpIndex = 0;
+
+			for (int index = 0; index < messageParts.length; index++)
+			{
+				if (messageParts[index].isEmpty() == true)
+				{
+					continue;
+				}
+
+				tmpParts[tmpIndex] = messageParts[index];
+				tmpIndex++;
+			}
+
+			messageParts = tmpParts;
 		}
 
 		String commandName = messageParts[0].toLowerCase();
@@ -552,7 +568,8 @@ public class DiscordEventHandlers
 				}
 
 				System.out.println("Executing " + command.getClass().getSimpleName() + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ": " + message.getChannel().getName() + ")");
-				command.execute(message, arguments);
+				String argumentString = String.join(" ", arguments);
+				command.execute(message, argumentString);
 			}
 		}
 	}

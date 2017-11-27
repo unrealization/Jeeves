@@ -23,7 +23,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "1.0.0";
+		this.version = "1.0.1";
 
 		this.commandList = new String[12];
 		this.commandList[0] = "GetRoles";
@@ -138,7 +138,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			List<IRole> manageableRoles;
 
@@ -195,10 +195,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String roleName)
 		{
-			String roleName = String.join(" ", arguments).trim();
-
 			if (roleName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
@@ -265,10 +263,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String roleName)
 		{
-			String roleName = String.join(" ", arguments).trim();
-
 			if (roleName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
@@ -343,10 +339,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String roleName)
 		{
-			String roleName = String.join(" ", arguments);
-
 			if (roleName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
@@ -405,10 +399,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String roleName)
 		{
-			String roleName = String.join(" ", arguments);
-
 			if (roleName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
@@ -479,7 +471,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			List<IUser> userList = message.getGuild().getUsers();
 			List<IUser> untaggedUsers = new ArrayList<IUser>();
@@ -539,7 +531,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String roleIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "autoRole");
 
@@ -600,9 +592,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String roleName)
 		{
-			String roleName = String.join(" ", arguments).trim();
 			IRole role = null;
 
 			if (roleName.isEmpty() == true)
@@ -670,10 +661,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String roleName)
 		{
-			String roleName = String.join(" ", arguments).trim();
-
 			if (roleName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
@@ -750,10 +739,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String roleName)
 		{
-			String roleName = String.join(" ", arguments).trim();
-
 			if (roleName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
@@ -835,9 +822,9 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
-			arguments = String.join(" ", arguments).split(":");
+			String[] arguments = Jeeves.splitArguments(argumentString);
 
 			if (arguments.length < 2)
 			{
@@ -845,7 +832,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			String userName = arguments[0].trim();
+			String userName = arguments[0];
 			IUser user;
 
 			if (userName.isEmpty() == true)
@@ -862,7 +849,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
 			}
 
-			String roleName = arguments[1].trim();
+			String roleName = arguments[1];
 
 			if (roleName.isEmpty() == true)
 			{
@@ -931,9 +918,9 @@ public class Roles extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
-			arguments = String.join(" ", arguments).split(":");
+			String[] arguments = Jeeves.splitArguments(argumentString);
 
 			if (arguments.length < 2)
 			{
@@ -941,7 +928,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			String userName = arguments[0].trim();
+			String userName = arguments[0];
 			IUser user;
 
 			if (userName.isEmpty() == true)
@@ -958,7 +945,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 				MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
 			}
 
-			String roleName = arguments[1].trim();
+			String roleName = arguments[1];
 
 			if (roleName.isEmpty() == true)
 			{

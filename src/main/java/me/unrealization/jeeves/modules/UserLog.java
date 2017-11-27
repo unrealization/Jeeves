@@ -26,7 +26,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 {
 	public UserLog()
 	{
-		this.version = "0.9.6";
+		this.version = "0.9.7";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetUserLogChannel";
@@ -184,7 +184,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "userLogChannel");
 
@@ -245,9 +245,8 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String channelName)
 		{
-			String channelName = String.join(" ", arguments).trim();
 			IChannel channel = null;
 
 			if (channelName.isEmpty() == true)

@@ -84,12 +84,11 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String searchName)
 		{
 			boolean sendInChannel = false;
-			String searchName = String.join(" ", arguments).trim();
-			String[] moduleList = Jeeves.getModuleList();
 			String output = "";
+			String[] moduleList = Jeeves.getModuleList();
 
 			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 			{
@@ -174,7 +173,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			MessageQueue.sendMessage(message.getChannel(), "Jeeves " + Jeeves.version);
 		}
@@ -196,7 +195,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			MessageQueue.sendMessage(message.getChannel(), "Pong!");
 		}
@@ -218,7 +217,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String utcTime = Jeeves.getUtcTime();
 			MessageQueue.sendMessage(message.getChannel(), "The current UTC time is: " + utcTime);
@@ -247,7 +246,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			try
 			{
@@ -301,7 +300,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String debugging = (String)Jeeves.clientConfig.getValue("debugging");
 
@@ -339,10 +338,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String debugging)
 		{
-			String debugging = String.join(" ", arguments).trim();
-
 			if ((debugging.equals("0") == false) && (debugging.equals("1") == false))
 			{
 				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
@@ -396,7 +393,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			List<IGuild> serverList = message.getClient().getGuilds();
 			String output = "The bot is connected to the following servers:\n\n";
@@ -435,7 +432,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "commandPrefix");
 			MessageQueue.sendMessage(message.getChannel(), "The command prefix is: " + commandPrefix);
@@ -467,10 +464,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String commandPrefix)
 		{
-			String commandPrefix = String.join(" ", arguments).trim();
-
 			if (commandPrefix.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "The command prefix cannot be empty.");
@@ -518,7 +513,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnPrefix");
 
@@ -558,10 +553,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String respondOnPrefix)
 		{
-			String respondOnPrefix = String.join(" ", arguments).trim();
-
 			if ((respondOnPrefix.equals("0") == false) && (respondOnPrefix.equals("1") == false))
 			{
 				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
@@ -617,7 +610,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String respondOnMention = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnMention");
 
@@ -657,10 +650,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String respondOnMention)
 		{
-			String respondOnMention = String.join(" ", arguments).trim();
-
 			if ((respondOnMention.equals("0") == false) && (respondOnMention.equals("1") == false))
 			{
 				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
@@ -715,7 +706,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredChannels");
 
@@ -771,10 +762,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String channelName)
 		{
-			String channelName = String.join(" ", arguments).trim();
-
 			if (channelName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a channel name.");
@@ -851,10 +840,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String channelName)
 		{
-			String channelName = String.join(" ", arguments).trim();
-
 			if (channelName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a channel name.");
@@ -935,7 +922,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredUsers");
 
@@ -991,10 +978,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String userName)
 		{
-			String userName = String.join(" ", arguments).trim();
-
 			if (userName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a user name.");
@@ -1071,10 +1056,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String userName)
 		{
-			String userName = String.join(" ", arguments).trim();
-
 			if (userName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a user name.");
@@ -1155,7 +1138,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentList)
 		{
 			String[] moduleList = Jeeves.getModuleList();
 			String output = "The following modules are available:\n\n";
@@ -1202,10 +1185,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String moduleName)
 		{
-			String moduleName = String.join(" ", arguments).trim();
-
 			if (moduleName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a module name.");
@@ -1294,10 +1275,8 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String moduleName)
 		{
-			String moduleName = String.join(" ", arguments).trim();
-
 			if (moduleName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a module name.");

@@ -24,7 +24,7 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.5.0";
+		this.version = "0.5.1";
 
 		this.commandList = new String[9];
 		this.commandList[0] = "GetUseEdsmBetaServer";
@@ -87,7 +87,7 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String useBetaServer = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "edsmUseBetaServer");
 
@@ -127,10 +127,8 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String useBetaServer)
 		{
-			String useBetaServer = String.join(" ", arguments).trim();
-
 			if ((useBetaServer.equals("0") == false) && (useBetaServer.equals("1") == false))
 			{
 				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
@@ -178,10 +176,8 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String edsmUserName)
 		{
-			String edsmUserName = String.join(" ", arguments).trim();
-
 			if (edsmUserName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide an EDSM username");
@@ -222,7 +218,7 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String userIdString = Long.toString(message.getAuthor().getLongID());
 
@@ -254,9 +250,8 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String userName)
 		{
-			String userName = String.join(" ", arguments);
 			IUser user;
 
 			if (userName.isEmpty() == true)
@@ -319,7 +314,7 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
 			EdsmModels.EDStatus data;
@@ -356,10 +351,8 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String commanderName)
 		{
-			String commanderName = String.join(" ", arguments).trim();
-
 			if (commanderName.isEmpty() == true)
 			{
 				String userIdString = Long.toString(message.getAuthor().getLongID());
@@ -435,10 +428,8 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String systemName)
 		{
-			String systemName = String.join(" ", arguments).trim();
-
 			if (systemName.isEmpty() == true)
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
@@ -492,10 +483,8 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String commanderName)
 		{
-			String commanderName = String.join(" ", arguments).trim();
-
 			if (commanderName.isEmpty() == true)
 			{
 				String userIdString = Long.toString(message.getAuthor().getLongID());

@@ -23,7 +23,7 @@ public class Cron extends BotModule
 
 	public Cron() throws ParserConfigurationException, SAXException
 	{
-		this.version = "1.0.0";
+		this.version = "1.0.1";
 
 		this.commandList = new String[3];
 		this.commandList[0] = "GetCronJobs";
@@ -57,7 +57,7 @@ public class Cron extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getLongID(), "cronJobs");
 
@@ -112,8 +112,9 @@ public class Cron extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
+			String[] arguments = Jeeves.splitArguments(argumentString);
 			String minute;
 
 			try
@@ -258,9 +259,8 @@ public class Cron extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String cronIndex)
 		{
-			String cronIndex = String.join(" ", arguments).trim();
 			int index;
 
 			try

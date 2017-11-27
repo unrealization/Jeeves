@@ -20,7 +20,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 {
 	public ModLog()
 	{
-		this.version = "1.0.0";
+		this.version = "1.0.1";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetModLogChannel";
@@ -153,7 +153,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String argumentString)
 		{
 			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "modLogChannel");
 
@@ -214,9 +214,8 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		}
 
 		@Override
-		public void execute(IMessage message, String[] arguments)
+		public void execute(IMessage message, String channelName)
 		{
-			String channelName = String.join(" ", arguments).trim();
 			IChannel channel = null;
 
 			if (channelName.isEmpty() == true)

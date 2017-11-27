@@ -37,8 +37,8 @@ public abstract class BotCommand
 
 	/**
 	 * Execute the command
-	 * @param message The message received
-	 * @param arguments The list of parameters
+	 * @param message The message received from Discord
+	 * @param argumentString The argument string for the command
 	 */
-	public abstract void execute(IMessage message, String[] arguments);
+	public abstract void execute(IMessage message, String argumentString);
 }
