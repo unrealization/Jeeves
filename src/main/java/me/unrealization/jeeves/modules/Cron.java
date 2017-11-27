@@ -23,7 +23,7 @@ public class Cron extends BotModule
 
 	public Cron() throws ParserConfigurationException, SAXException
 	{
-		this.version = "1.0.1";
+		this.version = "1.0.2";
 
 		this.commandList = new String[3];
 		this.commandList[0] = "GetCronJobs";
@@ -114,7 +114,7 @@ public class Cron extends BotModule
 		@Override
 		public void execute(IMessage message, String argumentString)
 		{
-			String[] arguments = Jeeves.splitArguments(argumentString);
+			String[] arguments = argumentString.split(" ");
 			String minute;
 
 			try
@@ -125,7 +125,7 @@ public class Cron extends BotModule
 			{
 				Jeeves.debugException(e);
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "");
+				MessageQueue.sendMessage(message.getChannel(), "x");
 				return;
 			}
 
@@ -139,7 +139,7 @@ public class Cron extends BotModule
 			{
 				Jeeves.debugException(e);
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "");
+				MessageQueue.sendMessage(message.getChannel(), "x");
 				return;
 			}
 
@@ -153,7 +153,7 @@ public class Cron extends BotModule
 			{
 				Jeeves.debugException(e);
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "");
+				MessageQueue.sendMessage(message.getChannel(), "x");
 				return;
 			}
 
@@ -167,7 +167,7 @@ public class Cron extends BotModule
 			{
 				Jeeves.debugException(e);
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "");
+				MessageQueue.sendMessage(message.getChannel(), "x");
 				return;
 			}
 
@@ -184,7 +184,7 @@ public class Cron extends BotModule
 			if (command.isEmpty() == true)
 			{
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "");
+				MessageQueue.sendMessage(message.getChannel(), "x");
 				return;
 			}
 
