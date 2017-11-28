@@ -41,7 +41,6 @@ public class EdsmModels
 			public String type;
 			public String subType;
 			public String distanceToArrival;
-			//stars
 			public String isMainStar;
 			public String isScoopable;
 			public String age;
@@ -50,7 +49,6 @@ public class EdsmModels
 			public String solarMasses;
 			public String solarRadius;
 			public String surfaceTemperature;
-			//planets
 			public String isLandable;
 			public String gravity;
 			public String earthMasses;
@@ -58,7 +56,6 @@ public class EdsmModels
 			public String volcanismType;
 			public String atmosphereType;
 			public String terraformingState;
-			//common
 			public String orbitalPeriod;
 			public String semiMajorAxis;
 			public String orbitalEccentricity;
@@ -79,12 +76,6 @@ public class EdsmModels
 	{
 		public static class Station
 		{
-			public static class Faction
-			{
-				public String id;
-				public String name;
-			}
-
 			public String id;
 			public String name;
 			public String type;
@@ -94,7 +85,7 @@ public class EdsmModels
 			public String economy;
 			public String haveMarket;
 			public String haveShipyard;
-			public EdsmModels.SystemStations.Station.Faction controllingFaction;
+			public EdsmModels.SystemFactions.Faction controllingFaction;
 		}
 
 		public String id;
@@ -104,14 +95,6 @@ public class EdsmModels
 
 	public static class SystemFactions
 	{
-		public static class ControllingFaction
-		{
-			public String id;
-			public String name;
-			public String allegiance;
-			public String government;
-		}
-
 		public static class Faction
 		{
 			public String id;
@@ -125,7 +108,7 @@ public class EdsmModels
 
 		public String id;
 		public String name;
-		public EdsmModels.SystemFactions.ControllingFaction controllingFaction;
+		public EdsmModels.SystemFactions.Faction controllingFaction;
 		public EdsmModels.SystemFactions.Faction factions[];
 	}
 
