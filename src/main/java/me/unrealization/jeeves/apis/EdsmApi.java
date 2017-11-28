@@ -2,15 +2,14 @@ package me.unrealization.jeeves.apis;
 
 import java.io.IOException;
 
+import me.unrealization.jeeves.interfaces.JsonApi;
 import me.unrealization.jeeves.jsonModels.EdsmModels;
-import me.unrealization.jeeves.bot.JSONHandler;
-import me.unrealization.jeeves.bot.WebClient;
 
-public class EdsmApi
+public class EdsmApi extends JsonApi
 {
 	private boolean useBetaServer = true;
 
-	private String getServerString()
+	protected String getServerString()
 	{
 		if (this.useBetaServer == true)
 		{
@@ -29,43 +28,37 @@ public class EdsmApi
 
 	public EdsmModels.EDStatus getEDStatus() throws IOException
 	{
-		String response = WebClient.getPage(this.getServerString() + "/api-status-v1/elite-server");
-		EdsmModels.EDStatus data = (EdsmModels.EDStatus)JSONHandler.parseJSON(response, EdsmModels.EDStatus.class);
+		EdsmModels.EDStatus data = (EdsmModels.EDStatus)this.apiCall("/api-status-v1/elite-server", EdsmModels.EDStatus.class);
 		return data;
 	}
 
 	public EdsmModels.CommanderLocation getCommanderLocation(String commanderName) throws IOException
 	{
-		String response = WebClient.getPage(this.getServerString() + "/api-logs-v1/get-position?commanderName=" + commanderName + "&showCoordinates=1");
-		EdsmModels.CommanderLocation data = (EdsmModels.CommanderLocation)JSONHandler.parseJSON(response, EdsmModels.CommanderLocation.class);
+		EdsmModels.CommanderLocation data = (EdsmModels.CommanderLocation)this.apiCall("/api-logs-v1/get-position?commanderName=" + commanderName + "&showCoordinates=1", EdsmModels.CommanderLocation.class);
 		return data;
 	}
 
 	public EdsmModels.SystemInfo getSystemInfo(String systemName) throws IOException
 	{
-		String response = WebClient.getPage(this.getServerString() + "/api-v1/system?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1");
-		EdsmModels.SystemInfo data = (EdsmModels.SystemInfo)JSONHandler.parseJSON(response, EdsmModels.SystemInfo.class);
+		EdsmModels.SystemInfo data = (EdsmModels.SystemInfo)this.apiCall("/api-v1/system?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1", EdsmModels.SystemInfo.class);
 		return data;
 	}
 
 	public EdsmModels.SystemBodies getSystemBodies(String systemName) throws IOException
 	{
-		String response = WebClient.getPage(this.getServerString() + "/api-system-v1/bodies?systemName=" + systemName);
-		EdsmModels.SystemBodies data = (EdsmModels.SystemBodies)JSONHandler.parseJSON(response, EdsmModels.SystemBodies.class);
+		EdsmModels.SystemBodies data = (EdsmModels.SystemBodies)this.apiCall("/api-system-v1/bodies?systemName=" + systemName, EdsmModels.SystemBodies.class);
 		return data;
 	}
 
 	public EdsmModels.SystemStations getSystemStations(String systemName) throws IOException
 	{
-		String response = WebClient.getPage(this.getServerString() + "/api-system-v1/stations?systemName=" + systemName);
-		EdsmModels.SystemStations data = (EdsmModels.SystemStations)JSONHandler.parseJSON(response, EdsmModels.SystemStations.class);
+		EdsmModels.SystemStations data = (EdsmModels.SystemStations)this.apiCall("/api-system-v1/stations?systemName=" + systemName, EdsmModels.SystemStations.class);
 		return data;
 	}
 
 	public EdsmModels.SystemFactions getSystemFactions(String systemName) throws IOException
 	{
-		String response = WebClient.getPage(this.getServerString() + "/api-system-v1/factions?systemName=" + systemName);
-		EdsmModels.SystemFactions data = (EdsmModels.SystemFactions)JSONHandler.parseJSON(response, EdsmModels.SystemFactions.class);
+		EdsmModels.SystemFactions data = (EdsmModels.SystemFactions)this.apiCall("/api-system-v1/factions?systemName=" + systemName, EdsmModels.SystemFactions.class);
 		return data;
 	}
 }
