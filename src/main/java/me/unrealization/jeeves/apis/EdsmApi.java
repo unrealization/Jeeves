@@ -40,7 +40,8 @@ public class EdsmApi extends JsonApi
 
 	public EdsmModels.SystemInfo getSystemInfo(String systemName) throws IOException
 	{
-		EdsmModels.SystemInfo data = (EdsmModels.SystemInfo)this.apiCall("/api-v1/system?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1", EdsmModels.SystemInfo.class);
+		//EdsmModels.SystemInfo data = (EdsmModels.SystemInfo)this.apiCall("/api-v1/system?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1", EdsmModels.SystemInfo.class);
+		EdsmModels.SystemInfo data = (EdsmModels.SystemInfo)this.apiCall("/api-v1/system?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showPrimaryStar=1", EdsmModels.SystemInfo.class);
 		return data;
 	}
 
@@ -59,6 +60,52 @@ public class EdsmApi extends JsonApi
 	public EdsmModels.SystemFactions getSystemFactions(String systemName) throws IOException
 	{
 		EdsmModels.SystemFactions data = (EdsmModels.SystemFactions)this.apiCall("/api-system-v1/factions?systemName=" + systemName, EdsmModels.SystemFactions.class);
+		return data;
+	}
+
+	public EdsmModels.SystemInfo[] getSystemSphere(String systemName) throws IOException
+	{
+		return this.getSystemSphere(systemName, null);
+	}
+
+	public EdsmModels.SystemInfo[] getSystemSphere(String systemName, String radius) throws IOException
+	{
+		EdsmModels.SystemInfo[] data;
+
+		if (radius == null)
+		{
+			//data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1&radius=50", EdsmModels.SystemInfo[].class);
+			data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showPrimaryStar=1&radius=50", EdsmModels.SystemInfo[].class);
+		}
+		else
+		{
+			//data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&radius=" + radius + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1&radius=50", EdsmModels.SystemInfo[].class);
+			data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&radius=" + radius + "&showId=1&showCoordinates=1&showPermit=1&showPrimaryStar=1&radius=50", EdsmModels.SystemInfo[].class);
+		}
+
+		return data;
+	}
+
+	public EdsmModels.SystemInfo[] getSystemCube(String systemName) throws IOException
+	{
+		return this.getSystemCube(systemName, null);
+	}
+
+	public EdsmModels.SystemInfo[] getSystemCube(String systemName, String size) throws IOException
+	{
+		EdsmModels.SystemInfo[] data;
+
+		if (size == null)
+		{
+			//data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/cube-systems?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1", EdsmModels.SystemInfo[].class);
+			data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/cube-systems?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showPrimaryStar=1", EdsmModels.SystemInfo[].class);
+		}
+		else
+		{
+			//data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/cube-systems?systemName=" + systemName + "&size=" + size + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1", EdsmModels.SystemInfo[].class);
+			data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/cube-systems?systemName=" + systemName + "&size=" + size + "&showId=1&showCoordinates=1&showPermit=1&showPrimaryStar=1", EdsmModels.SystemInfo[].class);
+		}
+
 		return data;
 	}
 }
