@@ -145,7 +145,7 @@ public class EdsmModels
 		public String id64;
 		public EdsmModels.SystemInfo.Coordinates coords;
 		public String requirePermit;
-		public EdsmModels.SystemInfo.SystemInformation information;
+		//public EdsmModels.SystemInfo.SystemInformation information;
 		public EdsmModels.SystemInfo.PrimaryStar primaryStar;
 	}
 }
