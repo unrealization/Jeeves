@@ -25,9 +25,9 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.6.0";
+		this.version = "0.7.0";
 
-		this.commandList = new String[10];
+		this.commandList = new String[12];
 		this.commandList[0] = "GetUseEdsmBetaServer";
 		this.commandList[1] = "SetUseEdsmBetaServer";
 		this.commandList[2] = "Register";
@@ -38,6 +38,8 @@ public class Edsm extends BotModule
 		this.commandList[7] = "SysCoords";
 		this.commandList[8] = "CmdrCoords";
 		this.commandList[9] = "Distance";
+		this.commandList[10] = "GetSystemSphere";
+		this.commandList[11] = "GetSystemCube";
 
 		this.defaultConfig.put("edsmUseBetaServer", "1");
 
@@ -55,6 +57,16 @@ public class Edsm extends BotModule
 		String output = input.replace("%20", " ").replace("%2B", "+").replace("%27", "'");
 		return output;
 	}*/
+
+	private static String calculateDistance(EdsmModels.SystemInfo.Coordinates leftCoords, EdsmModels.SystemInfo.Coordinates rightCoords)
+	{
+		double xDistSqr = Math.pow(Double.parseDouble(leftCoords.x) - Double.parseDouble(rightCoords.x), 2);
+		double yDistSqr = Math.pow(Double.parseDouble(leftCoords.y) - Double.parseDouble(rightCoords.y), 2);
+		double zDistSqr = Math.pow(Double.parseDouble(leftCoords.z) - Double.parseDouble(rightCoords.z), 2);
+		double distance = Math.sqrt(xDistSqr + yDistSqr + zDistSqr);
+		String distanceString = new DecimalFormat("#.##").format(distance);
+		return distanceString;
+	}
 
 	private static EdsmApi getApiObject(long serverId)
 	{
@@ -452,17 +464,13 @@ public class Edsm extends BotModule
 				return;
 			}
 
-			String output;
-
-			if (data.name != null)
+			if (data == null)
 			{
-				output = "System: " + data.name + " [ " + data.coords.x + " : " + data.coords.y + " : " + data.coords.z + " ]";
-			}
-			else
-			{
-				output = systemName + " cannot be found in EDSM.";
+				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				return;
 			}
 
+			String output = "System: " + data.name + " [ " + data.coords.x + " : " + data.coords.y + " : " + data.coords.z + " ]";
 			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
@@ -651,12 +659,166 @@ public class Edsm extends BotModule
 				systemInfo[index].coords = cmdrData.coordinates;
 			}
 
-			double x = Math.pow(Double.parseDouble(systemInfo[0].coords.x) - Double.parseDouble(systemInfo[1].coords.x), 2);
-			double y = Math.pow(Double.parseDouble(systemInfo[0].coords.y) - Double.parseDouble(systemInfo[1].coords.y), 2);
-			double z = Math.pow(Double.parseDouble(systemInfo[0].coords.z) - Double.parseDouble(systemInfo[1].coords.z), 2);
-			double distance = Math.sqrt(x + y + z);
-			String distanceString = new DecimalFormat("#.##").format(distance);
-			String output = "The distance between " + systemInfo[0].name + " and " + systemInfo[0].name + " is " + distanceString + " ly.";
+			String distance = Edsm.calculateDistance(systemInfo[0].coords, systemInfo[1].coords);
+			String output = "The distance between " + systemInfo[0].name + " and " + systemInfo[0].name + " is " + distance + " ly.";
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class GetSystemSphere extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<system>";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String systemName)
+		{
+			if (systemName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				return;
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmModels.SystemInfo centerData;
+
+			try
+			{
+				centerData = edsmApi.getSystemInfo(Edsm.sanitizeString(systemName));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (centerData == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+			}
+
+			EdsmModels.SystemInfo[] data;
+
+			try
+			{
+				data = edsmApi.getSystemSphere(Edsm.sanitizeString(systemName));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (data.length == 1)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No systems found near " + systemName);
+				return;
+			}
+
+			String output = "";
+
+			for (int index = 0; index < data.length; index++)
+			{
+				if (data[index].name.toLowerCase().equals(systemName.toLowerCase()))
+				{
+					continue;
+				}
+
+				output += data[index].name + " (Distance: " + Edsm.calculateDistance(centerData.coords, data[index].coords) + " ly)\n";
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class GetSystemCube extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<system>";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String systemName)
+		{
+			if (systemName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				return;
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmModels.SystemInfo centerData;
+
+			try
+			{
+				centerData = edsmApi.getSystemInfo(Edsm.sanitizeString(systemName));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (centerData == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+			}
+
+			EdsmModels.SystemInfo[] data;
+
+			try
+			{
+				data = edsmApi.getSystemCube(Edsm.sanitizeString(systemName));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (data.length == 1)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No systems found near " + systemName);
+				return;
+			}
+
+			String output = "";
+
+			for (int index = 0; index < data.length; index++)
+			{
+				if (data[index].name.toLowerCase().equals(systemName.toLowerCase()))
+				{
+					continue;
+				}
+
+				output += data[index].name + " (Distance: " + Edsm.calculateDistance(centerData.coords, data[index].coords) + " ly)\n";
+			}
+
 			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
