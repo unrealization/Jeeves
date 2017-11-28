@@ -1,6 +1,7 @@
 package me.unrealization.jeeves.modules;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -24,9 +25,9 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.5.1";
+		this.version = "0.6.0";
 
-		this.commandList = new String[9];
+		this.commandList = new String[10];
 		this.commandList[0] = "GetUseEdsmBetaServer";
 		this.commandList[1] = "SetUseEdsmBetaServer";
 		this.commandList[2] = "Register";
@@ -36,6 +37,7 @@ public class Edsm extends BotModule
 		this.commandList[6] = "Locate";
 		this.commandList[7] = "SysCoords";
 		this.commandList[8] = "CmdrCoords";
+		this.commandList[9] = "Distance";
 
 		this.defaultConfig.put("edsmUseBetaServer", "1");
 
@@ -437,7 +439,6 @@ public class Edsm extends BotModule
 			}
 
 			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
-			//EdsmModels.SystemCoordinates data;
 			EdsmModels.SystemInfo data;
 
 			try
@@ -534,6 +535,128 @@ public class Edsm extends BotModule
 				}
 			}
 
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class Distance extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "[commander|system] : [commander|system]";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			String[] arguments = Jeeves.splitArguments(argumentString);
+			String[] searchNames = new String[2];
+
+			for (int index = 0; index < searchNames.length; index++)
+			{
+				try
+				{
+					searchNames[index] = arguments[index];
+				}
+				catch (ArrayIndexOutOfBoundsException e)
+				{
+					//Jeeves.debugException(e);
+					searchNames[index] = "";
+				}
+
+				if (searchNames[index].isEmpty() == true)
+				{
+					String userIdString = Long.toString(message.getAuthor().getLongID());
+
+					if (Edsm.edsmUserList.hasKey(userIdString) == false)
+					{
+						MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander or system name or register your EDSM username.");
+						return;
+					}
+
+					searchNames[index] = (String)Edsm.edsmUserList.getValue(userIdString);
+				}
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmModels.SystemInfo systemInfo[] = new EdsmModels.SystemInfo[2];
+
+			for (int index = 0; index < searchNames.length; index++)
+			{
+				EdsmModels.SystemInfo systemData;
+
+				try
+				{
+					systemData = edsmApi.getSystemInfo(searchNames[index]);
+				}
+				catch (IOException e)
+				{
+					Jeeves.debugException(e);
+					MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+					return;
+				}
+
+				if (systemData != null)
+				{
+					systemInfo[index] = systemData;
+					continue;
+				}
+
+				EdsmModels.CommanderLocation cmdrData;
+
+				try
+				{
+					cmdrData = edsmApi.getCommanderLocation(searchNames[index]);
+				}
+				catch (IOException e)
+				{
+					Jeeves.debugException(e);
+					MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+					return;
+				}
+
+				if (cmdrData == null)
+				{
+					MessageQueue.sendMessage(message.getChannel(), searchNames[index] + " cannot be found on EDSM.");
+					return;
+				}
+
+				if (cmdrData.system == null)
+				{
+					switch (cmdrData.msgnum)
+					{
+					case "100":
+						MessageQueue.sendMessage(message.getChannel(), searchNames[index] + " cannot be located.");
+						return;
+					case "203":
+						MessageQueue.sendMessage(message.getChannel(), searchNames[index] + " does not seem to be using EDSM.");
+						return;
+					default:
+						MessageQueue.sendMessage(message.getChannel(), cmdrData.msg);
+						return;
+					}
+				}
+
+				systemInfo[index] = new EdsmModels.SystemInfo();
+				systemInfo[index].name = cmdrData.system;
+				systemInfo[index].coords = cmdrData.coordinates;
+			}
+
+			double x = Math.pow(Double.parseDouble(systemInfo[0].coords.x) - Double.parseDouble(systemInfo[1].coords.x), 2);
+			double y = Math.pow(Double.parseDouble(systemInfo[0].coords.y) - Double.parseDouble(systemInfo[1].coords.y), 2);
+			double z = Math.pow(Double.parseDouble(systemInfo[0].coords.z) - Double.parseDouble(systemInfo[1].coords.z), 2);
+			double distance = Math.sqrt(x + y + z);
+			String distanceString = new DecimalFormat("#.##").format(distance);
+			String output = "The distance between " + systemInfo[0].name + " and " + systemInfo[0].name + " is " + distanceString + " ly.";
 			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
