@@ -17,6 +17,8 @@ public class EdsmModels
 		public String system;
 		public String firstDiscover;
 		public String date;
+		public String systemId;
+		public String systemId64;
 		public EdsmModels.SystemInfo.Coordinates coordinates;
 		public String isDocked;
 		public String dateLastActivity;
@@ -36,10 +38,41 @@ public class EdsmModels
 				public String outerRadius;
 			}
 
+			public static class Materials
+			{
+				public String Carbon;
+				public String Iron;
+				public String Nickel;
+				public String Phosphorus;
+				public String Sulphur;
+				public String Chromium;
+				public String Germanium;
+				public String Manganese;
+				public String Vanadium;
+				public String Zinc;
+				public String Zirconium;
+				public String Arsenic;
+				public String Niobium;
+				public String Selenium;
+				public String Tungsten;
+				public String Cadmium;
+				public String Mercury;
+				public String Molybdenum;
+				public String Ruthenium;
+				public String Tin;
+				public String Yttrium;
+				public String Antimony;
+				public String Polonium;
+				public String Technetium;
+				public String Tellurium;
+			}
+
 			public String id;
+			public String id64;
 			public String name;
 			public String type;
 			public String subType;
+			public String offset;
 			public String distanceToArrival;
 			public String isMainStar;
 			public String isScoopable;
@@ -64,10 +97,14 @@ public class EdsmModels
 			public String rotationalPeriod;
 			public String rotationalPeriodTidallyLocked;
 			public String axialTilt;
+			public EdsmModels.SystemBodies.Body.Ring[] belts;
 			public EdsmModels.SystemBodies.Body.Ring[] rings;
+			public EdsmModels.SystemBodies.Body.Materials materials;
+			public String updateTime;
 		}
 
 		public String id;
+		public String id64;
 		public String name;
 		public EdsmModels.SystemBodies.Body[] bodies;
 	}
@@ -76,7 +113,16 @@ public class EdsmModels
 	{
 		public static class Station
 		{
+			public static class UpdateTime
+			{
+				public String information;
+				public String market;
+				public String shipyard;
+				public String outfitting;
+			}
+
 			public String id;
+			public String marketId;
 			public String name;
 			public String type;
 			public String distanceToArrival;
@@ -85,10 +131,13 @@ public class EdsmModels
 			public String economy;
 			public String haveMarket;
 			public String haveShipyard;
+			public String[] otherServices;
 			public EdsmModels.SystemFactions.Faction controllingFaction;
+			public EdsmModels.SystemStations.Station.UpdateTime updateTime;
 		}
 
 		public String id;
+		public String id64;
 		public String name;
 		public EdsmModels.SystemStations.Station[] stations;
 	}
@@ -97,16 +146,26 @@ public class EdsmModels
 	{
 		public static class Faction
 		{
+			public static class State
+			{
+				public String state;
+				public String trend;
+			}
+
 			public String id;
 			public String name;
 			public String allegiance;
 			public String government;
 			public String influence;
 			public String state;
+			public EdsmModels.SystemFactions.Faction.State[] recoveringStates;
+			public EdsmModels.SystemFactions.Faction.State[] pendingStates;
 			public String isPlayer;
+			public String lastUpdate;
 		}
 
 		public String id;
+		public String id64;
 		public String name;
 		public EdsmModels.SystemFactions.Faction controllingFaction;
 		public EdsmModels.SystemFactions.Faction factions[];
