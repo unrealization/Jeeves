@@ -74,13 +74,13 @@ public class EdsmApi extends JsonApi
 
 		if (radius == null)
 		{
-			//data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1&radius=50", EdsmModels.SystemInfo[].class);
-			data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showPrimaryStar=1&radius=50", EdsmModels.SystemInfo[].class);
+			//data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1", EdsmModels.SystemInfo[].class);
+			data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&showId=1&showCoordinates=1&showPermit=1&showPrimaryStar=1", EdsmModels.SystemInfo[].class);
 		}
 		else
 		{
-			//data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&radius=" + radius + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1&radius=50", EdsmModels.SystemInfo[].class);
-			data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&radius=" + radius + "&showId=1&showCoordinates=1&showPermit=1&showPrimaryStar=1&radius=50", EdsmModels.SystemInfo[].class);
+			//data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&radius=" + radius + "&showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1", EdsmModels.SystemInfo[].class);
+			data = (EdsmModels.SystemInfo[])this.apiCall("/api-v1/sphere-systems?systemName=" + systemName + "&radius=" + radius + "&showId=1&showCoordinates=1&showPermit=1&showPrimaryStar=1", EdsmModels.SystemInfo[].class);
 		}
 
 		return data;
