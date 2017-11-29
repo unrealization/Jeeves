@@ -25,21 +25,22 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.7.0";
+		this.version = "0.8.0";
 
-		this.commandList = new String[12];
+		this.commandList = new String[13];
 		this.commandList[0] = "GetUseEdsmBetaServer";
 		this.commandList[1] = "SetUseEdsmBetaServer";
 		this.commandList[2] = "Register";
 		this.commandList[3] = "Unregister";
-		this.commandList[4] = "GetEdsmUser";
-		this.commandList[5] = "GetEDStatus";
+		this.commandList[4] = "EdsmUser";
+		this.commandList[5] = "EDStatus";
 		this.commandList[6] = "Locate";
 		this.commandList[7] = "SysCoords";
 		this.commandList[8] = "CmdrCoords";
 		this.commandList[9] = "Distance";
-		this.commandList[10] = "GetSystemSphere";
-		this.commandList[11] = "GetSystemCube";
+		this.commandList[10] = "SystemSphere";
+		this.commandList[11] = "SystemCube";
+		this.commandList[12] = "Route";
 
 		this.defaultConfig.put("edsmUseBetaServer", "1");
 
@@ -247,7 +248,7 @@ public class Edsm extends BotModule
 		}
 	}
 
-	public static class GetEdsmUser extends BotCommand
+	public static class EdsmUser extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -259,8 +260,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "[username]";
+			return output;
 		}
 
 		@Override
@@ -312,7 +313,7 @@ public class Edsm extends BotModule
 		}
 	}
 
-	public static class GetEDStatus extends BotCommand
+	public static class EDStatus extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -665,7 +666,7 @@ public class Edsm extends BotModule
 		}
 	}
 
-	public static class GetSystemSphere extends BotCommand
+	public static class SystemSphere extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -677,17 +678,38 @@ public class Edsm extends BotModule
 		@Override
 		public String getParameters()
 		{
-			String output = "<system>";
+			String output = "<system> [ : <radius> ]";
 			return output;
 		}
 
 		@Override
-		public void execute(IMessage message, String systemName)
+		public void execute(IMessage message, String argumentString)
 		{
-			if (systemName.isEmpty() == true)
+			String[] arguments = Jeeves.splitArguments(argumentString);
+
+			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
 				return;
+			}
+
+			String systemName = arguments[0];
+			String radius = null;
+
+			if (arguments.length == 2)
+			{
+				radius = arguments[1];
+
+				try
+				{
+					Float.parseFloat(radius);
+				}
+				catch (NumberFormatException e)
+				{
+					Jeeves.debugException(e);
+					MessageQueue.sendMessage(message.getChannel(), "Invalid value for radius.");
+					return;
+				}
 			}
 
 			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
@@ -713,7 +735,7 @@ public class Edsm extends BotModule
 
 			try
 			{
-				data = edsmApi.getSystemSphere(Edsm.sanitizeString(systemName));
+				data = edsmApi.getSystemSphere(Edsm.sanitizeString(systemName), radius);
 			}
 			catch (IOException e)
 			{
@@ -744,7 +766,7 @@ public class Edsm extends BotModule
 		}
 	}
 
-	public static class GetSystemCube extends BotCommand
+	public static class SystemCube extends BotCommand
 	{
 		@Override
 		public String getHelp()
@@ -756,17 +778,38 @@ public class Edsm extends BotModule
 		@Override
 		public String getParameters()
 		{
-			String output = "<system>";
+			String output = "<system> [ : <size> ]";
 			return output;
 		}
 
 		@Override
-		public void execute(IMessage message, String systemName)
+		public void execute(IMessage message, String argumentString)
 		{
-			if (systemName.isEmpty() == true)
+			String[] arguments = Jeeves.splitArguments(argumentString);
+
+			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
 			{
 				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
 				return;
+			}
+
+			String systemName = arguments[0];
+			String size = null;
+
+			if (arguments.length == 2)
+			{
+				size = arguments[1];
+
+				try
+				{
+					Float.parseFloat(size);
+				}
+				catch (NumberFormatException e)
+				{
+					Jeeves.debugException(e);
+					MessageQueue.sendMessage(message.getChannel(), "Invalid value for size.");
+					return;
+				}
 			}
 
 			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
@@ -792,7 +835,7 @@ public class Edsm extends BotModule
 
 			try
 			{
-				data = edsmApi.getSystemCube(Edsm.sanitizeString(systemName));
+				data = edsmApi.getSystemCube(Edsm.sanitizeString(systemName), size);
 			}
 			catch (IOException e)
 			{
@@ -817,6 +860,153 @@ public class Edsm extends BotModule
 				}
 
 				output += data[index].name + " (Distance: " + Edsm.calculateDistance(centerData.coords, data[index].coords) + " ly)\n";
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class Route extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<origin> : <destination> : <jumprange>";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			String[] arguments = Jeeves.splitArguments(argumentString);
+
+			if (arguments.length < 3)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Insufficient amount of parameters.\n" + this.getParameters());
+				return;
+			}
+
+			String origin = arguments[0];
+			String destination = arguments[1];
+			String jumpRange = arguments[2];
+
+			try
+			{
+				Float.parseFloat(jumpRange);
+			}
+			catch (NumberFormatException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "Invalid value for jump range.");
+				return;
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmModels.SystemInfo originInfo;
+
+			try
+			{
+				originInfo = edsmApi.getSystemInfo(Edsm.sanitizeString(origin));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (originInfo == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), origin + " cannot be found on EDSM.");
+				return;
+			}
+
+			EdsmModels.SystemInfo destinationInfo;
+
+			try
+			{
+				destinationInfo = edsmApi.getSystemInfo(Edsm.sanitizeString(destination));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (destinationInfo == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), destination + " cannot be found on EDSM.");
+			}
+
+			EdsmModels.SystemInfo currentOriginInfo = originInfo;
+			String currentDistanceString = Edsm.calculateDistance(originInfo.coords, destinationInfo.coords);
+			float currentDistance = Float.parseFloat(currentDistanceString);
+			int jumpNo = 0;
+			String output = Integer.toString(jumpNo) + ": " + originInfo.name + " (Jump Distance: 0 ly) (Distance to " + destinationInfo.name + ": " + currentDistanceString + " ly)\n";
+			boolean abortRouting = false;
+
+			while ((currentOriginInfo.name.equals(destinationInfo.name) == false) && (abortRouting == false))
+			{
+				EdsmModels.SystemInfo[] systemBubble;
+
+				try
+				{
+					systemBubble = edsmApi.getSystemSphere(Edsm.sanitizeString(currentOriginInfo.name), jumpRange);
+				}
+				catch (IOException e)
+				{
+					Jeeves.debugException(e);
+					MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+					return;
+				}
+
+				EdsmModels.SystemInfo nextJump = null;
+				float nextJumpDistance = Float.POSITIVE_INFINITY;
+
+				for (int index = 0; index < systemBubble.length; index++)
+				{
+					String distanceString = Edsm.calculateDistance(systemBubble[index].coords, destinationInfo.coords);
+					float distance = Float.parseFloat(distanceString);
+
+					if (distance > currentDistance)
+					{
+						continue;
+					}
+
+					if ((nextJump != null) && (distance > nextJumpDistance))
+					{
+						continue;
+					}
+
+					nextJump = systemBubble[index];
+					nextJumpDistance = distance;
+				}
+
+				if (nextJump == null)
+				{
+					output += "Unable to find the next jump.\n";
+					abortRouting = true;
+					continue;
+				}
+
+				String jumpDistance = Edsm.calculateDistance(currentOriginInfo.coords, nextJump.coords);
+				currentOriginInfo = nextJump;
+				currentDistance = nextJumpDistance;
+				jumpNo++;
+				output += Integer.toString(jumpNo) + ": " + currentOriginInfo.name + " (Jump Distance: " + jumpDistance + " ly) (Distance to " + destinationInfo.name + ": " + Float.toString(currentDistance) + " ly)\n";
+			}
+
+			if (abortRouting == false)
+			{
+				output = "Total number of jumps: " + jumpNo + "\n" + output;
 			}
 
 			MessageQueue.sendMessage(message.getChannel(), output);
