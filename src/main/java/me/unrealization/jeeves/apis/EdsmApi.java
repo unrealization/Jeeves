@@ -34,7 +34,7 @@ public class EdsmApi extends JsonApi
 
 	public EdsmModels.CommanderLocation getCommanderLocation(String commanderName) throws IOException
 	{
-		EdsmModels.CommanderLocation data = (EdsmModels.CommanderLocation)this.apiCall("/api-logs-v1/get-position?commanderName=" + commanderName + "&showCoordinates=1", EdsmModels.CommanderLocation.class);
+		EdsmModels.CommanderLocation data = (EdsmModels.CommanderLocation)this.apiCall("/api-logs-v1/get-position?commanderName=" + commanderName + "&showCoordinates=1&showId=1", EdsmModels.CommanderLocation.class);
 		return data;
 	}
 
