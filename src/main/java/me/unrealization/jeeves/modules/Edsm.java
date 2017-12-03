@@ -25,9 +25,9 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.8.0";
+		this.version = "0.9.0";
 
-		this.commandList = new String[13];
+		this.commandList = new String[17];
 		this.commandList[0] = "GetUseEdsmBetaServer";
 		this.commandList[1] = "SetUseEdsmBetaServer";
 		this.commandList[2] = "Register";
@@ -41,6 +41,10 @@ public class Edsm extends BotModule
 		this.commandList[10] = "SystemSphere";
 		this.commandList[11] = "SystemCube";
 		this.commandList[12] = "Route";
+		this.commandList[13] = "SystemInfo";
+		this.commandList[14] = "BodyInfo";
+		this.commandList[15] = "StationInfo";
+		this.commandList[16] = "FactionInfo";
 
 		this.defaultConfig.put("edsmUseBetaServer", "1");
 
@@ -1007,6 +1011,378 @@ public class Edsm extends BotModule
 			if (abortRouting == false)
 			{
 				output = "Total number of jumps: " + jumpNo + "\n" + output;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class SystemInfo extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<system>";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String systemName)
+		{
+			if (systemName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to supply as system name.");
+				return;
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmModels.SystemInfo data;
+
+			try
+			{
+				data = edsmApi.getSystemInfo(Edsm.sanitizeString(systemName));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (data == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+			}
+
+			String output = "System: " + data.name + "\n";
+			output += "Galactic Coordinates: X: " + data.coords.x + " Y: " + data.coords.y + " Z: " + data.coords.z + "\n";
+
+			if (data.requirePermit.equals("true") == true)
+			{
+				output += "Required Permit: " + data.permitName + "\n";
+			}
+
+			if (data.primaryStar != null)
+			{
+				output += "\n";
+				output += "Primary Star\n";
+				output += "Name: " + data.primaryStar.name + "\n";
+				output += "Type: " + data.primaryStar.type + "\n";
+				output += "Is Scoopable: ";
+
+				if (data.primaryStar.isScoopable.equals("true") == true)
+				{
+					output += "yes";
+				}
+				else
+				{
+					output += "no";
+				}
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class BodyInfo extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<system> [ : <body> ]";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			String[] arguments = Jeeves.splitArguments(argumentString);
+
+			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				return;
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			String systemName = arguments[0];
+			String bodyName = null;
+
+			if (arguments.length == 2)
+			{
+				bodyName = arguments[1];
+			}
+
+			EdsmModels.SystemBodies data;
+
+			try
+			{
+				data = edsmApi.getSystemBodies(Edsm.sanitizeString(systemName));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (data == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				return;
+			}
+
+			String output = "System: " + data.name + "\n";
+			boolean bodyNotFound = true;
+
+			for (int index = 0; index < data.bodies.length; index++)
+			{
+				if (bodyName != null)
+				{
+					if ((data.bodies[index].name.toLowerCase().equals(bodyName.toLowerCase()) == false) && (data.bodies[index].name.toLowerCase().equals(systemName.toLowerCase() + " " + bodyName.toLowerCase()) == false))
+					{
+						continue;
+					}
+					else
+					{
+						bodyNotFound = false;
+					}
+				}
+
+				output += "\n";
+				output += "Body: " + data.bodies[index].name + "\n";
+
+				if (data.bodies[index].type.equals("Star"))
+				{
+					output += "Type: " + data.bodies[index].subType + "\n";
+				}
+				else
+				{
+					output += "Type: " + data.bodies[index].type + " (" + data.bodies[index].subType + ")\n";
+				}
+
+				output += "Distance from Arrival: " + data.bodies[index].distanceToArrival + " ls\n";
+
+				if (bodyName != null)
+				{
+					//add all the details!
+				}
+			}
+
+			if ((bodyName != null) && (bodyNotFound == true))
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the body " + bodyName);
+				return;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class StationInfo extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<system> [ : <station> ]";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			String[] arguments = Jeeves.splitArguments(argumentString);
+
+			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				return;
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			String systemName = arguments[0];
+			String stationName = null;
+
+			if (arguments.length == 2)
+			{
+				stationName = arguments[1];
+			}
+
+			EdsmModels.SystemStations data;
+
+			try
+			{
+				data = edsmApi.getSystemStations(Edsm.sanitizeString(systemName));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (data == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				return;
+			}
+
+			String output = "System: " + data.name + "\n";
+			boolean stationNotFound = true;
+
+			for (int index = 0; index < data.stations.length; index++)
+			{
+				if (stationName != null)
+				{
+					if (data.stations[index].name.toLowerCase().equals(stationName.toLowerCase()) == false)
+					{
+						continue;
+					}
+					else
+					{
+						stationNotFound = false;
+					}
+				}
+
+				output += "\n";
+				output += "Station: " + data.stations[index].name + "\n";
+				output += "Type: " + data.stations[index].type + "\n";
+
+				if (stationName != null)
+				{
+					//add all the details!
+				}
+			}
+
+			if ((stationName != null) && (stationNotFound == true))
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the station " + stationName);
+				return;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class FactionInfo extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<system> [ : <faction> ]";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			String[] arguments = Jeeves.splitArguments(argumentString);
+
+			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				return;
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			String systemName = arguments[0];
+			String factionName = null;
+
+			if (arguments.length == 2)
+			{
+				factionName = arguments[1];
+			}
+
+			EdsmModels.SystemFactions data;
+
+			try
+			{
+				data = edsmApi.getSystemFactions(Edsm.sanitizeString(systemName));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (data == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				return;
+			}
+
+			String output = "System: " + data.name + "\n";
+			boolean factionNotFound = true;
+
+			for (int index = 0; index < data.factions.length; index++)
+			{
+				if (factionName != null)
+				{
+					if (data.factions[index].name.toLowerCase().equals(factionName.toLowerCase()) == false)
+					{
+						continue;
+					}
+					else
+					{
+						factionNotFound = false;
+					}
+				}
+
+				output += "\n";
+				output += "Faction: " + data.factions[index].name + "\n";
+
+				try
+				{
+					float influence = Float.parseFloat(data.factions[index].influence) * 100;
+					String influenceString = new DecimalFormat("#.##").format(influence);
+					output += "Influence: " + influenceString + " %\n";
+				}
+				catch (NumberFormatException e)
+				{
+					Jeeves.debugException(e);
+				}
+
+				output += "State: " + data.factions[index].state + "\n";
+
+				if (factionName != null)
+				{
+					//add all the details!
+				}
+			}
+
+			if ((factionName != null) && (factionNotFound == true))
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the faction " + factionName);
+				return;
 			}
 
 			MessageQueue.sendMessage(message.getChannel(), output);
