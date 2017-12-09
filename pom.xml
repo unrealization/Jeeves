@@ -4,7 +4,7 @@
 	<artifactId>jeeves</artifactId>
 	<packaging>jar</packaging>
 	<name>Jeeves</name>
-	<version>0.9.5</version>
+	<version>0.10.0</version>
 	<url>https://github.com/unrealization/Jeeves</url>
 	<description>Jeeves is a Discord bot with various management- and logging-functions, and some commands specifically for Elite Dangerous players.</description>
 
@@ -71,6 +71,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
 				<configuration>
 					<archive>
 						<manifest>

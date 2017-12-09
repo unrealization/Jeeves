@@ -35,6 +35,7 @@ import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
 import sx.blah.discord.handle.impl.events.user.UserUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
@@ -385,6 +386,16 @@ public class DiscordEventHandlers
 		if (Jeeves.isIgnored(message.getGuild().getLongID(), message.getAuthor()) == true)
 		{
 			return;
+		}
+
+		List<IRole> roleList = message.getAuthor().getRolesForGuild(message.getGuild());
+
+		for (int index = 0; index < roleList.size(); index++)
+		{
+			if (Jeeves.isIgnored(roleList.get(index)) == true)
+			{
+				return;
+			}
 		}
 
 		String messageContent = message.getContent().trim();

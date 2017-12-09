@@ -281,6 +281,19 @@ public class Jeeves
 		return ignoredUserList.contains(Long.toString(user.getLongID()));
 	}
 
+	public static boolean isIgnored(IRole role)
+	{
+		Object ignoredRoles = Jeeves.serverConfig.getValue(role.getGuild().getLongID(), "ignoredRoles");
+
+		if (ignoredRoles.getClass() == String.class)
+		{
+			return false;
+		}
+
+		List<String> ignoredRoleList = Jeeves.listToStringList((List<?>)ignoredRoles);
+		return ignoredRoleList.contains(Long.toString(role.getLongID()));
+	}
+
 	public static boolean isDisabled(long serverId, BotModule module)
 	{
 		Long discordId = module.getDiscordId();
