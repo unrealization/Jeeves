@@ -16,25 +16,35 @@ import me.unrealization.jeeves.bot.WebClient;
 import me.unrealization.jeeves.dataLists.EdsmUserList;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
+import me.unrealization.jeeves.interfaces.MessageReceivedHandler;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.MissingPermissionsException;
 
-public class Ccn extends BotModule implements UserJoinedHandler
+public class Ccn extends BotModule implements UserJoinedHandler, MessageReceivedHandler
 {
+	private static long ccnLobbyChannelId = 349187463614562316L;
+	private static long ccnBarChannelId = 209372315673165825L;
+	private static long ccnModChannelId = 260526067972964352L;
+	private static long ccnGuestRoleId = 349156047467970561L;
+	private static long ccnColonistRoleId = 210509328753491968L;
+
 	public Ccn()
 	{
-		this.version = "0.8.1";
+		this.version = "0.9.0";
 
-		this.commandList = new String[5];
+		this.commandList = new String[6];
 		this.commandList[0] = "CcnProximityCheck";
 		this.commandList[1] = "GetCcnProximityRole";
 		this.commandList[2] = "SetCcnProximityRole";
 		this.commandList[3] = "GetCcnWelcomeMessageEnabled";
 		this.commandList[4] = "SetCcnWelcomeMessageEnabled";
+		this.commandList[5] = "SendGuidelines";
 
 		this.defaultConfig.put("ccnProximityRole", "");
 		//this.defaultConfig.put("ccnEdsmUseBetaServer", "0");
@@ -70,6 +80,154 @@ public class Ccn extends BotModule implements UserJoinedHandler
 
 			MessageQueue.sendMessage(event.getUser(), message);
 		}
+
+		IChannel lobby = event.getGuild().getChannelByID(Ccn.ccnLobbyChannelId);
+
+		if (lobby == null)
+		{
+			return;
+		}
+
+		String message = "Welcome to the Colonia Citizens Network, " + event.getUser().mention() + "!\n";
+		message += "Please take a moment and read through the CCN community guidelines at http://bit.ly/2lOQPWd\n";
+		message += "Once you are done please respond as follows:\n";
+		message += "If you agree with the guidelines, please post **@Jeeves guidelines yes**\n";
+		message += "If you disagree, please post **@Jeeves guidelines no**\n";
+		MessageQueue.sendMessage(lobby, message);
+	}
+
+	@Override
+	public boolean messageReceivedHandler(IMessage message)
+	{
+		IUser botUser = Jeeves.bot.getOurUser();
+
+		if (message.getAuthor() == botUser)
+		{
+			return false;
+		}
+
+		if (message.getChannel().getLongID() != Ccn.ccnLobbyChannelId)
+		{
+			return false;
+		}
+
+		String messageContent = message.getContent().trim();
+		String[] messageParts = messageContent.split(" ");
+		int nonEmptyParts = 0;
+
+		for (int index = 0; index < messageParts.length; index++)
+		{
+			if (messageParts[index].isEmpty() == false)
+			{
+				nonEmptyParts++;
+			}
+		}
+
+		if (nonEmptyParts == 0)
+		{
+			return false;
+		}
+
+		if (nonEmptyParts != messageParts.length)
+		{
+			String tmpParts[] = new String[nonEmptyParts];
+			int tmpIndex = 0;
+
+			for (int index = 0; index < messageParts.length; index++)
+			{
+				if (messageParts[index].isEmpty() == true)
+				{
+					continue;
+				}
+
+				tmpParts[tmpIndex] = messageParts[index];
+				tmpIndex++;
+			}
+
+			messageParts = tmpParts;
+		}
+
+		if (messageParts.length != 3)
+		{
+			return false;
+		}
+
+		if (messageParts[1].toLowerCase().equals("guidelines") == false)
+		{
+			return false;
+		}
+
+		if (messageParts[2].toLowerCase().equals("yes") == true)
+		{
+			IRole guestRole = message.getGuild().getRoleByID(Ccn.ccnGuestRoleId);
+			IRole colonistRole = message.getGuild().getRoleByID(Ccn.ccnColonistRoleId);
+
+			if ((guestRole == null) || (colonistRole == null))
+			{
+				IChannel modChannel = message.getGuild().getChannelByID(Ccn.ccnModChannelId);
+
+				if (modChannel != null)
+				{
+					MessageQueue.sendMessage(modChannel, "Error: Cannot tag up " + message.getAuthor().getName() + ", the IDs role the guest- and/or colonist-role must haven changed!");
+				}
+				else
+				{
+					System.out.println("Error: Cannot tag up " + message.getAuthor().getName() + ", the IDs role the guest- and/or colonist-role must haven changed!");
+				}
+
+				return true;
+			}
+
+			RoleQueue.removeRoleFromUser(guestRole, message.getAuthor());
+			RoleQueue.addRoleToUser(colonistRole, message.getAuthor());
+			IChannel barChannel = message.getGuild().getChannelByID(Ccn.ccnBarChannelId);
+
+			if (barChannel != null)
+			{
+				MessageQueue.sendMessage(barChannel, "Welcome to the Colonia Citizens Network, " + message.getAuthor().mention() + "!");
+			}
+
+			IChannel modChannel = message.getGuild().getChannelByID(Ccn.ccnModChannelId);
+
+			if (modChannel != null)
+			{
+				MessageQueue.sendMessage(modChannel, "The user " + message.getAuthor().getName() + " agrees with the guidelines and has therefore been tagged up.");
+			}
+
+			return true;
+		}
+		else if (messageParts[2].toLowerCase().equals("no") == true)
+		{
+			boolean kicked = false;
+
+			try
+			{
+				message.getGuild().kickUser(message.getAuthor());
+				kicked = true;
+			}
+			catch (MissingPermissionsException e)
+			{
+				Jeeves.debugException(e);
+			}
+
+			IChannel modChannel = message.getGuild().getChannelByID(ccnModChannelId);
+
+			if (modChannel != null)
+			{
+				if (kicked == true)
+				{
+					MessageQueue.sendMessage(modChannel, "The user " + message.getAuthor().getName() + " did not agree with the guidelines and has therefore been kicked.");
+				}
+				else
+				{
+					MessageQueue.sendMessage(modChannel, "The user " + message.getAuthor().getName() + " did not agree with the guidelines, but could not be kicked.");
+				}
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static class ProximityCheckModel
@@ -458,6 +616,50 @@ public class Ccn extends BotModule implements UserJoinedHandler
 			{
 				MessageQueue.sendMessage(message.getChannel(), "The CCN welcome message has ben enabled.");
 			}
+		}
+	}
+
+	public static class SendGuidelines extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			IChannel lobby = message.getGuild().getChannelByID(Ccn.ccnLobbyChannelId);
+
+			if (lobby == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot send the guidelines message. The ID of the lobby must have changed.");
+				return;
+			}
+
+			String output = "Welcome to the Colonia Citizens Network! " + "\n";
+			output += "Please take a moment and read through the CCN community guidelines at http://bit.ly/2lOQPWd\n";
+			output += "Once you are done please respond as follows:\n";
+			output += "If you agree with the guidelines, please post **@Jeeves guidelines yes**\n";
+			output += "If you disagree, please post **@Jeeves guidelines no**\n";
+			MessageQueue.sendMessage(lobby, output);
 		}
 	}
 }
