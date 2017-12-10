@@ -16,6 +16,7 @@ import me.unrealization.jeeves.bot.RoleQueue;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
@@ -28,7 +29,7 @@ public class Internal extends BotModule
 	{
 		this.version = Jeeves.version;
 
-		this.commandList = new String[23];
+		this.commandList = new String[30];
 		this.commandList[0] = "Help";
 		this.commandList[1] = "Version";
 		this.commandList[2] = "Ping";
@@ -49,15 +50,23 @@ public class Internal extends BotModule
 		this.commandList[17] = "GetIgnoredUsers";
 		this.commandList[18] = "AddIgnoredUser";
 		this.commandList[19] = "RemoveIgnoredUser";
-		this.commandList[20] = "GetModules";
-		this.commandList[21] = "EnableModule";
-		this.commandList[22] = "DisableModule";
+		this.commandList[20] = "GetIgnoredRoles";
+		this.commandList[21] = "AddIgnoredRole";
+		this.commandList[22] = "RemoveIgnoredRole";
+		this.commandList[23] = "GetModules";
+		this.commandList[24] = "EnableModule";
+		this.commandList[25] = "DisableModule";
+		this.commandList[26] = "GetServerId";
+		this.commandList[27] = "GetChannelId";
+		this.commandList[28] = "GetRoleId";
+		this.commandList[29] = "GetUserId";
 
 		this.defaultConfig.put("commandPrefix", "!");
 		this.defaultConfig.put("respondOnPrefix", "0");
 		this.defaultConfig.put("respondOnMention", "1");
 		this.defaultConfig.put("ignoredChannels", new ArrayList<String>());
 		this.defaultConfig.put("ignoredUsers", new ArrayList<String>());
+		this.defaultConfig.put("ignoredRoles", new ArrayList<String>());
 		this.defaultConfig.put("disabledModules", new ArrayList<String>());
 	}
 
@@ -1114,6 +1123,222 @@ public class Internal extends BotModule
 		}
 	}
 
+	public static class GetIgnoredRoles extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the list of ignored roles.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			Object ignoredRoles = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredRoles");
+
+			if (ignoredRoles.getClass() == String.class)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No roles are being ignored.");
+				return;
+			}
+
+			List<String> ignoredRoleList = Jeeves.listToStringList((List<?>)ignoredRoles);
+
+			if (ignoredRoleList.size() == 0)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No roles are being ignored.");
+				return;
+			}
+
+			String output = "The following roles are being ignored:\n\n";
+
+			for (int index = 0; index < ignoredRoleList.size(); index++)
+			{
+				long roleId = Long.parseLong(ignoredRoleList.get(index));
+				IRole role = message.getGuild().getRoleByID(roleId);
+				output += role.getName() + "\n";
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
+	public static class AddIgnoredRole extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Add a role to the ignore list.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<role>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String roleName)
+		{
+			if (roleName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				return;
+			}
+
+			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				return;
+			}
+
+			if (Jeeves.isIgnored(role) == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The role " + role.getName() + " is being ignored already.");
+				return;
+			}
+
+			Object ignoredRoles = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "getIgnoredRoles");
+			List<String> ignoredRoleList;
+
+			if (ignoredRoles.getClass() == String.class)
+			{
+				ignoredRoleList = new ArrayList<String>();
+			}
+			else
+			{
+				ignoredRoleList = Jeeves.listToStringList((List<?>)ignoredRoles);
+			}
+
+			String roleIdString = Long.toString(role.getLongID());
+			ignoredRoleList.add(roleIdString);
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredRoles", ignoredRoleList);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), "The following role is now being ignored: " + role.getName());
+		}
+	}
+
+	public static class RemoveIgnoredRole extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Remove a role from the ignore list.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<role>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String roleName)
+		{
+			if (roleName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				return;
+			}
+
+			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				return;
+			}
+
+			Object ignoredRoles = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredRoles");
+
+			if (ignoredRoles.getClass() == String.class)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No roles are being ignored.");
+				return;
+			}
+
+			List<String> ignoredRoleList = Jeeves.listToStringList((List<?>)ignoredRoles);
+
+			if (ignoredRoleList.size() == 0)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No roles are being ignored.");
+				return;
+			}
+
+			String roleIdString = Long.toString(role.getLongID());
+			boolean removed = ignoredRoleList.remove(roleIdString);
+
+			if (removed == false)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "The role " + role.getName() + " is not being ignored.");
+				return;
+			}
+
+			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredRoles", ignoredRoleList);
+
+			try
+			{
+				Jeeves.serverConfig.saveConfig();
+			}
+			catch (ParserConfigurationException | TransformerException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				return;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), "The following role is no longer being ignored: " + role.getName());
+		}
+	}
+
 	public static class GetModules extends BotCommand
 	{
 		@Override
@@ -1330,6 +1555,181 @@ public class Internal extends BotModule
 			}
 
 			MessageQueue.sendMessage(message.getChannel(), "The following module has been disabled: " + moduleName);
+		}
+	}
+
+	public static class GetServerId extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the ID of this Discord server.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			String idString = Long.toString(message.getGuild().getLongID());
+			MessageQueue.sendMessage(message.getChannel(), "The ID of this Discord server is " + idString);
+		}
+	}
+
+	public static class GetChannelId extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the ID of the given or current channel.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "[channel]";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String channelName)
+		{
+			IChannel channel = null;
+
+			if (channelName.isEmpty() == true)
+			{
+				channel = message.getChannel();
+			}
+			else
+			{
+				channel = Jeeves.findChannel(message.getGuild(), channelName);
+
+				if (channel == null)
+				{
+					MessageQueue.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
+					return;
+				}
+			}
+
+			String idString = Long.toString(channel.getLongID());
+			MessageQueue.sendMessage(message.getChannel(), "The ID of the channel " + channel.getName() + " is " + idString);
+		}
+	}
+
+	public static class GetRoleId extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the ID of the given role.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<role>";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String roleName)
+		{
+			if (roleName.isEmpty() == true)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "You need to supply a role name.");
+				return;
+			}
+
+			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+
+			if (role == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				return;
+			}
+
+			String idString = Long.toString(role.getLongID());
+			MessageQueue.sendMessage(message.getChannel(), "The ID of the role " + role.getName() + " is " + idString);
+		}
+	}
+
+	public static class GetUserId extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the ID of the given user or yourself.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "[user]";
+			return output;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String userName)
+		{
+			IUser user = null;
+
+			if (userName.isEmpty() == true)
+			{
+				user = message.getAuthor();
+			}
+			else
+			{
+				user = Jeeves.findUser(message.getGuild(), userName);
+
+				if (user == null)
+				{
+					MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+					return;
+				}
+			}
+
+			String idString = Long.toString(user.getLongID());
+			MessageQueue.sendMessage(message.getChannel(), "The ID of the user " + user.getName() + " is " + idString);
 		}
 	}
 }
