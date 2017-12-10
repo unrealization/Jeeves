@@ -3,6 +3,7 @@ package me.unrealization.jeeves.bot;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.MessageDeleteHandler;
+import me.unrealization.jeeves.interfaces.MessageReceivedHandler;
 import me.unrealization.jeeves.interfaces.MessageUpdateHandler;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
 import me.unrealization.jeeves.interfaces.PresenceUpdateHandler;
@@ -86,6 +87,37 @@ public class DiscordEventHandlers
 		public void handle(MessageReceivedEvent event)
 		{
 			IMessage message = event.getMessage();
+			String[] moduleList = Jeeves.getModuleList();
+
+			for (int index = 0; index < moduleList.length; index++)
+			{
+				BotModule module = Jeeves.getModule(moduleList[index]);
+
+				if (Jeeves.isDisabled(event.getGuild().getLongID(), module) == true)
+				{
+					continue;
+				}
+
+				MessageReceivedHandler handler;
+
+				try
+				{
+					handler = (MessageReceivedHandler)module;
+				}
+				catch (Exception e)
+				{
+					//Jeeves.debugException(e);
+					continue;
+				}
+
+				boolean handled = handler.messageReceivedHandler(message);
+
+				if (handled == true)
+				{
+					return;
+				}
+			}
+
 			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnPrefix");
 
 			if (respondOnPrefix.equals("0") == true)
