@@ -30,13 +30,13 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 {
 	private static long ccnLobbyChannelId = 349187463614562316L;
 	private static long ccnBarChannelId = 209372315673165825L;
-	private static long ccnModChannelId = 260526067972964352L;
+	private static long ccnActionLogChannelId = 389782634441605120L;
 	private static long ccnGuestRoleId = 349156047467970561L;
 	private static long ccnColonistRoleId = 210509328753491968L;
 
 	public Ccn()
 	{
-		this.version = "0.9.0";
+		this.version = "0.9.1";
 
 		this.commandList = new String[6];
 		this.commandList[0] = "CcnProximityCheck";
@@ -164,11 +164,11 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 			if ((guestRole == null) || (colonistRole == null))
 			{
-				IChannel modChannel = message.getGuild().getChannelByID(Ccn.ccnModChannelId);
+				IChannel actionLogChannel = message.getGuild().getChannelByID(Ccn.ccnActionLogChannelId);
 
-				if (modChannel != null)
+				if (actionLogChannel != null)
 				{
-					MessageQueue.sendMessage(modChannel, "Error: Cannot tag up " + message.getAuthor().getName() + ", the IDs role the guest- and/or colonist-role must haven changed!");
+					MessageQueue.sendMessage(actionLogChannel, "Error: Cannot tag up " + message.getAuthor().getName() + ", the IDs role the guest- and/or colonist-role must haven changed!");
 				}
 				else
 				{
@@ -187,11 +187,11 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 				MessageQueue.sendMessage(barChannel, "Welcome to the Colonia Citizens Network, " + message.getAuthor().mention() + "!");
 			}
 
-			IChannel modChannel = message.getGuild().getChannelByID(Ccn.ccnModChannelId);
+			IChannel actionLogChannel = message.getGuild().getChannelByID(Ccn.ccnActionLogChannelId);
 
-			if (modChannel != null)
+			if (actionLogChannel != null)
 			{
-				MessageQueue.sendMessage(modChannel, "The user " + message.getAuthor().getName() + " agrees with the guidelines and has therefore been tagged up.");
+				MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().getName() + " agrees with the guidelines and has therefore been tagged up.");
 			}
 
 			return true;
@@ -210,17 +210,17 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 				Jeeves.debugException(e);
 			}
 
-			IChannel modChannel = message.getGuild().getChannelByID(ccnModChannelId);
+			IChannel actionLogChannel = message.getGuild().getChannelByID(ccnActionLogChannelId);
 
-			if (modChannel != null)
+			if (actionLogChannel != null)
 			{
 				if (kicked == true)
 				{
-					MessageQueue.sendMessage(modChannel, "The user " + message.getAuthor().getName() + " did not agree with the guidelines and has therefore been kicked.");
+					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().getName() + " did not agree with the guidelines and has therefore been kicked.");
 				}
 				else
 				{
-					MessageQueue.sendMessage(modChannel, "The user " + message.getAuthor().getName() + " did not agree with the guidelines, but could not be kicked.");
+					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().getName() + " did not agree with the guidelines, but could not be kicked.");
 				}
 			}
 
