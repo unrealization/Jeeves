@@ -29,7 +29,7 @@ public class Internal extends BotModule
 	{
 		this.version = Jeeves.version;
 
-		this.commandList = new String[30];
+		this.commandList = new String[31];
 		this.commandList[0] = "Help";
 		this.commandList[1] = "Version";
 		this.commandList[2] = "Ping";
@@ -60,6 +60,7 @@ public class Internal extends BotModule
 		this.commandList[27] = "GetChannelId";
 		this.commandList[28] = "GetRoleId";
 		this.commandList[29] = "GetUserId";
+		this.commandList[30] = "GetJoinLink";
 
 		this.defaultConfig.put("commandPrefix", "!");
 		this.defaultConfig.put("respondOnPrefix", "0");
@@ -1730,6 +1731,34 @@ public class Internal extends BotModule
 
 			String idString = Long.toString(user.getLongID());
 			MessageQueue.sendMessage(message.getChannel(), "The ID of the user " + user.getName() + " is " + idString);
+		}
+	}
+
+	public static class GetJoinLink extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the link to let the bot join a new Discord server.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public boolean owner()
+		{
+			return true;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			MessageQueue.sendMessage(message.getChannel(), "https://discordapp.com/api/oauth2/authorize?client_id=" + Jeeves.bot.getApplicationClientID() + "&scope=bot");
 		}
 	}
 }
