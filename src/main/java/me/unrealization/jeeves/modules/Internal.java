@@ -27,7 +27,7 @@ public class Internal extends BotModule
 {
 	public Internal()
 	{
-		this.version = Jeeves.version;
+		this.version = "1.0.0";
 
 		this.commandList = new String[31];
 		this.commandList[0] = "Help";
