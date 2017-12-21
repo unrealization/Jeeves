@@ -23,7 +23,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "1.0.1";
+		this.version = "1.0.2";
 
 		this.commandList = new String[12];
 		this.commandList[0] = "GetRoles";
@@ -319,8 +319,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get a list of users with the given role.";
+			return output;
 		}
 
 		@Override
@@ -379,8 +379,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get a list of users missing the given role.";
+			return output;
 		}
 
 		@Override
@@ -452,8 +452,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get a list users without any roles.";
+			return output;
 		}
 
 		@Override
@@ -641,8 +641,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Lock a role so users can no longer assign it to themselves.";
+			return output;
 		}
 
 		@Override
@@ -719,8 +719,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Unlock a role so users can assign it to themselves.";
+			return output;
 		}
 
 		@Override
@@ -802,8 +802,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Assign a role to another user.";
+			return output;
 		}
 
 		@Override
@@ -898,8 +898,8 @@ public class Roles extends BotModule implements UserJoinedHandler
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Remove a role from another user.";
+			return output;
 		}
 
 		@Override

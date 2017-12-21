@@ -36,7 +36,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 	public Ccn()
 	{
-		this.version = "0.9.1";
+		this.version = "0.9.2";
 
 		this.commandList = new String[6];
 		this.commandList[0] = "CcnProximityCheck";
@@ -624,14 +624,13 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Post a link to the guidelines and instructions in the lobby.";
+			return output;
 		}
 
 		@Override
 		public String getParameters()
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
