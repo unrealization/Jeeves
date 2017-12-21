@@ -4,7 +4,7 @@ A bot for Discord based on the Discord4J library (https://github.com/austinv11/D
 
 Through a number of modules Jeeves has a certain focus on the game Elite: Dangerous, but can also provide useful functions for Discord servers unrelated to the game.
 
-For Elite: Dangerous related Discord servers it offers access to the EDSM and ED Materializer APIs.
+For Elite: Dangerous related Discord servers it offers access to the EDSM API.
 
 Jeeves' more general functions include things like welcoming new users, handling of roles or announcements of streams.
 
