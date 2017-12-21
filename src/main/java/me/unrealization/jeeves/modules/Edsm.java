@@ -25,7 +25,7 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.9.0";
+		this.version = "0.9.1";
 
 		this.commandList = new String[17];
 		this.commandList[0] = "GetUseEdsmBetaServer";
@@ -183,8 +183,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Register your EDSM-username with the bot for convenience on some EDSM commands.";
+			return output;
 		}
 
 		@Override
@@ -226,8 +226,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Clear your EDSM username from the bots register.";
+			return output;
 		}
 
 		@Override
@@ -257,8 +257,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get the EDSM username of the given user or yourself.";
+			return output;
 		}
 
 		@Override
@@ -322,8 +322,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Check the Elite: Dangerous server status.";
+			return output;
 		}
 
 		@Override
@@ -358,8 +358,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Locate the given commander, or yourself.";
+			return output;
 		}
 
 		@Override
@@ -435,8 +435,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get the coordinates of the given system.";
+			return output;
 		}
 
 		@Override
@@ -485,8 +485,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get the coordinates of the system the given commander is in.";
+			return output;
 		}
 
 		@Override
@@ -557,8 +557,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Calculate the distance between two systems or commanders.";
+			return output;
 		}
 
 		@Override
@@ -675,8 +675,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get a list of systems in a sphere centered around the given system.";
+			return output;
 		}
 
 		@Override
@@ -775,8 +775,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get a list of systems in a cube centered around the given system.";
+			return output;
 		}
 
 		@Override
@@ -875,8 +875,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Calculate the route from origin to destination at the given jumprange.";
+			return output;
 		}
 
 		@Override
@@ -1016,14 +1016,14 @@ public class Edsm extends BotModule
 			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
-
+ 
 	public static class SystemInfo extends BotCommand
 	{
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get information about the given system.";
+			return output;
 		}
 
 		@Override
@@ -1096,8 +1096,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get information on the bodies, or a specific body, in the given system.";
+			return output;
 		}
 
 		@Override
@@ -1198,8 +1198,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get information on the stations, or a specific station, in the given system.";
+			return output;
 		}
 
 		@Override
@@ -1290,8 +1290,8 @@ public class Edsm extends BotModule
 		@Override
 		public String getHelp()
 		{
-			// TODO Auto-generated method stub
-			return null;
+			String output = "Get information about the factions, or a specific faction, in the given system.";
+			return output;
 		}
 
 		@Override
