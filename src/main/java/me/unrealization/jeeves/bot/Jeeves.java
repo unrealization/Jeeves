@@ -19,6 +19,7 @@ import me.unrealization.jeeves.modules.Cron;
 import me.unrealization.jeeves.modules.Edsm;
 import me.unrealization.jeeves.modules.Internal;
 import me.unrealization.jeeves.modules.ModLog;
+import me.unrealization.jeeves.modules.ParadoxWing;
 import me.unrealization.jeeves.modules.Roles;
 import me.unrealization.jeeves.modules.UserLog;
 import me.unrealization.jeeves.modules.Welcome;
@@ -100,6 +101,7 @@ public class Jeeves
 
 		Jeeves.modules.put("internal", new Internal());
 		Jeeves.modules.put("modLog", new ModLog());
+		Jeeves.modules.put("paradoxWing", new ParadoxWing());
 		Jeeves.modules.put("roles", new Roles());
 		Jeeves.modules.put("userLog", new UserLog());
 		Jeeves.modules.put("welcome", new Welcome());
