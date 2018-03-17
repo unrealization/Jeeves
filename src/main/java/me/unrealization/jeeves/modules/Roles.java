@@ -23,9 +23,9 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "1.0.2";
+		this.version = "1.1.0";
 
-		this.commandList = new String[12];
+		this.commandList = new String[13];
 		this.commandList[0] = "GetRoles";
 		this.commandList[1] = "Join";
 		this.commandList[2] = "Leave";
@@ -36,8 +36,9 @@ public class Roles extends BotModule implements UserJoinedHandler
 		this.commandList[7] = "SetAutoRole";
 		this.commandList[8] = "LockRole";
 		this.commandList[9] = "UnlockRole";
-		this.commandList[10] = "AssignRole";
-		this.commandList[11] = "UnassignRole";
+		this.commandList[10] = "GetLockedRoles";
+		this.commandList[11] = "AssignRole";
+		this.commandList[12] = "UnassignRole";
 
 		this.defaultConfig.put("autoRole", "");
 		this.defaultConfig.put("lockedRoles", new ArrayList<String>());
@@ -160,18 +161,25 @@ public class Roles extends BotModule implements UserJoinedHandler
 			}
 
 			String output = "The following roles can be managed by the bot:\n";
+			int foundRoles = 0;
 
 			for (int roleIndex = 0; roleIndex < manageableRoles.size(); roleIndex++)
 			{
 				IRole role = manageableRoles.get(roleIndex);
-				output += "\t" + role.getName();
 
 				if (Roles.isLocked(role) == true)
 				{
-					output += " (locked)";
+					continue;
 				}
 
-				output += "\n";
+				foundRoles++;
+				output += "\t" + role.getName() + "\n";
+			}
+
+			if (foundRoles == 0)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "All manageable roles are locked.");
+				return;
 			}
 
 			MessageQueue.sendMessage(message.getChannel(), output);
@@ -794,6 +802,77 @@ public class Roles extends BotModule implements UserJoinedHandler
 			}
 
 			MessageQueue.sendMessage(message.getChannel(), "The following role has been unlocked: " + role.getName());
+		}
+	}
+
+	public static class GetLockedRoles extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Get the list of locked roles.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			return null;
+		}
+
+		@Override
+		public Permissions[] permissions()
+		{
+			Permissions[] permissionList = new Permissions[1];
+			permissionList[0] = Permissions.MANAGE_SERVER;
+			return permissionList;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			List<IRole> manageableRoles;
+
+			try
+			{
+				manageableRoles = Roles.getManageableRoles(message.getGuild());
+			}
+			catch (Exception e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "The bot does not have the permission to manage roles.");
+				return;
+			}
+
+			if (manageableRoles.size() == 0)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "No manageable roles found.");
+				return;
+			}
+
+			String output = "The following roles are locked:\n";
+			int foundRoles = 0;
+
+			for (int roleIndex = 0; roleIndex < manageableRoles.size(); roleIndex++)
+			{
+				IRole role = manageableRoles.get(roleIndex);
+
+				if (Roles.isLocked(role) == false)
+				{
+					continue;
+				}
+
+				foundRoles++;
+				output += "\t" + role.getName() + "\n";
+			}
+
+			if (foundRoles == 0)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "None of the manageable roles are locked.");
+				return;
+			}
+
+			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
 
