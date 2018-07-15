@@ -25,7 +25,7 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.9.1";
+		this.version = "0.9.2";
 
 		this.commandList = new String[17];
 		this.commandList[0] = "GetUseEdsmBetaServer";
@@ -665,7 +665,7 @@ public class Edsm extends BotModule
 			}
 
 			String distance = Edsm.calculateDistance(systemInfo[0].coords, systemInfo[1].coords);
-			String output = "The distance between " + systemInfo[0].name + " and " + systemInfo[0].name + " is " + distance + " ly.";
+			String output = "The distance between " + systemInfo[0].name + " and " + systemInfo[1].name + " is " + distance + " ly.";
 			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
