@@ -410,7 +410,7 @@ public class DiscordEventHandlers
 
 	public static void handleMessage(IMessage message, boolean cronJob)
 	{
-		if (message.mentionsEveryone() == true)
+		if ((message.mentionsEveryone() == true) || (message.mentionsHere() == true))
 		{
 			return;
 		}
