@@ -410,6 +410,11 @@ public class DiscordEventHandlers
 
 	public static void handleMessage(IMessage message, boolean cronJob)
 	{
+		if (message.mentionsEveryone() == true)
+		{
+			return;
+		}
+
 		if (Jeeves.isIgnored(message.getChannel()) == true)
 		{
 			return;
