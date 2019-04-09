@@ -13,7 +13,7 @@ public class WebClient
 	{
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestMethod(method);
-		connection.setRequestProperty("User-Agent", "Java Test");
+		connection.setRequestProperty("User-Agent", "Jeeves " + Jeeves.version + " (Discord Bot)");
 
 		if (method.equals("POST") == true)
 		{
@@ -26,10 +26,9 @@ public class WebClient
 
 		int responseCode = connection.getResponseCode();
 
-		System.out.println("Status Code: " + responseCode);
-
 		if (responseCode != 200)
 		{
+			System.out.println("Status Code: " + responseCode);
 			return null;
 		}
 
@@ -43,6 +42,7 @@ public class WebClient
 		}
 
 		webReader.close();
+		connection.disconnect();
 		return response.toString();
 	}
 
