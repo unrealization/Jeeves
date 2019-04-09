@@ -145,12 +145,13 @@ public class ServerConfig implements BotConfig
 			server.setAttributeNode(serverId);
 			docRoot.appendChild(server);
 
-			if (Jeeves.bot != null)
+			//TODO: Fix comments breaking the encoding.
+			/*if (Jeeves.bot != null)
 			{
 				IGuild guild = Jeeves.bot.getGuildByID(serverIdList[serverIndex]);
 				Comment serverName = doc.createComment(guild.getName());
 				server.appendChild(serverName);
-			}
+			}*/
 
 			Set<String> configKeySet = serverConfig.keySet();
 			String[] configKeyList = configKeySet.toArray(new String[configKeySet.size()]);
