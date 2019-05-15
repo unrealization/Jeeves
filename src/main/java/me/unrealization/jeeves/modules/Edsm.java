@@ -25,7 +25,7 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.9.2";
+		this.version = "0.9.3";
 
 		this.commandList = new String[17];
 		this.commandList[0] = "GetUseEdsmBetaServer";
@@ -609,7 +609,7 @@ public class Edsm extends BotModule
 
 				try
 				{
-					systemData = edsmApi.getSystemInfo(searchNames[index]);
+					systemData = edsmApi.getSystemInfo(Edsm.sanitizeString(searchNames[index]));
 				}
 				catch (IOException e)
 				{
