@@ -13,10 +13,10 @@ import sx.blah.discord.util.RateLimitException;
 public class RoleQueue
 {
 	private static RoleQueue instance = null;
-	private List<RoleQueue.RoleQueueItem> roleList = new ArrayList<RoleQueue.RoleQueueItem>();
+	private List<RoleQueue.QueueItem> roleList = new ArrayList<RoleQueue.QueueItem>();
 	private Thread worker = null;
 
-	private static class RoleQueueItem
+	private static class QueueItem
 	{
 		public String action = null;
 		public IUser user = null;
@@ -30,7 +30,7 @@ public class RoleQueue
 		public void run()
 		{
 			RoleQueue roleQueue = RoleQueue.getInstance();
-			RoleQueueItem queueItem;
+			QueueItem queueItem;
 
 			while ((queueItem = roleQueue.getQueueItem()) != null)
 			{
@@ -109,7 +109,7 @@ public class RoleQueue
 	public static void addRoleToUser(IRole role, IUser user, IChannel notificationChannel)
 	{
 		RoleQueue roleQueue = RoleQueue.getInstance();
-		RoleQueueItem roleItem = new RoleQueueItem();
+		QueueItem roleItem = new QueueItem();
 		roleItem.action = "add";
 		roleItem.role = role;
 		roleItem.user = user;
@@ -125,7 +125,7 @@ public class RoleQueue
 	public static void removeRoleFromUser(IRole role, IUser user, IChannel notificationChannel)
 	{
 		RoleQueue roleQueue = RoleQueue.getInstance();
-		RoleQueueItem roleItem = new RoleQueueItem();
+		QueueItem roleItem = new QueueItem();
 		roleItem.action = "remove";
 		roleItem.role = role;
 		roleItem.user = user;
@@ -138,7 +138,7 @@ public class RoleQueue
 		RoleQueue.removeRoleFromUser(role, user, null);
 	}
 
-	private void addQueueItem(RoleQueueItem queueItem)
+	private void addQueueItem(QueueItem queueItem)
 	{
 		this.roleList.add(queueItem);
 
@@ -149,7 +149,7 @@ public class RoleQueue
 		}
 	}
 
-	private RoleQueueItem getQueueItem()
+	private QueueItem getQueueItem()
 	{
 		if (this.roleList.size() == 0)
 		{

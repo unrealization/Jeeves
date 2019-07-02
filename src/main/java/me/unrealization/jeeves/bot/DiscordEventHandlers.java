@@ -617,7 +617,7 @@ public class DiscordEventHandlers
 
 				System.out.println("Executing " + command.getClass().getSimpleName() + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ": " + message.getChannel().getName() + ")");
 				String argumentString = String.join(" ", arguments);
-				command.execute(message, argumentString);
+				CommandQueue.runCommand(command, message, argumentString);
 			}
 		}
 	}

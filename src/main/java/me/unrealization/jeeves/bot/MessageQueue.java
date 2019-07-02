@@ -13,10 +13,10 @@ import sx.blah.discord.util.RateLimitException;
 public class MessageQueue
 {
 	private static MessageQueue instance = null;
-	private List<MessageQueue.MessageQueueItem> messageList = new ArrayList<MessageQueue.MessageQueueItem>();
+	private List<MessageQueue.QueueItem> messageList = new ArrayList<MessageQueue.QueueItem>();
 	private Thread worker = null;
 
-	private static class MessageQueueItem
+	private static class QueueItem
 	{
 		public IChannel channel = null;
 		public IUser user = null;
@@ -29,7 +29,7 @@ public class MessageQueue
 		public void run()
 		{
 			MessageQueue messageQueue = MessageQueue.getInstance();
-			MessageQueueItem queueItem;
+			QueueItem queueItem;
 
 			while ((queueItem = messageQueue.getQueueItem()) != null)
 			{
@@ -129,7 +129,7 @@ public class MessageQueue
 
 		for (int messageIndex = 0; messageIndex < messageList.size(); messageIndex++)
 		{
-			MessageQueueItem messageItem = new MessageQueueItem();
+			QueueItem messageItem = new QueueItem();
 			messageItem.channel = channel;
 			messageItem.message = messageList.get(messageIndex);
 			messageQueue.addQueueItem(messageItem);
@@ -143,7 +143,7 @@ public class MessageQueue
 
 		for (int messageIndex = 0; messageIndex < messageList.size(); messageIndex++)
 		{
-			MessageQueueItem messageItem = new MessageQueueItem();
+			QueueItem messageItem = new QueueItem();
 			messageItem.user = user;
 			messageItem.message = messageList.get(messageIndex);
 			messageQueue.addQueueItem(messageItem);
@@ -180,7 +180,7 @@ public class MessageQueue
 		return messageList;
 	}
 
-	private void addQueueItem(MessageQueueItem queueItem)
+	private void addQueueItem(QueueItem queueItem)
 	{
 		this.messageList.add(queueItem);
 
@@ -191,7 +191,7 @@ public class MessageQueue
 		}
 	}
 
-	private MessageQueueItem getQueueItem()
+	private QueueItem getQueueItem()
 	{
 		if (this.messageList.size() == 0)
 		{
