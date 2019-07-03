@@ -972,20 +972,32 @@ public class Edsm extends BotModule
 					return;
 				}
 
+				if (systemBubble == null)
+				{
+					output += "EDSM communication error.\n";
+					abortRouting = true;
+					continue;
+				}
+
 				EdsmModels.SystemInfo nextJump = null;
 				float nextJumpDistance = Float.POSITIVE_INFINITY;
 
 				for (int index = 0; index < systemBubble.length; index++)
 				{
-					String distanceString = Edsm.calculateDistance(systemBubble[index].coords, destinationInfo.coords);
-					float distance = Float.parseFloat(distanceString);
-
-					if (distance > currentDistance)
+					if (currentOriginInfo.name.equals(systemBubble[index].name) == true)
 					{
 						continue;
 					}
 
-					if ((nextJump != null) && (distance > nextJumpDistance))
+					String distanceString = Edsm.calculateDistance(systemBubble[index].coords, destinationInfo.coords);
+					float distance = Float.parseFloat(distanceString);
+
+					if (distance >= currentDistance)
+					{
+						continue;
+					}
+
+					if ((nextJump != null) && (distance >= nextJumpDistance))
 					{
 						continue;
 					}
