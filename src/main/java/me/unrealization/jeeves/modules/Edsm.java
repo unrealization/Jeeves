@@ -25,9 +25,9 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.9.3";
+		this.version = "0.10.0";
 
-		this.commandList = new String[17];
+		this.commandList = new String[18];
 		this.commandList[0] = "GetUseEdsmBetaServer";
 		this.commandList[1] = "SetUseEdsmBetaServer";
 		this.commandList[2] = "Register";
@@ -41,10 +41,11 @@ public class Edsm extends BotModule
 		this.commandList[10] = "SystemSphere";
 		this.commandList[11] = "SystemCube";
 		this.commandList[12] = "Route";
-		this.commandList[13] = "SystemInfo";
-		this.commandList[14] = "BodyInfo";
-		this.commandList[15] = "StationInfo";
-		this.commandList[16] = "FactionInfo";
+		this.commandList[13] = "NextJump";
+		this.commandList[14] = "SystemInfo";
+		this.commandList[15] = "BodyInfo";
+		this.commandList[16] = "StationInfo";
+		this.commandList[17] = "FactionInfo";
 
 		this.defaultConfig.put("edsmUseBetaServer", "1");
 
@@ -1028,7 +1029,143 @@ public class Edsm extends BotModule
 			MessageQueue.sendMessage(message.getChannel(), output);
 		}
 	}
- 
+
+	public static class NextJump extends BotCommand
+	{
+		@Override
+		public String getHelp()
+		{
+			String output = "Find the next jump from one system to another for the given jump range.";
+			return output;
+		}
+
+		@Override
+		public String getParameters()
+		{
+			String output = "<origin> : <destination> : <jumprange>";
+			return output;
+		}
+
+		@Override
+		public void execute(IMessage message, String argumentString)
+		{
+			String[] arguments = Jeeves.splitArguments(argumentString);
+
+			if (arguments.length < 3)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Insufficient amount of parameters.\n" + this.getParameters());
+				return;
+			}
+
+			String origin = arguments[0];
+			String destination = arguments[1];
+			String jumpRange = arguments[2];
+
+			try
+			{
+				Float.parseFloat(jumpRange);
+			}
+			catch (NumberFormatException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "Invalid value for jump range.");
+				return;
+			}
+
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmModels.SystemInfo originInfo;
+
+			try
+			{
+				originInfo = edsmApi.getSystemInfo(Edsm.sanitizeString(origin));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (originInfo == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), origin + " cannot be found on EDSM.");
+				return;
+			}
+
+			EdsmModels.SystemInfo destinationInfo;
+
+			try
+			{
+				destinationInfo = edsmApi.getSystemInfo(Edsm.sanitizeString(destination));
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (destinationInfo == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), destination + " cannot be found on EDSM.");
+			}
+
+			EdsmModels.SystemInfo[] systemBubble;
+
+			try
+			{
+				systemBubble = edsmApi.getSystemSphere(Edsm.sanitizeString(originInfo.name), jumpRange);
+			}
+			catch (IOException e)
+			{
+				Jeeves.debugException(e);
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			if (systemBubble == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				return;
+			}
+
+			String distanceString = Edsm.calculateDistance(originInfo.coords, destinationInfo.coords);
+			float originDistance = Float.parseFloat(distanceString);
+
+			EdsmModels.SystemInfo nextJump = null;
+			float nextJumpDistance = Float.POSITIVE_INFINITY;
+
+			for (int index = 0; index < systemBubble.length; index++)
+			{
+				if (originInfo.name.equals(systemBubble[index].name) == true)
+				{
+					continue;
+				}
+
+				distanceString = Edsm.calculateDistance(systemBubble[index].coords, destinationInfo.coords);
+				float distance = Float.parseFloat(distanceString);
+
+				if ((distance >= originDistance) || ((nextJump != null) && (distance >= nextJumpDistance)))
+				{
+					continue;
+				}
+
+				nextJump = systemBubble[index];
+				nextJumpDistance = distance;
+			}
+
+			if (nextJump == null)
+			{
+				MessageQueue.sendMessage(message.getChannel(), "Unable to find the next jump.");
+				return;
+			}
+
+			String jumpDistance = Edsm.calculateDistance(originInfo.coords, nextJump.coords);
+			String output = nextJump.name + " (Jump Distance: " + jumpDistance + " ly) (Distance to " + destinationInfo.name + ": " + Float.toString(nextJumpDistance) + " ly)\n";
+			MessageQueue.sendMessage(message.getChannel(), output);
+		}
+	}
+
 	public static class SystemInfo extends BotCommand
 	{
 		@Override
