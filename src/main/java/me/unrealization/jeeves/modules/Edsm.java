@@ -1315,20 +1315,252 @@ public class Edsm extends BotModule
 				output += "\n";
 				output += "Body: " + data.bodies[index].name + "\n";
 
-				if (data.bodies[index].type.equals("Star"))
+				if (data.bodies[index].type.equals("Star") == true)
 				{
 					output += "Type: " + data.bodies[index].subType + "\n";
+
+					if (data.bodies[index].isMainStar.equals("true") == true)
+					{
+						output += "Main star\n";
+					}
+
+					if (data.bodies[index].isScoopable.equals("true") == true)
+					{
+						output += "Scoopable\n";
+					}
+					else
+					{
+						output += "Not scoopable\n";
+					}
+
+					if (data.bodies[index].belts != null)
+					{
+						output += "Has belts\n";
+					}
 				}
 				else
 				{
 					output += "Type: " + data.bodies[index].type + " (" + data.bodies[index].subType + ")\n";
+
+					if (data.bodies[index].isLandable.equals("true") == true)
+					{
+						output += "Is landable\n";
+					}
+
+					if (data.bodies[index].rings != null)
+					{
+						output += "Has rings\n";
+					}
 				}
 
-				output += "Distance from Arrival: " + data.bodies[index].distanceToArrival + " ls\n";
+				output += "Distance to arrival: " + data.bodies[index].distanceToArrival + " ls\n";
 
 				if (bodyName != null)
 				{
-					//add all the details!
+					if (data.bodies[index].type.equals("Star") == true)
+					{
+						output += "Solar radii: " + data.bodies[index].solarRadius + "\n";
+						output += "Solar masses: " + data.bodies[index].solarMasses + "\n";
+						output += "Absolute magnitude: " + data.bodies[index].absoluteMagnitude + "\n";
+						output += "Age: " + data.bodies[index].age + "\n";
+
+						if (data.bodies[index].belts != null)
+						{
+							output += "Belts: \n";
+
+							for (int beltIndex = 0; beltIndex < data.bodies[index].belts.length; beltIndex++)
+							{
+								output += "\n";
+								output += data.bodies[index].belts[beltIndex].name + "\n";
+								output += "Type: " + data.bodies[index].belts[beltIndex].type + "\n";
+								output += "Mass: " + data.bodies[index].belts[beltIndex].mass + "\n";
+								output += "Inner radius: " + data.bodies[index].belts[beltIndex].innerRadius + "\n";
+								output += "Outer radius: " + data.bodies[index].belts[beltIndex].outerRadius + "\n";
+							}
+						}
+					}
+					else
+					{
+						output += "Radius: " + data.bodies[index].radius + "\n";
+						output += "Earth masses: " + data.bodies[index].earthMasses + "\n";
+						output += "Gravity: " + data.bodies[index].gravity + "\n";
+						output += "Atmosphere type: " + data.bodies[index].atmosphereType + "\n";
+
+						if ((data.bodies[index].isLandable.equals("true") == true) && (data.bodies[index].materials != null))
+						{
+							output += "Materials: \n";
+
+							if (data.bodies[index].materials.Antimony != null)
+							{
+								output += "Antimony: " + data.bodies[index].materials.Antimony + "\n";
+							}
+
+							if (data.bodies[index].materials.Arsenic != null)
+							{
+								output += "Arsenic: " + data.bodies[index].materials.Arsenic + "\n";
+							}
+
+							if (data.bodies[index].materials.Cadmium != null)
+							{
+								output += "Cadmium: " + data.bodies[index].materials.Cadmium + "\n";
+							}
+
+							if (data.bodies[index].materials.Carbon != null)
+							{
+								output += "Carbon: " + data.bodies[index].materials.Carbon + "\n";
+							}
+
+							if (data.bodies[index].materials.Chromium != null)
+							{
+								output += "Chromium: " + data.bodies[index].materials.Chromium + "\n";
+							}
+
+							if (data.bodies[index].materials.Germanium != null)
+							{
+								output += "Germanium: " + data.bodies[index].materials.Germanium + "\n";
+							}
+
+							if (data.bodies[index].materials.Iron != null)
+							{
+								output += "Iron: " + data.bodies[index].materials.Iron + "\n";
+							}
+
+							if (data.bodies[index].materials.Manganese != null)
+							{
+								output += "Manganese: " + data.bodies[index].materials.Manganese + "\n";
+							}
+
+							if (data.bodies[index].materials.Mercury != null)
+							{
+								output += "Mercury: " + data.bodies[index].materials.Mercury + "\n";
+							}
+
+							if (data.bodies[index].materials.Molybdenum != null)
+							{
+								output += "Molybdenum: " + data.bodies[index].materials.Molybdenum + "\n";
+							}
+
+							if (data.bodies[index].materials.Nickel != null)
+							{
+								output += "Nickel: " + data.bodies[index].materials.Nickel + "\n";
+							}
+
+							if (data.bodies[index].materials.Niobium != null)
+							{
+								output += "Niobium: " + data.bodies[index].materials.Niobium + "\n";
+							}
+
+							if (data.bodies[index].materials.Phosphorus != null)
+							{
+								output += "Phosphorus: " + data.bodies[index].materials.Phosphorus + "\n";
+							}
+
+							if (data.bodies[index].materials.Polonium != null)
+							{
+								output += "Polonium: " + data.bodies[index].materials.Polonium + "\n";
+							}
+							else
+							{
+								int choice = (int)Math.round(Math.random() * 10);
+
+								switch (choice)
+								{
+									case 0:
+									case 1:
+									case 2:
+									case 3:
+									case 4:
+									case 5:
+										break;
+									case 6:
+										output += "Polonium: You wish!\n";
+										break;
+									case 7:
+										output += "Polonium: As if!\n";
+										break;
+									case 8:
+										output += "Polonium: Ha ha ha ha ha!\n";
+										break;
+									case 9:
+										output += "Polonium: Did you really expect to find that here?\n";
+										break;
+									case 10:
+										output += "Polonium: NO! NO POLONIUM FOR YOU! EVER!\n";
+										break;
+								}
+							}
+
+							if (data.bodies[index].materials.Ruthenium != null)
+							{
+								output += "Ruthenium: " + data.bodies[index].materials.Ruthenium + "\n";
+							}
+
+							if (data.bodies[index].materials.Selenium != null)
+							{
+								output += "Selenium: " + data.bodies[index].materials.Selenium + "\n";
+							}
+
+							if (data.bodies[index].materials.Sulphur != null)
+							{
+								output += "Sulphur: " + data.bodies[index].materials.Sulphur + "\n";
+							}
+
+							if (data.bodies[index].materials.Technetium != null)
+							{
+								output += "Technetium: " + data.bodies[index].materials.Technetium + "\n";
+							}
+
+							if (data.bodies[index].materials.Tellurium != null)
+							{
+								output += "Tellurium: " + data.bodies[index].materials.Tellurium + "\n";
+							}
+
+							if (data.bodies[index].materials.Tin != null)
+							{
+								output += "Tin: " + data.bodies[index].materials.Tin + "\n";
+							}
+
+							if (data.bodies[index].materials.Tungsten != null)
+							{
+								output += "Tungsten: " + data.bodies[index].materials.Tungsten + "\n";
+							}
+
+							if (data.bodies[index].materials.Vanadium != null)
+							{
+								output += "Vanadium: " + data.bodies[index].materials.Vanadium + "\n";
+							}
+
+							if (data.bodies[index].materials.Yttrium != null)
+							{
+								output += "Yttrium: " + data.bodies[index].materials.Yttrium + "\n";
+							}
+
+							if (data.bodies[index].materials.Zinc != null)
+							{
+								output += "Zinc: " + data.bodies[index].materials.Zinc + "\n";
+							}
+
+							if (data.bodies[index].materials.Zirconium != null)
+							{
+								output += "Zirconium: " + data.bodies[index].materials.Zirconium + "\n";
+							}
+						}
+
+						if (data.bodies[index].rings != null)
+						{
+							output += "Rings: \n";
+
+							for (int ringIndex = 0; ringIndex < data.bodies[index].rings.length; ringIndex++)
+							{
+								output += "\n";
+								output += data.bodies[index].rings[ringIndex].name + "\n";
+								output += "Type: " + data.bodies[index].rings[ringIndex].type + "\n";
+								output += "Mass: " + data.bodies[index].rings[ringIndex].mass + "\n";
+								output += "Inner radius: " + data.bodies[index].rings[ringIndex].innerRadius + "\n";
+								output += "Outer radius: " + data.bodies[index].rings[ringIndex].outerRadius + "\n";
+							}
+						}
+					}
 				}
 			}
 
@@ -1417,10 +1649,11 @@ public class Edsm extends BotModule
 				output += "\n";
 				output += "Station: " + data.stations[index].name + "\n";
 				output += "Type: " + data.stations[index].type + "\n";
+				output += "Distance to arrival: " + data.stations[index].distanceToArrival + " ls\n";
 
 				if (stationName != null)
 				{
-					//add all the details!
+					//TODO add all the details!
 				}
 			}
 
@@ -1509,6 +1742,19 @@ public class Edsm extends BotModule
 				output += "\n";
 				output += "Faction: " + data.factions[index].name + "\n";
 
+				if (data.factions[index].isPlayer.equals("true") == true)
+				{
+					output += "Player faction\n";
+				}
+
+				if (data.factions[index].id.equals(data.controllingFaction.id) == true)
+				{
+					output += "Controlling faction\n";
+				}
+
+				output += "Allegiance: " + data.factions[index].allegiance + "\n";
+				output += "Government: " + data.factions[index].government + "\n";
+
 				try
 				{
 					float influence = Float.parseFloat(data.factions[index].influence) * 100;
@@ -1524,7 +1770,39 @@ public class Edsm extends BotModule
 
 				if (factionName != null)
 				{
-					//add all the details!
+					if (data.factions[index].pendingStates.length > 0)
+					{
+						output += "Pending states: ";
+
+						for (int stateIndex = 0; stateIndex < data.factions[index].pendingStates.length; stateIndex++)
+						{
+							if (stateIndex > 0)
+							{
+								output += ", ";
+							}
+
+							output += data.factions[index].pendingStates[stateIndex].state;
+						}
+
+						output += "\n";
+					}
+
+					if (data.factions[index].recoveringStates.length > 0)
+					{
+						output += "Recovering states: ";
+
+						for (int stateIndex = 0; stateIndex < data.factions[index].recoveringStates.length; stateIndex++)
+						{
+							if (stateIndex > 0)
+							{
+								output += ", ";
+							}
+
+							output += data.factions[index].recoveringStates[stateIndex].state;
+						}
+
+						output += "\n";
+					}
 				}
 			}
 
