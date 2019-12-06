@@ -3,12 +3,9 @@ package me.unrealization.jeeves.bot;
 import java.util.ArrayList;
 import java.util.List;
 
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Role;
 
 public class RoleQueue
 {
@@ -19,9 +16,9 @@ public class RoleQueue
 	private static class QueueItem
 	{
 		public String action = null;
-		public IUser user = null;
-		public IRole role = null;
-		public IChannel notificationChannel = null;
+		public Member user = null;
+		public Role role = null;
+		public Channel notificationChannel = null;
 	}
 
 	private static class QueueWorker implements Runnable
@@ -34,56 +31,27 @@ public class RoleQueue
 
 			while ((queueItem = roleQueue.getQueueItem()) != null)
 			{
-				try
+				switch (queueItem.action)
 				{
-					switch (queueItem.action)
+				case "add":
+					queueItem.user.addRole(queueItem.role.getId());
+
+					if (queueItem.notificationChannel != null)
 					{
-					case "add":
-						queueItem.user.addRole(queueItem.role);
-
-						if (queueItem.notificationChannel != null)
-						{
-							MessageQueue.sendMessage(queueItem.notificationChannel, "The role " + queueItem.role.getName() + " has been added to " + queueItem.user.getName());
-						}
-						break;
-					case "remove":
-						queueItem.user.removeRole(queueItem.role);
-
-						if (queueItem.notificationChannel != null)
-						{
-							MessageQueue.sendMessage(queueItem.notificationChannel, "The role " + queueItem.role.getName() + " has been removed from " + queueItem.user.getName());
-						}
-						break;
-					default:
-						System.out.println("Unknown role queue action " + queueItem.action);
-						break;
+						MessageQueue.sendMessage(queueItem.notificationChannel, "The role " + queueItem.role.getName() + " has been added to " + queueItem.user.getDisplayName());
 					}
-				}
-				catch (RateLimitException e)
-				{
-					Jeeves.debugException(e);
+					break;
+				case "remove":
+					queueItem.user.removeRole(queueItem.role.getId());
 
-					try
+					if (queueItem.notificationChannel != null)
 					{
-						Thread.sleep(e.getRetryDelay());
+						MessageQueue.sendMessage(queueItem.notificationChannel, "The role " + queueItem.role.getName() + " has been removed from " + queueItem.user.getDisplayName());
 					}
-					catch (InterruptedException e1)
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-
-					continue;
-				}
-				catch (MissingPermissionsException e)
-				{
-					Jeeves.debugException(e);
-					System.out.println("Missing permissions to apply role change. Discarding.");
-				}
-				catch (DiscordException e)
-				{
-					Jeeves.debugException(e);
-					continue;
+					break;
+				default:
+					System.out.println("Unknown role queue action " + queueItem.action);
+					break;
 				}
 
 				roleQueue.removeQueueItem();
@@ -106,7 +74,7 @@ public class RoleQueue
 		return RoleQueue.instance;
 	}
 
-	public static void addRoleToUser(IRole role, IUser user, IChannel notificationChannel)
+	public static void addRoleToUser(Role role, Member user, Channel notificationChannel)
 	{
 		RoleQueue roleQueue = RoleQueue.getInstance();
 		QueueItem roleItem = new QueueItem();
@@ -117,12 +85,12 @@ public class RoleQueue
 		roleQueue.addQueueItem(roleItem);
 	}
 
-	public static void addRoleToUser(IRole role, IUser user)
+	public static void addRoleToUser(Role role, Member user)
 	{
 		RoleQueue.addRoleToUser(role, user, null);
 	}
 
-	public static void removeRoleFromUser(IRole role, IUser user, IChannel notificationChannel)
+	public static void removeRoleFromUser(Role role, Member user, Channel notificationChannel)
 	{
 		RoleQueue roleQueue = RoleQueue.getInstance();
 		QueueItem roleItem = new QueueItem();
@@ -133,7 +101,7 @@ public class RoleQueue
 		roleQueue.addQueueItem(roleItem);
 	}
 
-	public static void removeRoleFromUser(IRole role, IUser user)
+	public static void removeRoleFromUser(Role role, Member user)
 	{
 		RoleQueue.removeRoleFromUser(role, user, null);
 	}

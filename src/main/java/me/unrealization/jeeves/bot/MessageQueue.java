@@ -3,12 +3,9 @@ package me.unrealization.jeeves.bot;
 import java.util.ArrayList;
 import java.util.List;
 
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MessageBuilder;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RateLimitException;
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
 
 public class MessageQueue
 {
@@ -18,8 +15,8 @@ public class MessageQueue
 
 	private static class QueueItem
 	{
-		public IChannel channel = null;
-		public IUser user = null;
+		public Channel channel = null;
+		public User user = null;
 		public String message = null;
 	}
 
@@ -33,75 +30,18 @@ public class MessageQueue
 
 			while ((queueItem = messageQueue.getQueueItem()) != null)
 			{
-				IChannel channel;
+				MessageChannel channel;
 
 				if (queueItem.channel == null)
 				{
-					try
-					{
-						channel = queueItem.user.getOrCreatePMChannel();
-					}
-					catch (RateLimitException e)
-					{
-						Jeeves.debugException(e);
-
-						try
-						{
-							Thread.sleep(e.getRetryDelay());
-						}
-						catch (InterruptedException e1)
-						{
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-
-						continue;
-					}
-					catch (DiscordException e)
-					{
-						Jeeves.debugException(e);
-						continue;
-					}
-
+					channel = queueItem.user.getPrivateChannel().block();
 				}
 				else
 				{
-					channel = queueItem.channel;
+					channel = (MessageChannel)queueItem.channel;
 				}
 
-				MessageBuilder messageBuilder = new MessageBuilder(Jeeves.bot);
-
-				try
-				{
-					messageBuilder.withContent(queueItem.message).withChannel(channel).build();
-				}
-				catch (RateLimitException e)
-				{
-					Jeeves.debugException(e);
-
-					try
-					{
-						Thread.sleep(e.getRetryDelay());
-					}
-					catch (InterruptedException e1)
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-
-					continue;
-				}
-				catch (MissingPermissionsException e)
-				{
-					Jeeves.debugException(e);
-					System.out.println("Missing permissions to send message. Discarding.");
-				}
-				catch (DiscordException e)
-				{
-					Jeeves.debugException(e);
-					continue;
-				}
-
+				channel.createMessage(queueItem.message).block();
 				messageQueue.removeQueueItem();
 			}
 		}
@@ -122,7 +62,7 @@ public class MessageQueue
 		return MessageQueue.instance;
 	}
 
-	public static void sendMessage(IChannel channel, String message)
+	public static void sendMessage(Channel channel, String message)
 	{
 		List<String> messageList = MessageQueue.splitMessage(message);
 		MessageQueue messageQueue = MessageQueue.getInstance();
@@ -136,7 +76,7 @@ public class MessageQueue
 		}
 	}
 
-	public static void sendMessage(IUser user, String message)
+	public static void sendMessage(User user, String message)
 	{
 		List<String> messageList = MessageQueue.splitMessage(message);
 		MessageQueue messageQueue = MessageQueue.getInstance();

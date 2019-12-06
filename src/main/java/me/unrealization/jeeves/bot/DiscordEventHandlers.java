@@ -20,49 +20,51 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 
+import discord4j.core.DiscordClient;
+import discord4j.core.event.EventDispatcher;
+import discord4j.core.event.domain.Event;
+import discord4j.core.event.domain.PresenceUpdateEvent;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.guild.MemberJoinEvent;
+import discord4j.core.event.domain.guild.MemberLeaveEvent;
+import discord4j.core.event.domain.guild.MemberUpdateEvent;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageDeleteEvent;
+import discord4j.core.event.domain.message.MessageUpdateEvent;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.Role;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
 import me.unrealization.jeeves.modules.Internal;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.EventDispatcher;
-import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageUpdateEvent;
-import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
-import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
-import sx.blah.discord.handle.impl.events.user.UserUpdateEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.DiscordException;
 
 public class DiscordEventHandlers
 {
-	public static class ReadyEventListener implements IListener<ReadyEvent>
+	interface EventListener<EventType extends Event>
+	{
+		public void execute(EventType event);
+	}
+
+	public static class ReadyEventListener implements EventListener<ReadyEvent>
 	{
 		@Override
-		public void handle(ReadyEvent event)
+		public void execute(ReadyEvent event)
 		{
-			IDiscordClient bot = event.getClient();
+			DiscordClient bot = event.getClient();
+			EventDispatcher dispatcher = bot.getEventDispatcher();
 
-			EventDispatcher dispatcher = bot.getDispatcher();
-			dispatcher.registerListener(new MessageReceivedListener());
-			dispatcher.registerListener(new MentionListener());
-			dispatcher.registerListener(new UserJoinedListener());
-			dispatcher.registerListener(new UserLeftListener());
-			dispatcher.registerListener(new UserUpdateListener());
-			dispatcher.registerListener(new UserPresenceListener());
-			dispatcher.registerListener(new GuildCreateListener());
-			dispatcher.registerListener(new MessageUpdateListener());
-			dispatcher.registerListener(new MessageDeleteListener());
+			dispatcher.on(MessageCreateEvent.class).subscribe(runtimeEvent -> new MessageReceivedListener().execute(runtimeEvent));
+			dispatcher.on(MemberJoinEvent.class).subscribe(runtimeEvent -> new UserJoinedListener().execute(runtimeEvent));
+			dispatcher.on(MemberLeaveEvent.class).subscribe(runtimeEvent -> new UserLeftListener().execute(runtimeEvent));
+			dispatcher.on(MemberUpdateEvent.class).subscribe(runtimeEvent -> new UserUpdateListener().execute(runtimeEvent));
+			dispatcher.on(PresenceUpdateEvent.class).subscribe(runtimeEvent -> new UserPresenceListener().execute(runtimeEvent));
+			dispatcher.on(GuildCreateEvent.class).subscribe(runtimeEvent -> new GuildCreateListener().execute(runtimeEvent));
+			dispatcher.on(MessageUpdateEvent.class).subscribe(runtimeEvent -> new MessageUpdateListener().execute(runtimeEvent));
+			dispatcher.on(MessageDeleteEvent.class).subscribe(runtimeEvent -> new MessageDeleteListener().execute(runtimeEvent));
 
-			IUser botUser = bot.getOurUser();
-			System.out.println("Logged in as " + botUser.getName() + " (" + Jeeves.version + ")");
+			User botUser = bot.getSelf().block();
+			System.out.println("Logged in as " + botUser.getUsername() + " (" + Jeeves.version + ")");
 
 			try
 			{
@@ -77,23 +79,22 @@ public class DiscordEventHandlers
 			{
 				Jeeves.debugException(e);
 			}
-
 		}
 	}
 
-	private static class MessageReceivedListener implements IListener<MessageReceivedEvent>
+	private static class MessageReceivedListener implements EventListener<MessageCreateEvent>
 	{
 		@Override
-		public void handle(MessageReceivedEvent event)
+		public void execute(MessageCreateEvent event)
 		{
-			IMessage message = event.getMessage();
+			Message message = event.getMessage();
 			String[] moduleList = Jeeves.getModuleList();
 
 			for (int index = 0; index < moduleList.length; index++)
 			{
 				BotModule module = Jeeves.getModule(moduleList[index]);
 
-				if (Jeeves.isDisabled(event.getGuild().getLongID(), module) == true)
+				if (Jeeves.isDisabled(event.getGuildId().get().asLong(), module) == true)
 				{
 					continue;
 				}
@@ -118,58 +119,35 @@ public class DiscordEventHandlers
 				}
 			}
 
-			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnPrefix");
+			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(event.getGuildId().get().asLong(), "respondOnPrefix");
 
 			if (respondOnPrefix.equals("0") == true)
 			{
 				return;
 			}
 
-			String messageContent = message.getContent();
+			String messageContent = message.getContent().get();
 
-			if (messageContent.startsWith((String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "commandPrefix")) == true)
+			if (messageContent.startsWith((String)Jeeves.serverConfig.getValue(event.getGuildId().get().asLong(), "commandPrefix")) == true)
 			{
 				DiscordEventHandlers.handleMessage(message);
 			}
 		}
 	}
 
-	private static class MentionListener implements IListener<MentionEvent>
+	private static class UserJoinedListener implements EventListener<MemberJoinEvent>
 	{
 		@Override
-		public void handle(MentionEvent event)
+		public void execute(MemberJoinEvent event)
 		{
-			IMessage message = event.getMessage();
-			String respondOnMention = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnMention");
-
-			if (respondOnMention.equals("0"))
-			{
-				return;
-			}
-
-			String messageContent = message.getContent();
-			IUser botUser = event.getClient().getOurUser();
-
-			if ((messageContent.startsWith(botUser.mention(true)) == true) || (messageContent.startsWith(botUser.mention(false)) == true))
-			{
-				DiscordEventHandlers.handleMessage(message);
-			}
-		}
-	}
-
-	private static class UserJoinedListener implements IListener<UserJoinEvent>
-	{
-		@Override
-		public void handle(UserJoinEvent event)
-		{
-			System.out.println("User " + event.getUser().getName() + " has joined " + event.getGuild().getName());
+			System.out.println("User " + event.getMember().getDisplayName() + " has joined " + event.getGuild().block().getName());
 			String[] moduleList = Jeeves.getModuleList();
 
 			for (int moduleIndex = 0; moduleIndex < moduleList.length; moduleIndex++)
 			{
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(event.getGuild().getLongID(), module) == true)
+				if (Jeeves.isDisabled(event.getGuildId().asLong(), module) == true)
 				{
 					continue;
 				}
@@ -191,10 +169,10 @@ public class DiscordEventHandlers
 		}
 	}
 
-	private static class UserLeftListener implements IListener<UserLeaveEvent>
+	private static class UserLeftListener implements EventListener<MemberLeaveEvent>
 	{
 		@Override
-		public void handle(UserLeaveEvent event)
+		public void execute(MemberLeaveEvent event)
 		{
 			String[] moduleList = Jeeves.getModuleList();
 
@@ -202,7 +180,7 @@ public class DiscordEventHandlers
 			{
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(event.getGuild().getLongID(), module) == true)
+				if (Jeeves.isDisabled(event.getGuildId().asLong(), module) == true)
 				{
 					continue;
 				}
@@ -224,18 +202,18 @@ public class DiscordEventHandlers
 		}
 	}
 
-	private static class UserUpdateListener implements IListener<UserUpdateEvent>
+	private static class UserUpdateListener implements EventListener<MemberUpdateEvent>
 	{
 		@Override
-		public void handle(UserUpdateEvent event)
+		public void execute(MemberUpdateEvent event)
 		{
-			List<IGuild> serverList = event.getClient().getGuilds();
+			List<Guild> serverList = (List<Guild>)event.getClient().getGuilds().toIterable();
 			String[] moduleList = Jeeves.getModuleList();
 
 			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
-				IGuild server = serverList.get(serverIndex);
-				IUser user = server.getUserByID(event.getNewUser().getLongID());
+				Guild server = serverList.get(serverIndex);
+				User user = server.getMemberById(event.getMemberId()).block();
 
 				if (user == null)
 				{
@@ -246,7 +224,7 @@ public class DiscordEventHandlers
 				{
 					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-					if (Jeeves.isDisabled(server.getLongID(), module) == true)
+					if (Jeeves.isDisabled(server.getId().asLong(), module) == true)
 					{
 						continue;
 					}
@@ -269,18 +247,18 @@ public class DiscordEventHandlers
 		}
 	}
 
-	private static class UserPresenceListener implements IListener<PresenceUpdateEvent>
+	private static class UserPresenceListener implements EventListener<PresenceUpdateEvent>
 	{
 		@Override
-		public void handle(PresenceUpdateEvent event)
+		public void execute(PresenceUpdateEvent event)
 		{
-			List<IGuild> serverList = event.getClient().getGuilds();
+			List<Guild> serverList = (List<Guild>)event.getClient().getGuilds().toIterable();
 			String[] moduleList = Jeeves.getModuleList();
 
 			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
-				IGuild server = serverList.get(serverIndex);
-				IUser user = server.getUserByID(event.getUser().getLongID());
+				Guild server = serverList.get(serverIndex);
+				User user = server.getMemberById(event.getUserId()).block();
 
 				if (user == null)
 				{
@@ -291,7 +269,7 @@ public class DiscordEventHandlers
 				{
 					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-					if (Jeeves.isDisabled(server.getLongID(), module) == true)
+					if (Jeeves.isDisabled(server.getId().asLong(), module) == true)
 					{
 						continue;
 					}
@@ -314,16 +292,16 @@ public class DiscordEventHandlers
 		}
 	}
 
-	private static class GuildCreateListener implements IListener<GuildCreateEvent>
+	private static class GuildCreateListener implements EventListener<GuildCreateEvent>
 	{
 		@Override
-		public void handle(GuildCreateEvent event)
+		public void execute(GuildCreateEvent event)
 		{
 			Internal internal = new Internal();
 
 			try
 			{
-				Jeeves.checkConfig(event.getGuild().getLongID(), internal.getDefaultConfig());
+				Jeeves.checkConfig(event.getGuild().getId().asLong(), internal.getDefaultConfig());
 			}
 			catch (ParserConfigurationException | TransformerException e)
 			{
@@ -337,10 +315,10 @@ public class DiscordEventHandlers
 		}
 	}
 
-	private static class MessageUpdateListener implements IListener<MessageUpdateEvent>
+	private static class MessageUpdateListener implements EventListener<MessageUpdateEvent>
 	{
 		@Override
-		public void handle(MessageUpdateEvent event)
+		public void execute(MessageUpdateEvent event)
 		{
 			String[] moduleList = Jeeves.getModuleList();
 
@@ -348,7 +326,7 @@ public class DiscordEventHandlers
 			{
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(event.getNewMessage().getGuild().getLongID(), module) == true)
+				if (Jeeves.isDisabled(event.getGuildId().get().asLong(), module) == true)
 				{
 					continue;
 				}
@@ -370,10 +348,10 @@ public class DiscordEventHandlers
 		}
 	}
 
-	private static class MessageDeleteListener implements IListener<MessageDeleteEvent>
+	private static class MessageDeleteListener implements EventListener<MessageDeleteEvent>
 	{
 		@Override
-		public void handle(MessageDeleteEvent event)
+		public void execute(MessageDeleteEvent event)
 		{
 			String[] moduleList = Jeeves.getModuleList();
 
@@ -381,7 +359,7 @@ public class DiscordEventHandlers
 			{
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(event.getMessage().getGuild().getLongID(), module) == true)
+				if (Jeeves.isDisabled(event.getMessage().get().getGuild().block().getId().asLong(), module) == true)
 				{
 					continue;
 				}
@@ -403,55 +381,60 @@ public class DiscordEventHandlers
 		}
 	}
 
-	public static void handleMessage(IMessage message)
+	public static void handleMessage(Message message)
 	{
 		DiscordEventHandlers.handleMessage(message, false);
 	}
 
-	public static void handleMessage(IMessage message, boolean cronJob)
+	public static void handleMessage(Message message, boolean cronJob)
 	{
-		if ((message.mentionsEveryone() == true) || (message.mentionsHere() == true))
+		//if ((message.mentionsEveryone() == true) || (message.mentionsHere() == true))
+		if (message.mentionsEveryone() == true)
 		{
 			return;
 		}
 
-		if (Jeeves.isIgnored(message.getChannel()) == true)
+		if (Jeeves.isIgnored(message.getGuild().block().getId().asLong(), message.getChannel().block()) == true)
 		{
 			return;
 		}
 
-		if (Jeeves.isIgnored(message.getGuild().getLongID(), message.getAuthor()) == true)
+		if (Jeeves.isIgnored(message.getGuild().block().getId().asLong(), message.getAuthor().get()) == true)
 		{
 			return;
 		}
 
-		List<IRole> roleList = message.getAuthor().getRolesForGuild(message.getGuild());
+		List<Role> roleList = (List<Role>)message.getAuthorAsMember().block().getRoles().toIterable();
 
 		for (int index = 0; index < roleList.size(); index++)
 		{
-			if (Jeeves.isIgnored(roleList.get(index)) == true)
+			if (Jeeves.isIgnored(message.getGuild().block().getId().asLong(), roleList.get(index)) == true)
 			{
 				return;
 			}
 		}
 
-		String messageContent = message.getContent().trim();
-		IUser botUser = message.getClient().getOurUser();
+		String messageContent = message.getContent().get().trim();
+		User botUser = message.getClient().getSelf().block();
 		int cutLength = 0;
-		String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "commandPrefix");
+		String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "commandPrefix");
 
 		if (messageContent.startsWith(commandPrefix))
 		{
 			cutLength = commandPrefix.length();
 		}
-		else if (messageContent.startsWith(botUser.mention(true)))
+		else if (messageContent.startsWith(botUser.getMention()))
+		{
+			cutLength = botUser.getMention().length();
+		}
+		/*else if (messageContent.startsWith(botUser.mention(true)))
 		{
 			cutLength = botUser.mention(true).length();
 		}
 		else if (messageContent.startsWith(botUser.mention(false)))
 		{
 			cutLength = botUser.mention(false).length();
-		}
+		}*/
 		else
 		{
 			System.out.println("What is this message doing here?");
@@ -513,7 +496,7 @@ public class DiscordEventHandlers
 		{
 			BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-			if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
+			if (Jeeves.isDisabled(message.getGuild().block().getId().asLong(), module) == true)
 			{
 				continue;
 			}
@@ -534,7 +517,7 @@ public class DiscordEventHandlers
 
 				try
 				{
-					Jeeves.checkConfig(message.getGuild().getLongID(), module.getDefaultConfig());
+					Jeeves.checkConfig(message.getGuild().block().getId().asLong(), module.getDefaultConfig());
 				}
 				catch (ParserConfigurationException | TransformerException e)
 				{
@@ -544,9 +527,9 @@ public class DiscordEventHandlers
 
 				Long discordId = module.getDiscordId();
 
-				if ((discordId != null) && (discordId.equals(message.getGuild().getLongID()) == false))
+				if ((discordId != null) && (discordId.equals(message.getGuild().block().getId().asLong()) == false))
 				{
-					MessageQueue.sendMessage(message.getChannel(), "This command is not available on this Discord.");
+					MessageQueue.sendMessage(message.getChannel().block(), "This command is not available on this Discord.");
 					return;
 				}
 
@@ -581,41 +564,32 @@ public class DiscordEventHandlers
 
 				if (command.owner() == true)
 				{
-					Long ownerId = null;
+					Long ownerId = message.getClient().getApplicationInfo().block().getOwnerId().asLong();
 
-					try
+					if ((ownerId != null) && (ownerId.equals(message.getAuthor().get().getId().asLong()) == false))
 					{
-						ownerId = message.getClient().getApplicationOwner().getLongID();
-					}
-					catch (DiscordException e)
-					{
-						Jeeves.debugException(e);
-					}
-
-					if ((ownerId != null) && (ownerId.equals(message.getAuthor().getLongID()) == false))
-					{
-						MessageQueue.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
+						MessageQueue.sendMessage(message.getChannel().block(), "You are not permitted to execute this command.");
 						return;
 					}
 				}
 
-				Permissions[] permissionList = command.permissions();
+				Permission[] permissionList = command.permissions();
 
 				if ((permissionList != null) && (cronJob == false))
 				{
-					EnumSet<Permissions> userPermissions = message.getAuthor().getPermissionsForGuild(message.getGuild());
+					EnumSet<Permission> userPermissions = message.getAuthorAsMember().block().getBasePermissions().block().asEnumSet();
 
 					for (int permissionIndex = 0; permissionIndex < permissionList.length; permissionIndex++)
 					{
 						if (userPermissions.contains(permissionList[permissionIndex]) == false)
 						{
-							MessageQueue.sendMessage(message.getChannel(), "You are not permitted to execute this command.");
+							MessageQueue.sendMessage(message.getChannel().block(), "You are not permitted to execute this command.");
 							return;
 						}
 					}
 				}
 
-				System.out.println("Executing " + command.getClass().getSimpleName() + " for " + message.getAuthor().getName() + " (" + message.getGuild().getName() + ": " + message.getChannel().getName() + ")");
+				System.out.println("Executing " + command.getClass().getSimpleName() + " for " + message.getAuthor().get().getUsername() + " (" + message.getGuild().block().getName() + ": " + message.getChannel().block().getMention() + ")");
 				String argumentString = String.join(" ", arguments);
 				CommandQueue.runCommand(command, message, argumentString);
 			}

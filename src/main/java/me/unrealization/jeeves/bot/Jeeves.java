@@ -29,48 +29,38 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.xml.sax.SAXException;
 
-import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.EventDispatcher;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.DiscordException;
+import discord4j.core.DiscordClient;
+import discord4j.core.DiscordClientBuilder;
+import discord4j.core.event.EventDispatcher;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Role;
+import discord4j.core.object.entity.User;
 
 public class Jeeves
 {
 	public static String version = null;
-	public static IDiscordClient bot = null;
+	public static DiscordClient bot = null;
 	public static ClientConfig clientConfig = null;
 	public static ServerConfig serverConfig = null;
 	private static HashMap<String, BotModule> modules = null;
 
-	private static IDiscordClient createClient(String token)
+	private static DiscordClient createClient(String token)
 	{
 		return Jeeves.createClient(token, true);
 	}
 
-	private static IDiscordClient createClient(String token, boolean login)
+	private static DiscordClient createClient(String token, boolean login)
 	{
-		ClientBuilder clientBuilder = new ClientBuilder();
-		clientBuilder.withToken(token);
-		IDiscordClient client = null;
-
-		try
+		DiscordClient client = new DiscordClientBuilder(token).build();
+		
+		if (login == true)
 		{
-			if (login == true)
-			{
-				client = clientBuilder.login();
-			}
-			else
-			{
-				client = clientBuilder.build();
-			}
-		}
-		catch (DiscordException e)
-		{
-			Jeeves.debugException(e);
+			//client.login();
+			client.login().block();
 		}
 
 		return client;
@@ -179,87 +169,60 @@ public class Jeeves
 		return stringList;
 	}
 
-	public static IChannel findChannel(IGuild server, String channelName)
+	public static GuildChannel findChannel(Guild server, String channelName)
 	{
-		List<IChannel> channelList = server.getChannelsByName(channelName);
+		List<GuildChannel> channelList = server.getChannels().collectList().block();
 
-		if (channelList.size() > 0)
+		for (int channelIndex = 0; channelIndex < channelList.size(); channelIndex++)
 		{
-			return channelList.get(0);
-		}
-		else
-		{
-			channelList = server.getChannels();
+			GuildChannel channel = channelList.get(channelIndex);
 
-			for (int channelIndex = 0; channelIndex < channelList.size(); channelIndex++)
+			if ((channel.getName().equals(channelName) == true) || (channel.getMention().equals(channelName) == true))
 			{
-				IChannel channel = channelList.get(channelIndex);
-
-				if (channel.mention().equals(channelName) == true)
-				{
-					return channel;
-				}
+				return channel;
 			}
 		}
 
 		return null;
 	}
 
-	public static IRole findRole(IGuild server, String roleName)
+	public static Role findRole(Guild server, String roleName)
 	{
-		List<IRole> roleList = server.getRolesByName(roleName);
+		List<Role> roleList = server.getRoles().collectList().block();
 
-		if (roleList.size() > 0)
+		for (int roleIndex = 0; roleIndex < roleList.size(); roleIndex++)
 		{
-			return roleList.get(0);
-		}
-		else
-		{
-			roleList = server.getRoles();
+			Role role = roleList.get(roleIndex);
 
-			for (int roleIndex = 0; roleIndex < roleList.size(); roleIndex++)
+			if ((role.getName().equals(roleName) == true) || (role.getMention().equals(roleName) == true))
 			{
-				IRole role = roleList.get(roleIndex);
-
-				if (role.mention().equals(roleName) == true)
-				{
-					return role;
-				}
+				return role;
 			}
 		}
 
 		return null;
 	}
 
-	public static IUser findUser(IGuild server, String userName)
+	public static Member findUser(Guild server, String userName)
 	{
-		List<IUser> userList = server.getUsersByName(userName);
+		List<Member> userList = server.getMembers().collectList().block();
 
-		if (userList.size() > 0)
+		for (int userIndex = 0; userIndex < userList.size(); userIndex++)
 		{
-			return userList.get(0);
-		}
-		else
-		{
-			userList = server.getUsers();
+			Member user = userList.get(userIndex);
 
-			for (int userIndex = 0; userIndex < userList.size(); userIndex++)
+			if ((user.getDisplayName().equals(userName)) || (user.getNickname().toString().equals(userName) == true) || (user.getMention().equals(userName) == true) || (user.getNicknameMention().equals(userName) == true))
 			{
-				IUser user = userList.get(userIndex);
-
-				if ((user.mention(true).equals(userName) == true) || (user.mention(false).equals(userName) == true))
-				{
-					return user;
-				}
+				return user;
 			}
 		}
 
 		return null;
 	}
 
-	public static boolean isIgnored(IChannel channel)
+	public static boolean isIgnored(long serverId, Channel channel)
 	{
-		Object ignoredChannels = Jeeves.serverConfig.getValue(channel.getGuild().getLongID(), "ignoredChannels");
+		Object ignoredChannels = Jeeves.serverConfig.getValue(serverId, "ignoredChannels");
 
 		if (ignoredChannels.getClass() == String.class)
 		{
@@ -267,10 +230,10 @@ public class Jeeves
 		}
 
 		List<String> ignoredChannelList = Jeeves.listToStringList((List<?>)ignoredChannels);
-		return ignoredChannelList.contains(Long.toString(channel.getLongID()));
+		return ignoredChannelList.contains(channel.getId().asString());
 	}
 
-	public static boolean isIgnored(long serverId, IUser user)
+	public static boolean isIgnored(long serverId, User user)
 	{
 		Object ignoredUsers = Jeeves.serverConfig.getValue(serverId, "ignoredUsers");
 
@@ -280,12 +243,12 @@ public class Jeeves
 		}
 
 		List<String> ignoredUserList = Jeeves.listToStringList((List<?>)ignoredUsers);
-		return ignoredUserList.contains(Long.toString(user.getLongID()));
+		return ignoredUserList.contains(user.getId().asString());
 	}
 
-	public static boolean isIgnored(IRole role)
+	public static boolean isIgnored(long serverId, Role role)
 	{
-		Object ignoredRoles = Jeeves.serverConfig.getValue(role.getGuild().getLongID(), "ignoredRoles");
+		Object ignoredRoles = Jeeves.serverConfig.getValue(serverId, "ignoredRoles");
 
 		if (ignoredRoles.getClass() == String.class)
 		{
@@ -293,7 +256,7 @@ public class Jeeves
 		}
 
 		List<String> ignoredRoleList = Jeeves.listToStringList((List<?>)ignoredRoles);
-		return ignoredRoleList.contains(Long.toString(role.getLongID()));
+		return ignoredRoleList.contains(role.getId().asString());
 	}
 
 	public static boolean isDisabled(long serverId, BotModule module)
@@ -364,7 +327,7 @@ public class Jeeves
 				Jeeves.debugException(e);
 			}
 
-			if (Jeeves.bot.isLoggedIn() == true)
+			/*if (Jeeves.bot.isLoggedIn() == true)
 			{
 				System.out.println("Logging out.");
 
@@ -376,6 +339,11 @@ public class Jeeves
 				{
 					Jeeves.debugException(e);
 				}
+			}*/
+
+			if (Jeeves.bot.isConnected() == true)
+			{
+				Jeeves.bot.logout().block();
 			}
 		}
 	}
@@ -412,7 +380,7 @@ public class Jeeves
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		Jeeves.loadModules();
 		Jeeves.bot = Jeeves.createClient((String)Jeeves.clientConfig.getValue("loginToken"));
-		EventDispatcher dispatcher = Jeeves.bot.getDispatcher();
-		dispatcher.registerListener(new DiscordEventHandlers.ReadyEventListener());
+		EventDispatcher dispatcher = Jeeves.bot.getEventDispatcher();
+		dispatcher.on(ReadyEvent.class).subscribe(event -> new DiscordEventHandlers.ReadyEventListener().execute(event));
 	}
 }

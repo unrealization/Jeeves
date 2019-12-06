@@ -1,10 +1,11 @@
 package me.unrealization.jeeves.bot;
 
 import me.unrealization.jeeves.interfaces.BotCommand;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import discord4j.core.object.entity.Message;
 
 public class CommandQueue
 {
@@ -15,7 +16,7 @@ public class CommandQueue
 	private static class QueueItem
 	{
 		public BotCommand command = null;
-		public IMessage message = null;
+		public Message message = null;
 		public String arguments = null;
 	}
 
@@ -50,7 +51,7 @@ public class CommandQueue
 		return CommandQueue.instance;
 	}
 
-	public static void runCommand(BotCommand command, IMessage message, String arguments)
+	public static void runCommand(BotCommand command, Message message, String arguments)
 	{
 		CommandQueue commandQueue = CommandQueue.getInstance();
 		QueueItem commandItem = new QueueItem();
