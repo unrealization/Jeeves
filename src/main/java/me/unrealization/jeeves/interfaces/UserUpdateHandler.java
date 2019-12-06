@@ -1,7 +1,7 @@
 package me.unrealization.jeeves.interfaces;
 
-import sx.blah.discord.handle.impl.events.user.UserUpdateEvent;
-import sx.blah.discord.handle.obj.IGuild;
+import discord4j.core.event.domain.guild.MemberUpdateEvent;
+import discord4j.core.object.entity.Guild;
 
 public interface UserUpdateHandler
 {
@@ -10,5 +10,5 @@ public interface UserUpdateHandler
 	 * @param server Since this event is not tied to a specific server the server the module needs to work on needs to be provided
 	 * @param event The user update event that needs handling
 	 */
-	public void userUpdateHandler(IGuild server, UserUpdateEvent event);
+	public void userUpdateHandler(Guild server, MemberUpdateEvent event);
 }

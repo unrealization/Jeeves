@@ -1,7 +1,7 @@
 package me.unrealization.jeeves.interfaces;
 
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.Permissions;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.util.Permission;
 
 public abstract class BotCommand
 {
@@ -21,7 +21,7 @@ public abstract class BotCommand
 	 * Get the permissions required to run the command
 	 * @return The list of permissions required to be allowed to run the command, or null if no permissions are needed
 	 */
-	public Permissions[] permissions()
+	public Permission[] permissions()
 	{
 		return null;
 	}
@@ -40,5 +40,5 @@ public abstract class BotCommand
 	 * @param message The message received from Discord
 	 * @param argumentString The argument string for the command
 	 */
-	public abstract void execute(IMessage message, String argumentString);
+	public abstract void execute(Message message, String argumentString);
 }

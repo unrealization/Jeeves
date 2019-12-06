@@ -1,7 +1,7 @@
 package me.unrealization.jeeves.interfaces;
 
-import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
-import sx.blah.discord.handle.obj.IGuild;
+import discord4j.core.event.domain.PresenceUpdateEvent;
+import discord4j.core.object.entity.Guild;
 
 public interface PresenceUpdateHandler
 {
@@ -10,5 +10,5 @@ public interface PresenceUpdateHandler
 	 * @param server Since this event is not tied to a specific server the server the module needs to work on needs to be provided
 	 * @param event The presence update event that needs handling
 	 */
-	public void presenceUpdateHandler(IGuild server, PresenceUpdateEvent event);
+	public void presenceUpdateHandler(Guild server, PresenceUpdateEvent event);
 }

@@ -1,6 +1,6 @@
 package me.unrealization.jeeves.interfaces;
 
-import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
+import discord4j.core.event.domain.guild.MemberJoinEvent;
 
 public interface UserJoinedHandler
 {
@@ -8,5 +8,5 @@ public interface UserJoinedHandler
 	 * React to a new user joining a Discord server
 	 * @param event The user join event that needs handling
 	 */
-	public void userJoinedHandler(UserJoinEvent event);
+	public void userJoinedHandler(MemberJoinEvent event);
 }

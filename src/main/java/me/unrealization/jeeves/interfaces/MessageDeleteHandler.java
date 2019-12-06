@@ -1,6 +1,6 @@
 package me.unrealization.jeeves.interfaces;
 
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
+import discord4j.core.event.domain.message.MessageDeleteEvent;
 
 public interface MessageDeleteHandler
 {

@@ -1,6 +1,6 @@
 package me.unrealization.jeeves.interfaces;
 
-import sx.blah.discord.handle.obj.IMessage;
+import discord4j.core.object.entity.Message;
 
 public interface MessageReceivedHandler
 {
@@ -9,5 +9,5 @@ public interface MessageReceivedHandler
 	 * @param message The received message
 	 * @return Whether or not the message has been handled.
 	 */
-	public boolean messageReceivedHandler(IMessage message);
+	public boolean messageReceivedHandler(Message message);
 }
