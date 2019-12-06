@@ -38,9 +38,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import sx.blah.discord.handle.impl.obj.Message;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.util.Snowflake;
 import me.unrealization.jeeves.bot.DiscordEventHandlers;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.interfaces.BotConfig;
@@ -65,9 +67,11 @@ public class CronJobList implements BotConfig
 
 				System.out.println("Running cron command " + command);
 
-				IChannel channel = Jeeves.bot.getChannelByID(channelId);
-				String commandPrefix = (String)Jeeves.serverConfig.getValue(channel.getGuild().getLongID(), "commandPrefix");
-				Message commandMessage = new Message(Jeeves.bot, 0, commandPrefix + command, Jeeves.bot.getOurUser(), channel, null, null, false, null, null, null, false, null, null, 0, null);
+				//Channel channel = Jeeves.bot.getChannelById(Snowflake.of(channelId)).block();
+				GuildChannel channel = (GuildChannel)Jeeves.bot.getChannelById(Snowflake.of(channelId)).block();
+				//String commandPrefix = (String)Jeeves.serverConfig.getValue(channel.getGuild().getLongID(), "commandPrefix");
+				String commandPrefix = (String)Jeeves.serverConfig.getValue(channel.getGuildId().asLong(), "commandPrefix");
+				Message commandMessage = ((MessageChannel)channel).createMessage(commandPrefix + command).block();
 				DiscordEventHandlers.handleMessage(commandMessage, true);
 			}
 		}
@@ -290,7 +294,7 @@ public class CronJobList implements BotConfig
 
 			if (Jeeves.bot != null)
 			{
-				IGuild guild = Jeeves.bot.getGuildByID(serverIdList[serverIndex]);
+				Guild guild = Jeeves.bot.getGuildById(Snowflake.of(serverIdList[serverIndex])).block();
 				Comment serverName = doc.createComment(guild.getName());
 				server.appendChild(serverName);
 			}
