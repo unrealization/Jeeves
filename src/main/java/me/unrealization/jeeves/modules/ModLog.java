@@ -3,12 +3,12 @@ package me.unrealization.jeeves.modules;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEditEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageUpdateEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.Permissions;
+import discord4j.core.event.domain.message.MessageDeleteEvent;
+import discord4j.core.event.domain.message.MessageUpdateEvent;
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.Snowflake;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.interfaces.BotCommand;
@@ -20,7 +20,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 {
 	public ModLog()
 	{
-		this.version = "1.0.1";
+		this.version = "2.0.0";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetModLogChannel";
@@ -32,12 +32,12 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 	@Override
 	public void messageUpdateHandler(MessageUpdateEvent event)
 	{
-		if (event.getClass() != MessageEditEvent.class)
+		if (event.isContentChanged() == false)
 		{
 			return;
 		}
 
-		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getNewMessage().getGuild().getLongID(), "modLogChannel");
+		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getGuildId().get().asLong(), "modLogChannel");
 
 		if (channelIdString.isEmpty() == true)
 		{
@@ -45,13 +45,13 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		}
 
 		long channelId = Long.parseLong(channelIdString);
-		IChannel channel = event.getNewMessage().getGuild().getChannelByID(channelId);
+		Channel channel = event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 		if (channel == null)
 		{
 			System.out.println("Invalid mod log channel.");
 			ModLog modLog = new ModLog();
-			Jeeves.serverConfig.setValue(event.getNewMessage().getGuild().getLongID(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
+			Jeeves.serverConfig.setValue(event.getGuildId().get().asLong(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
 
 			try
 			{
@@ -65,8 +65,8 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 			return;
 		}
 
-		String oldAuthor = event.getOldMessage().getAuthor().getName();
-		String newAuthor = event.getNewMessage().getAuthor().getName();
+		String oldAuthor = event.getOld().get().getAuthor().get().getUsername();
+		String newAuthor = event.getMessage().block().getAuthor().get().getUsername();
 		String output = Jeeves.getUtcTime() + ": " + newAuthor + " has edited one of ";
 
 		if (oldAuthor.equals(newAuthor) == true)
@@ -78,15 +78,16 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 			output += oldAuthor + "'s";
 		}
 
-		output += " messages in " + event.getNewMessage().getChannel().mention() + "\n";
+		
+		output += " messages in " + event.getChannel().block().getMention() + "\n";
 		output += "=============================================\n";
 		output += "**Old Message**\n";
 		output += "=============================================\n";
-		output += event.getOldMessage().getContent() + "\n";
+		output += event.getOld().get().getContent().get() + "\n";
 		output += "=============================================\n";
 		output += "**New Message**\n";
 		output += "=============================================\n";
-		output += event.getNewMessage().getContent() + "\n";
+		output += event.getMessage().block().getContent().get() + "\n";
 		output += "=============================================\n";
 		MessageQueue.sendMessage(channel, output);
 	}
@@ -94,7 +95,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 	@Override
 	public void messageDeleteHandler(MessageDeleteEvent event)
 	{
-		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getMessage().getGuild().getLongID(), "modLogChannel");
+		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getMessage().get().getGuild().block().getId().asLong(), "modLogChannel");
 
 		if (channelIdString.isEmpty() == true)
 		{
@@ -102,13 +103,13 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		}
 
 		long channelId = Long.parseLong(channelIdString);
-		IChannel channel = event.getMessage().getGuild().getChannelByID(channelId);
+		Channel channel = event.getMessage().get().getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 		if (channel == null)
 		{
 			System.out.println("Invalid mod log channel.");
 			ModLog modLog = new ModLog();
-			Jeeves.serverConfig.setValue(event.getMessage().getGuild().getLongID(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
+			Jeeves.serverConfig.setValue(event.getMessage().get().getGuild().block().getId().asLong(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
 
 			try
 			{
@@ -122,9 +123,9 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 			return;
 		}
 
-		String output = Jeeves.getUtcTime() + ": One of " + event.getMessage().getAuthor().getName() + "'s messages has been deleted in " + event.getMessage().getChannel().mention() + "\n";
+		String output = Jeeves.getUtcTime() + ": One of " + event.getMessage().get().getAuthor().get().getUsername() + "'s messages has been deleted in " + event.getChannel().block().getMention() + "\n";
 		output += "=============================================\n";
-		output += event.getMessage().getContent() + "\n";
+		output += event.getMessage().get().getContent().get() + "\n";
 		output += "=============================================\n";
 		MessageQueue.sendMessage(channel, output);
 	}
@@ -145,33 +146,33 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "modLogChannel");
+			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "modLogChannel");
 
 			if (channelIdString.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No mod log channel has been set.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No mod log channel has been set.");
 				return;
 			}
 
 			long channelId = Long.parseLong(channelIdString);
-			IChannel channel = message.getGuild().getChannelByID(channelId);
+			Channel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 			if (channel == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "A mod log channel has been set, but it does not exist.");
+				MessageQueue.sendMessage(message.getChannel().block(), "A mod log channel has been set, but it does not exist.");
 
 				ModLog modLog = new ModLog();
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
+				Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "modLogChannel", modLog.getDefaultConfig().get("modLogChannel"));
 
 				try
 				{
@@ -185,7 +186,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The mod log channel is: " + channel.getName());
+			MessageQueue.sendMessage(message.getChannel().block(), "The mod log channel is: " + channel.getMention());
 		}
 	}
 
@@ -206,34 +207,35 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String channelName)
+		public void execute(Message message, String channelName)
 		{
-			IChannel channel = null;
+			Channel channel = null;
 
 			if (channelName.isEmpty() == true)
 			{
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "modLogChannel", "");
+				Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "modLogChannel", "");
 			}
 			else
 			{
-				channel = Jeeves.findChannel(message.getGuild(), channelName);
+				channel = Jeeves.findChannel(message.getGuild().block(), channelName);
 
 				if (channel == null)
 				{
-					MessageQueue.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
+					MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the channel " + channelName);
 					return;
 				}
 
-				String channelIdString = Long.toString(channel.getLongID());
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "modLogChannel", channelIdString);
+				
+				String channelIdString = channel.getId().asString();
+				Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "modLogChannel", channelIdString);
 			}
 
 			try
@@ -243,17 +245,17 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
 			if (channel == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The mod log channel has been cleared.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The mod log channel has been cleared.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The mod log channel has been set to: " + channel.getName());
+				MessageQueue.sendMessage(message.getChannel().block(), "The mod log channel has been set to: " + channel.getMention());
 			}
 		}
 	}

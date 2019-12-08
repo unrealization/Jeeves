@@ -3,12 +3,13 @@ package me.unrealization.jeeves.modules;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import discord4j.core.event.domain.guild.MemberJoinEvent;
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.Snowflake;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
-import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.Permissions;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
@@ -17,7 +18,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 {
 	public Welcome()
 	{
-		this.version = "1.0.2";
+		this.version = "2.0.0";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetWelcomeChannel";
@@ -27,9 +28,9 @@ public class Welcome extends BotModule implements UserJoinedHandler
 	}
 
 	@Override
-	public void userJoinedHandler(UserJoinEvent event)
+	public void userJoinedHandler(MemberJoinEvent event)
 	{
-		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "welcomeChannel");
+		String channelIdString = (String)Jeeves.serverConfig.getValue(event.getGuildId().asLong(), "welcomeChannel");
 
 		if (channelIdString.isEmpty() == true)
 		{
@@ -37,13 +38,13 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		}
 
 		long channelId = Long.parseLong(channelIdString);
-		IChannel channel = event.getGuild().getChannelByID(channelId);
+		Channel channel = event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 		if (channel == null)
 		{
 			System.out.println("Invalid welcome channel.");
 			Welcome welcome = new Welcome();
-			Jeeves.serverConfig.setValue(event.getGuild().getLongID(), "welcomeChannel", welcome.getDefaultConfig().get("welcomeChannel"));
+			Jeeves.serverConfig.setValue(event.getGuildId().asLong(), "welcomeChannel", welcome.getDefaultConfig().get("welcomeChannel"));
 
 			try
 			{
@@ -57,7 +58,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 			return;
 		}
 
-		MessageQueue.sendMessage(channel, "Welcome to " + event.getGuild().getName() + ", " + event.getUser().mention() + "!");
+		MessageQueue.sendMessage(channel, "Welcome to " + event.getGuild().block().getName() + ", " + event.getMember().getMention() + "!");
 	}
 
 	public static class GetWelcomeChannel extends BotCommand
@@ -76,33 +77,33 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "welcomeChannel");
+			String channelIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "welcomeChannel");
 
 			if (channelIdString.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No welcome channel has been set.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No welcome channel has been set.");
 				return;
 			}
 
 			long channelId = Long.parseLong(channelIdString);
-			IChannel channel = message.getGuild().getChannelByID(channelId);
+			Channel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 			if (channel == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "A welcome channel has been set, but it does not exist.");
+				MessageQueue.sendMessage(message.getChannel().block(), "A welcome channel has been set, but it does not exist.");
 
 				Welcome welcome = new Welcome();
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "welcomeChannel", welcome.getDefaultConfig().get("welcomeChannel"));
+				Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "welcomeChannel", welcome.getDefaultConfig().get("welcomeChannel"));
 
 				try
 				{
@@ -116,7 +117,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The welcome channel is: " + channel.getName());
+			MessageQueue.sendMessage(message.getChannel().block(), "The welcome channel is: " + channel.getMention());
 		}
 	}
 
@@ -137,34 +138,34 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String channelName)
+		public void execute(Message message, String channelName)
 		{
-			IChannel channel = null;
+			Channel channel = null;
 
 			if (channelName.isEmpty() == true)
 			{
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "welcomeChannel", "");
+				Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "welcomeChannel", "");
 			}
 			else
 			{
-				channel = Jeeves.findChannel(message.getGuild(), channelName);
+				channel = Jeeves.findChannel(message.getGuild().block(), channelName);
 
 				if (channel == null)
 				{
-					MessageQueue.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
+					MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the channel " + channelName);
 					return;
 				}
 
-				String channelIdString = Long.toString(channel.getLongID());
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "welcomeChannel", channelIdString);
+				String channelIdString = Long.toString(channel.getId().asLong());
+				Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "welcomeChannel", channelIdString);
 			}
 
 			try
@@ -174,17 +175,17 @@ public class Welcome extends BotModule implements UserJoinedHandler
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
 			if (channel == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The welcome channel has been cleared.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The welcome channel has been cleared.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The welcome channel has been set to: " + channel.getName());
+				MessageQueue.sendMessage(message.getChannel().block(), "The welcome channel has been set to: " + channel.getMention());
 			}
 		}
 	}

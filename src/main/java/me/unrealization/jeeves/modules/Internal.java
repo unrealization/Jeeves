@@ -10,16 +10,18 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.Role;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.Snowflake;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.bot.RoleQueue;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.DiscordException;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 
@@ -27,7 +29,7 @@ public class Internal extends BotModule
 {
 	public Internal()
 	{
-		this.version = "1.0.0";
+		this.version = "2.0.0";
 
 		this.commandList = new String[31];
 		this.commandList[0] = "Help";
@@ -94,7 +96,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String searchName)
+		public void execute(Message message, String searchName)
 		{
 			boolean sendInChannel = false;
 			String output = "";
@@ -109,7 +111,7 @@ public class Internal extends BotModule
 
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-				if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
+				if (Jeeves.isDisabled(message.getGuild().block().getId().asLong(), module) == true)
 				{
 					continue;
 				}
@@ -126,7 +128,7 @@ public class Internal extends BotModule
 				{
 					BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 
-					if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
+					if (Jeeves.isDisabled(message.getGuild().block().getId().asLong(), module) == true)
 					{
 						continue;
 					}
@@ -152,18 +154,18 @@ public class Internal extends BotModule
 
 			if (output.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "I'm sorry, but I cannot help you with " + searchName);
+				MessageQueue.sendMessage(message.getChannel().block(), "I'm sorry, but I cannot help you with " + searchName);
 				return;
 			}
 
 			if (sendInChannel == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), output);
+				MessageQueue.sendMessage(message.getChannel().block(), output);
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getAuthor(), output);
-			MessageQueue.sendMessage(message.getChannel(), "Help sent as private message.");
+			MessageQueue.sendMessage(message.getAuthor().get(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), "Help sent as private message.");
 		}
 	}
 
@@ -183,9 +185,9 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			MessageQueue.sendMessage(message.getChannel(), "Jeeves " + Jeeves.version);
+			MessageQueue.sendMessage(message.getChannel().block(), "Jeeves " + Jeeves.version);
 		}
 	}
 
@@ -205,9 +207,9 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			MessageQueue.sendMessage(message.getChannel(), "Pong!");
+			MessageQueue.sendMessage(message.getChannel().block(), "Pong!");
 		}
 	}
 
@@ -227,10 +229,10 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String utcTime = Jeeves.getUtcTime();
-			MessageQueue.sendMessage(message.getChannel(), "The current UTC time is: " + utcTime);
+			MessageQueue.sendMessage(message.getChannel().block(), "The current UTC time is: " + utcTime);
 		}
 	}
 
@@ -256,7 +258,7 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			try
 			{
@@ -268,7 +270,7 @@ public class Internal extends BotModule
 				Jeeves.debugException(e);
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "Good bye, cruel world.");
+			MessageQueue.sendMessage(message.getChannel().block(), "Good bye, cruel world.");
 			MessageQueue messageQueue = MessageQueue.getInstance();
 			RoleQueue roleQueue = RoleQueue.getInstance();
 
@@ -277,14 +279,7 @@ public class Internal extends BotModule
 				//wait for the queues to finish processing
 			}
 
-			try
-			{
-				message.getClient().logout();
-			}
-			catch (DiscordException e)
-			{
-				Jeeves.debugException(e);
-			}
+			message.getClient().logout();
 		}
 	}
 
@@ -310,17 +305,17 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String debugging = (String)Jeeves.clientConfig.getValue("debugging");
 
 			if (debugging.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Debugging is disabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Debugging is disabled.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Debugging is enabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Debugging is enabled.");
 			}
 		}
 	}
@@ -348,11 +343,11 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String debugging)
+		public void execute(Message message, String debugging)
 		{
 			if ((debugging.equals("0") == false) && (debugging.equals("1") == false))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel().block(), "Invalid value");
 				return;
 			}
 
@@ -365,17 +360,17 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
 			if (debugging.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Debugging has been disabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Debugging has been disabled.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Debugging has been enabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Debugging has been enabled.");
 			}
 		}
 	}
@@ -403,18 +398,18 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			List<IGuild> serverList = message.getClient().getGuilds();
+			List<Guild> serverList = (List<Guild>)message.getClient().getGuilds().toIterable();
 			String output = "The bot is connected to the following servers:\n\n";
 
 			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
 			{
-				IGuild server = serverList.get(serverIndex);
+				Guild server = serverList.get(serverIndex);
 				output += "\t" + server.getName() + "\n";
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -434,18 +429,18 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "commandPrefix");
-			MessageQueue.sendMessage(message.getChannel(), "The command prefix is: " + commandPrefix);
+			String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "commandPrefix");
+			MessageQueue.sendMessage(message.getChannel().block(), "The command prefix is: " + commandPrefix);
 		}
 	}
 
@@ -466,23 +461,23 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String commandPrefix)
+		public void execute(Message message, String commandPrefix)
 		{
 			if (commandPrefix.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The command prefix cannot be empty.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The command prefix cannot be empty.");
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "commandPrefix", commandPrefix);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "commandPrefix", commandPrefix);
 
 			try
 			{
@@ -491,11 +486,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The command prefix has been set to: " + commandPrefix);
+			MessageQueue.sendMessage(message.getChannel().block(), "The command prefix has been set to: " + commandPrefix);
 		}
 	}
 
@@ -515,25 +510,25 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnPrefix");
+			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "respondOnPrefix");
 
 			if (respondOnPrefix.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot will not respond to the command prefix.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot will not respond to the command prefix.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot will respond to the command prefix.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot will respond to the command prefix.");
 			}
 		}
 	}
@@ -555,24 +550,24 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String respondOnPrefix)
+		public void execute(Message message, String respondOnPrefix)
 		{
 			if ((respondOnPrefix.equals("0") == false) && (respondOnPrefix.equals("1") == false))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel().block(), "Invalid value");
 				return;
 			}
 
 			System.out.println(respondOnPrefix);
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "respondOnPrefix", respondOnPrefix);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "respondOnPrefix", respondOnPrefix);
 
 			try
 			{
@@ -581,17 +576,17 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
 			if (respondOnPrefix.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot will no longer respond to the command prefix.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot will no longer respond to the command prefix.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot now responds to the command prefix.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot now responds to the command prefix.");
 			}
 		}
 	}
@@ -612,25 +607,25 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String respondOnMention = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "respondOnMention");
+			String respondOnMention = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "respondOnMention");
 
 			if (respondOnMention.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot will not respond to mentions.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot will not respond to mentions.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot will respond to mentions.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot will respond to mentions.");
 			}
 		}
 	}
@@ -652,23 +647,23 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String respondOnMention)
+		public void execute(Message message, String respondOnMention)
 		{
 			if ((respondOnMention.equals("0") == false) && (respondOnMention.equals("1") == false))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel().block(), "Invalid value");
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "respondOnMention", respondOnMention);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "respondOnMention", respondOnMention);
 
 			try
 			{
@@ -677,17 +672,17 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
 			if (respondOnMention.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot will no longer respond to mentions.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot will no longer respond to mentions.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot now responds to mentions.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot now responds to mentions.");
 			}
 		}
 	}
@@ -708,21 +703,21 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredChannels");
+			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ignoredChannels");
 
 			if (ignoredChannels.getClass() == String.class)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No channels are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No channels are being ignored.");
 				return;
 			}
 
@@ -730,7 +725,7 @@ public class Internal extends BotModule
 
 			if (ignoredChannelList.size() == 0)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No channels are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No channels are being ignored.");
 				return;
 			}
 
@@ -739,11 +734,11 @@ public class Internal extends BotModule
 			for (int channelIndex = 0; channelIndex < ignoredChannelList.size(); channelIndex++)
 			{
 				Long channelId = Long.parseLong(ignoredChannelList.get(channelIndex));
-				IChannel channel = message.getGuild().getChannelByID(channelId);
-				output += channel.getName() + "\n";
+				Channel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+				output += channel.getMention() + "\n";
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -764,37 +759,37 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String channelName)
+		public void execute(Message message, String channelName)
 		{
 			if (channelName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a channel name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a channel name.");
 				return;
 			}
 
-			IChannel channel = Jeeves.findChannel(message.getGuild(), channelName);
+			Channel channel = Jeeves.findChannel(message.getGuild().block(), channelName);
 
 			if (channel == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the channel " + channelName);
 				return;
 			}
 
-			if (Jeeves.isIgnored(channel) == true)
+			if (Jeeves.isIgnored(message.getGuild().block().getId().asLong(), channel) == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The channel " + channel.getName() + " is being ignored already.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The channel " + channel.getMention() + " is being ignored already.");
 				return;
 			}
 
-			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredChannels");
+			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ignoredChannels");
 			List<String> ignoredChannelList;
 
 			if (ignoredChannels.getClass() == String.class)
@@ -806,9 +801,9 @@ public class Internal extends BotModule
 				ignoredChannelList = Jeeves.listToStringList((List<?>)ignoredChannels);
 			}
 
-			String channelIdString = Long.toString(channel.getLongID());
+			String channelIdString = channel.getId().asString();
 			ignoredChannelList.add(channelIdString);
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredChannels", ignoredChannelList);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ignoredChannels", ignoredChannelList);
 
 			try
 			{
@@ -817,11 +812,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The following channel is now being ignored: " + channel.getName());
+			MessageQueue.sendMessage(message.getChannel().block(), "The following channel is now being ignored: " + channel.getMention());
 		}
 	}
 
@@ -842,35 +837,35 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String channelName)
+		public void execute(Message message, String channelName)
 		{
 			if (channelName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a channel name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a channel name.");
 				return;
 			}
 
-			IChannel channel = Jeeves.findChannel(message.getGuild(), channelName);
+			Channel channel = Jeeves.findChannel(message.getGuild().block(), channelName);
 
 			if (channel == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the channel " + channelName);
 				return;
 			}
 
-			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredChannels");
+			Object ignoredChannels = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ignoredChannels");
 
 			if (ignoredChannels.getClass() == String.class)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No channels are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No channels are being ignored.");
 				return;
 			}
 
@@ -878,20 +873,20 @@ public class Internal extends BotModule
 
 			if (ignoredChannelList.size() == 0)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No channels are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No channels are being ignored.");
 				return;
 			}
 
-			String channelIdString = Long.toString(channel.getLongID());
+			String channelIdString = channel.getId().asString();
 			boolean removed = ignoredChannelList.remove(channelIdString);
 
 			if (removed == false)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The channel " + channel.getName() + " is not being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The channel " + channel.getMention() + " is not being ignored.");
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredChannels", ignoredChannelList);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ignoredChannels", ignoredChannelList);
 
 			try
 			{
@@ -900,11 +895,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The following channel is no longer being ignored: " + channel.getName());
+			MessageQueue.sendMessage(message.getChannel().block(), "The following channel is no longer being ignored: " + channel.getMention());
 		}
 	}
 
@@ -924,21 +919,21 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredUsers");
+			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ignoredUsers");
 
 			if (ignoredUsers.getClass() == String.class)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No users are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No users are being ignored.");
 				return;
 			}
 
@@ -946,7 +941,7 @@ public class Internal extends BotModule
 
 			if (ignoredUserList.size() == 0)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No users are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No users are being ignored.");
 				return;
 			}
 
@@ -955,11 +950,11 @@ public class Internal extends BotModule
 			for (int userIndex = 0; userIndex < ignoredUserList.size(); userIndex++)
 			{
 				long userId = Long.parseLong(ignoredUserList.get(userIndex));
-				IUser user = message.getGuild().getUserByID(userId);
-				output += user.getName() + "\n";
+				Member user = message.getGuild().block().getMemberById(Snowflake.of(userId)).block();
+				output += user.getDisplayName() + "\n";
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -980,37 +975,37 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String userName)
+		public void execute(Message message, String userName)
 		{
 			if (userName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a user name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a user name.");
 				return;
 			}
 
-			IUser user = Jeeves.findUser(message.getGuild(), userName);
+			User user = Jeeves.findUser(message.getGuild().block(), userName);
 
 			if (user == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the user " + userName);
 				return;
 			}
 
-			if (Jeeves.isIgnored(message.getGuild().getLongID(), user) == true)
+			if (Jeeves.isIgnored(message.getGuild().block().getId().asLong(), user) == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The user " + user.getName() + " is being ignored already.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The user " + user.getUsername() + " is being ignored already.");
 				return;
 			}
 
-			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredUsers");
+			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ignoredUsers");
 			List<String> ignoredUserList;
 
 			if (ignoredUsers.getClass() == String.class)
@@ -1022,9 +1017,9 @@ public class Internal extends BotModule
 				ignoredUserList = Jeeves.listToStringList((List<?>)ignoredUsers);
 			}
 
-			String userIdString = Long.toString(user.getLongID());
+			String userIdString = user.getId().asString();
 			ignoredUserList.add(userIdString);
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredUsers", ignoredUserList);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ignoredUsers", ignoredUserList);
 
 			try
 			{
@@ -1033,11 +1028,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The following user is now being ignored: " + user.getName());
+			MessageQueue.sendMessage(message.getChannel().block(), "The following user is now being ignored: " + user.getUsername());
 		}
 	}
 
@@ -1058,35 +1053,35 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String userName)
+		public void execute(Message message, String userName)
 		{
 			if (userName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a user name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a user name.");
 				return;
 			}
 
-			IUser user = Jeeves.findUser(message.getGuild(), userName);
+			User user = Jeeves.findUser(message.getGuild().block(), userName);
 
 			if (user == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the user " + userName);
 				return;
 			}
 
-			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredUsers");
+			Object ignoredUsers = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ignoredUsers");
 
 			if (ignoredUsers.getClass() == String.class)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No users are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No users are being ignored.");
 				return;
 			}
 
@@ -1094,20 +1089,20 @@ public class Internal extends BotModule
 
 			if (ignoredUserList.size() == 0)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No users are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No users are being ignored.");
 				return;
 			}
 
-			String userIdString = Long.toString(user.getLongID());
+			String userIdString = user.getId().asString();
 			boolean removed = ignoredUserList.remove(userIdString);
 
 			if (removed == false)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The user " + user.getName() + " is not being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The user " + user.getUsername() + " is not being ignored.");
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredUsers", ignoredUserList);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ignoredUsers", ignoredUserList);
 
 			try
 			{
@@ -1116,11 +1111,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The following user is no longer being ignored: " + user.getName());
+			MessageQueue.sendMessage(message.getChannel().block(), "The following user is no longer being ignored: " + user.getUsername());
 		}
 	}
 
@@ -1140,21 +1135,21 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			Object ignoredRoles = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredRoles");
+			Object ignoredRoles = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ignoredRoles");
 
 			if (ignoredRoles.getClass() == String.class)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No roles are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No roles are being ignored.");
 				return;
 			}
 
@@ -1162,7 +1157,7 @@ public class Internal extends BotModule
 
 			if (ignoredRoleList.size() == 0)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No roles are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No roles are being ignored.");
 				return;
 			}
 
@@ -1171,11 +1166,11 @@ public class Internal extends BotModule
 			for (int index = 0; index < ignoredRoleList.size(); index++)
 			{
 				long roleId = Long.parseLong(ignoredRoleList.get(index));
-				IRole role = message.getGuild().getRoleByID(roleId);
+				Role role = message.getGuild().block().getRoleById(Snowflake.of(roleId)).block();
 				output += role.getName() + "\n";
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -1196,37 +1191,37 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String roleName)
+		public void execute(Message message, String roleName)
 		{
 			if (roleName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a role name.");
 				return;
 			}
 
-			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+			Role role = Jeeves.findRole(message.getGuild().block(), roleName);
 
 			if (role == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the role " + roleName);
 				return;
 			}
 
-			if (Jeeves.isIgnored(role) == true)
+			if (Jeeves.isIgnored(message.getGuild().block().getId().asLong(), role) == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The role " + role.getName() + " is being ignored already.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The role " + role.getName() + " is being ignored already.");
 				return;
 			}
 
-			Object ignoredRoles = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "getIgnoredRoles");
+			Object ignoredRoles = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "getIgnoredRoles");
 			List<String> ignoredRoleList;
 
 			if (ignoredRoles.getClass() == String.class)
@@ -1238,9 +1233,9 @@ public class Internal extends BotModule
 				ignoredRoleList = Jeeves.listToStringList((List<?>)ignoredRoles);
 			}
 
-			String roleIdString = Long.toString(role.getLongID());
+			String roleIdString = role.getId().asString();
 			ignoredRoleList.add(roleIdString);
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredRoles", ignoredRoleList);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ignoredRoles", ignoredRoleList);
 
 			try
 			{
@@ -1249,11 +1244,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The following role is now being ignored: " + role.getName());
+			MessageQueue.sendMessage(message.getChannel().block(), "The following role is now being ignored: " + role.getName());
 		}
 	}
 
@@ -1274,35 +1269,35 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String roleName)
+		public void execute(Message message, String roleName)
 		{
 			if (roleName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a role name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a role name.");
 				return;
 			}
 
-			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+			Role role = Jeeves.findRole(message.getGuild().block(), roleName);
 
 			if (role == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the role " + roleName);
 				return;
 			}
 
-			Object ignoredRoles = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ignoredRoles");
+			Object ignoredRoles = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ignoredRoles");
 
 			if (ignoredRoles.getClass() == String.class)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No roles are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No roles are being ignored.");
 				return;
 			}
 
@@ -1310,20 +1305,20 @@ public class Internal extends BotModule
 
 			if (ignoredRoleList.size() == 0)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No roles are being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No roles are being ignored.");
 				return;
 			}
 
-			String roleIdString = Long.toString(role.getLongID());
+			String roleIdString = role.getId().asString();
 			boolean removed = ignoredRoleList.remove(roleIdString);
 
 			if (removed == false)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The role " + role.getName() + " is not being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The role " + role.getName() + " is not being ignored.");
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ignoredRoles", ignoredRoleList);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ignoredRoles", ignoredRoleList);
 
 			try
 			{
@@ -1332,11 +1327,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The following role is no longer being ignored: " + role.getName());
+			MessageQueue.sendMessage(message.getChannel().block(), "The following role is no longer being ignored: " + role.getName());
 		}
 	}
 
@@ -1356,15 +1351,15 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentList)
+		public void execute(Message message, String argumentList)
 		{
 			String[] moduleList = Jeeves.getModuleList();
 			String output = "The following modules are available:\n\n";
@@ -1374,7 +1369,7 @@ public class Internal extends BotModule
 				BotModule module = Jeeves.getModule(moduleList[moduleIndex]);
 				output += "\t" + moduleList[moduleIndex] + " " + module.getVersion();
 
-				if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
+				if (Jeeves.isDisabled(message.getGuild().block().getId().asLong(), module) == true)
 				{
 					output += " (disabled)";
 				}
@@ -1382,7 +1377,7 @@ public class Internal extends BotModule
 				output += "\n";
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -1403,19 +1398,19 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String moduleName)
+		public void execute(Message message, String moduleName)
 		{
 			if (moduleName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a module name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a module name.");
 				return;
 			}
 
@@ -1423,23 +1418,23 @@ public class Internal extends BotModule
 
 			if (module == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the module " + moduleName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the module " + moduleName);
 				return;
 			}
 
 			Long discordId = module.getDiscordId();
 
-			if ((discordId != null) && (discordId.equals(message.getGuild().getLongID()) == false))
+			if ((discordId != null) && (discordId.equals(message.getGuild().block().getId().asLong()) == false))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName + " is not available on this server.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The module " + moduleName + " is not available on this server.");
 				return;
 			}
 
-			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "disabledModules");
+			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "disabledModules");
 
 			if (disabledModules.getClass() == String.class)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "All available modules are enabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "All available modules are enabled.");
 				return;
 			}
 
@@ -1447,7 +1442,7 @@ public class Internal extends BotModule
 
 			if (disabledModuleList.size() == 0)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "All available modules are enabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "All available modules are enabled.");
 				return;
 			}
 
@@ -1455,11 +1450,11 @@ public class Internal extends BotModule
 
 			if (removed == false)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName +  " is not disabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The module " + moduleName +  " is not disabled.");
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "disabledModules", disabledModuleList);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "disabledModules", disabledModuleList);
 
 			try
 			{
@@ -1468,11 +1463,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The following module has been enabled: " + moduleName);
+			MessageQueue.sendMessage(message.getChannel().block(), "The following module has been enabled: " + moduleName);
 		}
 	}
 
@@ -1493,19 +1488,19 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String moduleName)
+		public void execute(Message message, String moduleName)
 		{
 			if (moduleName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a module name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a module name.");
 				return;
 			}
 
@@ -1513,23 +1508,23 @@ public class Internal extends BotModule
 
 			if (module == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the module " + moduleName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the module " + moduleName);
 				return;
 			}
 
 			if (module.canDisable() == false)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName + " cannot be disabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The module " + moduleName + " cannot be disabled.");
 				return;
 			}
 
-			if (Jeeves.isDisabled(message.getGuild().getLongID(), module) == true)
+			if (Jeeves.isDisabled(message.getGuild().block().getId().asLong(), module) == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The module " + moduleName + " is disabled already.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The module " + moduleName + " is disabled already.");
 				return;
 			}
 
-			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "disabledModules");
+			Object disabledModules = Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "disabledModules");
 			List<String> disabledModuleList;
 
 			if (disabledModules.getClass() == String.class)
@@ -1542,7 +1537,7 @@ public class Internal extends BotModule
 			}
 
 			disabledModuleList.add(moduleName);
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "disabledModules", disabledModuleList);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "disabledModules", disabledModuleList);
 
 			try
 			{
@@ -1551,11 +1546,11 @@ public class Internal extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The following module has been disabled: " + moduleName);
+			MessageQueue.sendMessage(message.getChannel().block(), "The following module has been disabled: " + moduleName);
 		}
 	}
 
@@ -1575,18 +1570,18 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String idString = Long.toString(message.getGuild().getLongID());
-			MessageQueue.sendMessage(message.getChannel(), "The ID of this Discord server is " + idString);
+			String idString = message.getGuild().block().getId().asString();
+			MessageQueue.sendMessage(message.getChannel().block(), "The ID of this Discord server is " + idString);
 		}
 	}
 
@@ -1607,35 +1602,35 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String channelName)
+		public void execute(Message message, String channelName)
 		{
-			IChannel channel = null;
+			Channel channel = null;
 
 			if (channelName.isEmpty() == true)
 			{
-				channel = message.getChannel();
+				channel = message.getChannel().block();
 			}
 			else
 			{
-				channel = Jeeves.findChannel(message.getGuild(), channelName);
+				channel = Jeeves.findChannel(message.getGuild().block(), channelName);
 
 				if (channel == null)
 				{
-					MessageQueue.sendMessage(message.getChannel(), "Cannot find the channel " + channelName);
+					MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the channel " + channelName);
 					return;
 				}
 			}
 
-			String idString = Long.toString(channel.getLongID());
-			MessageQueue.sendMessage(message.getChannel(), "The ID of the channel " + channel.getName() + " is " + idString);
+			String idString = channel.getId().asString();
+			MessageQueue.sendMessage(message.getChannel().block(), "The ID of the channel " + channel.getMention() + " is " + idString);
 		}
 	}
 
@@ -1656,32 +1651,32 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String roleName)
+		public void execute(Message message, String roleName)
 		{
 			if (roleName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to supply a role name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to supply a role name.");
 				return;
 			}
 
-			IRole role = Jeeves.findRole(message.getGuild(), roleName);
+			Role role = Jeeves.findRole(message.getGuild().block(), roleName);
 
 			if (role == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the role " + roleName);
 				return;
 			}
 
-			String idString = Long.toString(role.getLongID());
-			MessageQueue.sendMessage(message.getChannel(), "The ID of the role " + role.getName() + " is " + idString);
+			String idString = role.getId().asString();
+			MessageQueue.sendMessage(message.getChannel().block(), "The ID of the role " + role.getName() + " is " + idString);
 		}
 	}
 
@@ -1702,35 +1697,35 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String userName)
+		public void execute(Message message, String userName)
 		{
-			IUser user = null;
+			User user = null;
 
 			if (userName.isEmpty() == true)
 			{
-				user = message.getAuthor();
+				user = message.getAuthor().get();
 			}
 			else
 			{
-				user = Jeeves.findUser(message.getGuild(), userName);
+				user = Jeeves.findUser(message.getGuild().block(), userName);
 
 				if (user == null)
 				{
-					MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+					MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the user " + userName);
 					return;
 				}
 			}
 
-			String idString = Long.toString(user.getLongID());
-			MessageQueue.sendMessage(message.getChannel(), "The ID of the user " + user.getName() + " is " + idString);
+			String idString = user.getId().asString();
+			MessageQueue.sendMessage(message.getChannel().block(), "The ID of the user " + user.getUsername() + " is " + idString);
 		}
 	}
 
@@ -1756,9 +1751,9 @@ public class Internal extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			MessageQueue.sendMessage(message.getChannel(), "https://discordapp.com/api/oauth2/authorize?client_id=" + Jeeves.bot.getApplicationClientID() + "&scope=bot");
+			MessageQueue.sendMessage(message.getChannel().block(), "https://discordapp.com/api/oauth2/authorize?client_id=" + Jeeves.bot.getApplicationInfo().block().getId().asString() + "&scope=bot");
 		}
 	}
 }
