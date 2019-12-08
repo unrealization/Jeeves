@@ -11,7 +11,6 @@ import me.unrealization.jeeves.interfaces.UserLeftHandler;
 import me.unrealization.jeeves.interfaces.UserUpdateHandler;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -207,12 +206,11 @@ public class DiscordEventHandlers
 		@Override
 		public void execute(MemberUpdateEvent event)
 		{
-			List<Guild> serverList = (List<Guild>)event.getClient().getGuilds().toIterable();
+			Iterable<Guild> serverList = event.getClient().getGuilds().toIterable();
 			String[] moduleList = Jeeves.getModuleList();
 
-			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
+			for (Guild server: serverList)
 			{
-				Guild server = serverList.get(serverIndex);
 				User user = server.getMemberById(event.getMemberId()).block();
 
 				if (user == null)
@@ -252,12 +250,11 @@ public class DiscordEventHandlers
 		@Override
 		public void execute(PresenceUpdateEvent event)
 		{
-			List<Guild> serverList = (List<Guild>)event.getClient().getGuilds().toIterable();
+			Iterable<Guild> serverList = event.getClient().getGuilds().toIterable();
 			String[] moduleList = Jeeves.getModuleList();
 
-			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
+			for (Guild server: serverList)
 			{
-				Guild server = serverList.get(serverIndex);
 				User user = server.getMemberById(event.getUserId()).block();
 
 				if (user == null)
@@ -404,11 +401,11 @@ public class DiscordEventHandlers
 			return;
 		}
 
-		List<Role> roleList = (List<Role>)message.getAuthorAsMember().block().getRoles().toIterable();
+		Iterable<Role> roleList = message.getAuthorAsMember().block().getRoles().toIterable();
 
-		for (int index = 0; index < roleList.size(); index++)
+		for (Role role : roleList)
 		{
-			if (Jeeves.isIgnored(message.getGuild().block().getId().asLong(), roleList.get(index)) == true)
+			if (Jeeves.isIgnored(message.getGuild().block().getId().asLong(), role) == true)
 			{
 				return;
 			}

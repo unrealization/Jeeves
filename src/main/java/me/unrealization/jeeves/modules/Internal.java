@@ -14,7 +14,6 @@ import discord4j.core.object.entity.Channel;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.Role;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
@@ -400,12 +399,11 @@ public class Internal extends BotModule
 		@Override
 		public void execute(Message message, String argumentString)
 		{
-			List<Guild> serverList = (List<Guild>)message.getClient().getGuilds().toIterable();
+			Iterable<Guild> serverList = message.getClient().getGuilds().toIterable();
 			String output = "The bot is connected to the following servers:\n\n";
 
-			for (int serverIndex = 0; serverIndex < serverList.size(); serverIndex++)
+			for (Guild server : serverList)
 			{
-				Guild server = serverList.get(serverIndex);
 				output += "\t" + server.getName() + "\n";
 			}
 

@@ -48,24 +48,6 @@ public class Jeeves
 	public static ServerConfig serverConfig = null;
 	private static HashMap<String, BotModule> modules = null;
 
-	private static DiscordClient createClient(String token)
-	{
-		return Jeeves.createClient(token, true);
-	}
-
-	private static DiscordClient createClient(String token, boolean login)
-	{
-		DiscordClient client = new DiscordClientBuilder(token).build();
-		
-		if (login == true)
-		{
-			//client.login();
-			client.login().block();
-		}
-
-		return client;
-	}
-
 	private static void loadModules()
 	{
 		Jeeves.modules = new HashMap< String, BotModule>();
@@ -379,8 +361,9 @@ public class Jeeves
 
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		Jeeves.loadModules();
-		Jeeves.bot = Jeeves.createClient((String)Jeeves.clientConfig.getValue("loginToken"));
+		Jeeves.bot = new DiscordClientBuilder((String)Jeeves.clientConfig.getValue("loginToken")).build();
 		EventDispatcher dispatcher = Jeeves.bot.getEventDispatcher();
 		dispatcher.on(ReadyEvent.class).subscribe(event -> new DiscordEventHandlers.ReadyEventListener().execute(event));
+		Jeeves.bot.login().block();
 	}
 }
