@@ -3,20 +3,20 @@ package me.unrealization.jeeves.modules;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import discord4j.core.event.domain.guild.MemberJoinEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.util.Permission;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
-import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.Permissions;
 
 public class ParadoxWing extends BotModule implements UserJoinedHandler
 {
 	public ParadoxWing()
 	{
-		this.version = "1.0.0";
+		this.version = "2.0.0";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetParadoxWelcomeMessageEnabled";
@@ -32,9 +32,9 @@ public class ParadoxWing extends BotModule implements UserJoinedHandler
 	}
 
 	@Override
-	public void userJoinedHandler(UserJoinEvent event)
+	public void userJoinedHandler(MemberJoinEvent event)
 	{
-		String paradoxWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "paradoxWelcomeMessageEnabled");
+		String paradoxWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(event.getGuildId().asLong(), "paradoxWelcomeMessageEnabled");
 
 		if (paradoxWelcomeMessageEnabled.equals("1") == true)
 		{
@@ -43,7 +43,7 @@ public class ParadoxWing extends BotModule implements UserJoinedHandler
 			message += "With that in mind, one of the Admin team will be along shortly to assign you the member role, but in the meantime, pop into the **#guest-chat**, make a cup of tea and say Hi!\n\n";
 			message += "We're looking forward to seeing you out in the black! o7";
 
-			MessageQueue.sendMessage(event.getUser(), message);
+			MessageQueue.sendMessage(event.getMember(), message);
 		}
 	}
 
@@ -63,25 +63,25 @@ public class ParadoxWing extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String paradoxWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "paradoxWelcomeMessageEnabled");
+			String paradoxWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "paradoxWelcomeMessageEnabled");
 
 			if (paradoxWelcomeMessageEnabled.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The Paradox Wing welcome message is disabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The Paradox Wing welcome message is disabled.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The Paradox Wing welcome message is enabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The Paradox Wing welcome message is enabled.");
 			}
 		}
 	}
@@ -103,23 +103,23 @@ public class ParadoxWing extends BotModule implements UserJoinedHandler
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String paradoxWelcomeMessageEnabled)
+		public void execute(Message message, String paradoxWelcomeMessageEnabled)
 		{
 			if ((paradoxWelcomeMessageEnabled.equals("0") == false) && (paradoxWelcomeMessageEnabled.equals("1") == false))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel().block(), "Invalid value");
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "paradoxWelcomeMessageEnabled", paradoxWelcomeMessageEnabled);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "paradoxWelcomeMessageEnabled", paradoxWelcomeMessageEnabled);
 
 			try
 			{
@@ -128,17 +128,17 @@ public class ParadoxWing extends BotModule implements UserJoinedHandler
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
 			if (paradoxWelcomeMessageEnabled.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The Paradox Wing welcome message has been disabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The Paradox Wing welcome message has been disabled.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The Paradox Wing welcome message has ben enabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The Paradox Wing welcome message has been enabled.");
 			}
 		}
 	}
