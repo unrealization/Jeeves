@@ -34,7 +34,7 @@ public class RoleQueue
 				switch (queueItem.action)
 				{
 				case "add":
-					queueItem.user.addRole(queueItem.role.getId());
+					queueItem.user.addRole(queueItem.role.getId()).block();
 
 					if (queueItem.notificationChannel != null)
 					{
@@ -42,7 +42,7 @@ public class RoleQueue
 					}
 					break;
 				case "remove":
-					queueItem.user.removeRole(queueItem.role.getId());
+					queueItem.user.removeRole(queueItem.role.getId()).block();
 
 					if (queueItem.notificationChannel != null)
 					{
