@@ -9,8 +9,8 @@ import javax.xml.transform.TransformerException;
 import org.quartz.SchedulerException;
 import org.xml.sax.SAXException;
 
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.Permissions;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.util.Permission;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.dataLists.CronJobList;
@@ -23,7 +23,7 @@ public class Cron extends BotModule
 
 	public Cron() throws ParserConfigurationException, SAXException
 	{
-		this.version = "1.0.2";
+		this.version = "1.99.0";
 
 		this.commandList = new String[3];
 		this.commandList[0] = "GetCronJobs";
@@ -49,21 +49,21 @@ public class Cron extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getLongID(), "cronJobs");
+			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().block().getId().asLong(), "cronJobs");
 
 			if (cronJobs.getClass() == String.class)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "There are no cronjobs for this Discord.");
+				MessageQueue.sendMessage(message.getChannel().block(), "There are no cronjobs for this Discord.");
 				return;
 			}
 
@@ -71,7 +71,7 @@ public class Cron extends BotModule
 
 			if (cronJobList.size() == 0)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "There are no cronjobs for this Discord.");
+				MessageQueue.sendMessage(message.getChannel().block(), "There are no cronjobs for this Discord.");
 				return;
 			}
 
@@ -83,7 +83,7 @@ public class Cron extends BotModule
 				output += "[" + Integer.toString(cronJobIndex) + "] " + cronJob.getSchedule() + " " + cronJob.getCommand() + " (" + cronJob.getChannelId() + ")\n";
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -104,15 +104,15 @@ public class Cron extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String[] arguments = argumentString.split(" ");
 			String minute;
@@ -125,7 +125,7 @@ public class Cron extends BotModule
 			{
 				Jeeves.debugException(e);
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "x");
+				MessageQueue.sendMessage(message.getChannel().block(), "x");
 				return;
 			}
 
@@ -139,7 +139,7 @@ public class Cron extends BotModule
 			{
 				Jeeves.debugException(e);
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "x");
+				MessageQueue.sendMessage(message.getChannel().block(), "x");
 				return;
 			}
 
@@ -153,7 +153,7 @@ public class Cron extends BotModule
 			{
 				Jeeves.debugException(e);
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "x");
+				MessageQueue.sendMessage(message.getChannel().block(), "x");
 				return;
 			}
 
@@ -167,7 +167,7 @@ public class Cron extends BotModule
 			{
 				Jeeves.debugException(e);
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "x");
+				MessageQueue.sendMessage(message.getChannel().block(), "x");
 				return;
 			}
 
@@ -184,12 +184,12 @@ public class Cron extends BotModule
 			if (command.isEmpty() == true)
 			{
 				//TODO
-				MessageQueue.sendMessage(message.getChannel(), "x");
+				MessageQueue.sendMessage(message.getChannel().block(), "x");
 				return;
 			}
 
 			CronJobList.CronJob cronJob = new CronJobList.CronJob();
-			cronJob.setChannelId(message.getChannel().getLongID());
+			cronJob.setChannelId(message.getChannelId().asLong());
 			cronJob.setCommand(command);
 			cronJob.setSchedule(schedule);
 
@@ -200,11 +200,11 @@ public class Cron extends BotModule
 			catch (SchedulerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "The cronjob cannot be started.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The cronjob cannot be started.");
 				return;
 			}
 
-			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getLongID(), "cronJobs");
+			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().block().getId().asLong(), "cronJobs");
 			List<CronJobList.CronJob> cronJobList;
 
 			if (cronJobs.getClass() == String.class)
@@ -217,7 +217,7 @@ public class Cron extends BotModule
 			}
 
 			cronJobList.add(cronJob);
-			Cron.cronJobList.setValue(message.getGuild().getLongID(), "cronJobs", cronJobList);
+			Cron.cronJobList.setValue(message.getGuild().block().getId().asLong(), "cronJobs", cronJobList);
 
 			try
 			{
@@ -226,11 +226,11 @@ public class Cron extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The cronjob has been added.");
+			MessageQueue.sendMessage(message.getChannel().block(), "The cronjob has been added.");
 		}
 	}
 
@@ -251,15 +251,15 @@ public class Cron extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String cronIndex)
+		public void execute(Message message, String cronIndex)
 		{
 			int index;
 
@@ -270,15 +270,15 @@ public class Cron extends BotModule
 			catch (NumberFormatException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "The index must be numeric.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The index must be numeric.");
 				return;
 			}
 
-			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().getLongID(), "cronJobs");
+			Object cronJobs = Cron.cronJobList.getValue(message.getGuild().block().getId().asLong(), "cronJobs");
 
 			if (cronJobs.getClass() == String.class)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "There are no cronjobs for this Discord.");
+				MessageQueue.sendMessage(message.getChannel().block(), "There are no cronjobs for this Discord.");
 				return;
 			}
 
@@ -286,7 +286,7 @@ public class Cron extends BotModule
 
 			if (cronJobList.size() == 0)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "There are no cronjobs for this Discord.");
+				MessageQueue.sendMessage(message.getChannel().block(), "There are no cronjobs for this Discord.");
 				return;
 			}
 
@@ -294,12 +294,12 @@ public class Cron extends BotModule
 
 			if (removedCron == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The index " + cronIndex + " does not exist.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The index " + cronIndex + " does not exist.");
 				return;
 			}
 
 			removedCron.stop();
-			Cron.cronJobList.setValue(message.getGuild().getLongID(), "cronJobs", cronJobList);
+			Cron.cronJobList.setValue(message.getGuild().block().getId().asLong(), "cronJobs", cronJobList);
 
 			try
 			{
@@ -308,11 +308,11 @@ public class Cron extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The cronjob at index " + cronIndex + " has been removed.");
+			MessageQueue.sendMessage(message.getChannel().block(), "The cronjob at index " + cronIndex + " has been removed.");
 		}
 	}
 }

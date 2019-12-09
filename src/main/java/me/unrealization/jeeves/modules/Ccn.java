@@ -1,13 +1,20 @@
 package me.unrealization.jeeves.modules;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
+import discord4j.core.event.domain.guild.MemberJoinEvent;
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.Role;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.Snowflake;
 import me.unrealization.jeeves.bot.JSONHandler;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
@@ -18,13 +25,6 @@ import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 import me.unrealization.jeeves.interfaces.MessageReceivedHandler;
 import me.unrealization.jeeves.interfaces.UserJoinedHandler;
-import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.MissingPermissionsException;
 
 public class Ccn extends BotModule implements UserJoinedHandler, MessageReceivedHandler
 {
@@ -36,7 +36,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 	public Ccn()
 	{
-		this.version = "0.9.2";
+		this.version = "1.99.0";
 
 		this.commandList = new String[6];
 		this.commandList[0] = "CcnProximityCheck";
@@ -61,13 +61,13 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 	}
 
 	@Override
-	public void userJoinedHandler(UserJoinEvent event)
+	public void userJoinedHandler(MemberJoinEvent event)
 	{
-		String ccnWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(event.getGuild().getLongID(), "ccnWelcomeMessageEnabled");
+		String ccnWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(event.getGuildId().asLong(), "ccnWelcomeMessageEnabled");
 
 		if (ccnWelcomeMessageEnabled.equals("1") == true)
 		{
-			String message = "Welcome to the Colonia Citizens Network, " + event.getUser().getName() + "\n\n";
+			String message = "Welcome to the Colonia Citizens Network, " + event.getMember().getDisplayName() + "\n\n";
 			message += "In order to make the most out of your experience here we have set up a number of roles which you can assign to yourself, using our bot Jeeves in our **#bots** channel. These roles allow access to special channels dedicated to different topics, where you can meet players who share your interests.\n\n";
 			message += "The bot commands ``roles``, ``join`` and ``leave`` will help you to find out which roles are currently available for you to use, and allow you to give yourself a role, or take it away again.\n\n";
 			message += "Please note that all bot commands have to be prefixed by pinging the bot using ``@Jeeves``\n\n";
@@ -78,17 +78,17 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 			message += "Have a pleasant stay on the Colonia Citizens Network Discord!\n";
 			message += "The CCN Team";
 
-			MessageQueue.sendMessage(event.getUser(), message);
+			MessageQueue.sendMessage(event.getMember(), message);
 		}
 
-		IChannel lobby = event.getGuild().getChannelByID(Ccn.ccnLobbyChannelId);
+		Channel lobby = event.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnLobbyChannelId)).block();
 
 		if (lobby == null)
 		{
 			return;
 		}
 
-		String message = "Welcome to the Colonia Citizens Network, " + event.getUser().mention() + "!\n";
+		String message = "Welcome to the Colonia Citizens Network, " + event.getMember().getMention() + "!\n";
 		message += "Please take a moment and read through the CCN community guidelines at http://bit.ly/2lOQPWd\n";
 		message += "Once you are done please respond as follows:\n";
 		message += "If you agree with the guidelines, please post **@Jeeves guidelines yes**\n";
@@ -97,21 +97,21 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 	}
 
 	@Override
-	public boolean messageReceivedHandler(IMessage message)
+	public boolean messageReceivedHandler(Message message)
 	{
-		IUser botUser = Jeeves.bot.getOurUser();
+		User botUser = Jeeves.bot.getSelf().block();
 
-		if (message.getAuthor() == botUser)
+		if (message.getAuthor().get() == botUser)
 		{
 			return false;
 		}
 
-		if (message.getChannel().getLongID() != Ccn.ccnLobbyChannelId)
+		if (message.getChannelId().asLong() != Ccn.ccnLobbyChannelId)
 		{
 			return false;
 		}
 
-		String messageContent = message.getContent().trim();
+		String messageContent = message.getContent().get().trim();
 		String[] messageParts = messageContent.split(" ");
 		int nonEmptyParts = 0;
 
@@ -159,39 +159,39 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 		if (messageParts[2].toLowerCase().equals("yes") == true)
 		{
-			IRole guestRole = message.getGuild().getRoleByID(Ccn.ccnGuestRoleId);
-			IRole colonistRole = message.getGuild().getRoleByID(Ccn.ccnColonistRoleId);
+			Role guestRole = message.getGuild().block().getRoleById(Snowflake.of(Ccn.ccnGuestRoleId)).block();
+			Role colonistRole = message.getGuild().block().getRoleById(Snowflake.of(Ccn.ccnColonistRoleId)).block();
 
 			if ((guestRole == null) || (colonistRole == null))
 			{
-				IChannel actionLogChannel = message.getGuild().getChannelByID(Ccn.ccnActionLogChannelId);
+				Channel actionLogChannel = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnActionLogChannelId)).block();
 
 				if (actionLogChannel != null)
 				{
-					MessageQueue.sendMessage(actionLogChannel, "Error: Cannot tag up " + message.getAuthor().getName() + ", the IDs role the guest- and/or colonist-role must haven changed!");
+					MessageQueue.sendMessage(actionLogChannel, "Error: Cannot tag up " + message.getAuthor().get().getUsername() + ", the IDs role the guest- and/or colonist-role must have changed!");
 				}
 				else
 				{
-					System.out.println("Error: Cannot tag up " + message.getAuthor().getName() + ", the IDs role the guest- and/or colonist-role must haven changed!");
+					System.out.println("Error: Cannot tag up " + message.getAuthor().get().getUsername() + ", the IDs role the guest- and/or colonist-role must have changed!");
 				}
 
 				return true;
 			}
 
-			RoleQueue.removeRoleFromUser(guestRole, message.getAuthor());
-			RoleQueue.addRoleToUser(colonistRole, message.getAuthor());
-			IChannel barChannel = message.getGuild().getChannelByID(Ccn.ccnBarChannelId);
+			RoleQueue.removeRoleFromUser(guestRole, message.getAuthorAsMember().block());
+			RoleQueue.addRoleToUser(colonistRole, message.getAuthorAsMember().block());
+			Channel barChannel = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnBarChannelId)).block();
 
 			if (barChannel != null)
 			{
-				MessageQueue.sendMessage(barChannel, "Welcome to the Colonia Citizens Network, " + message.getAuthor().mention() + "!");
+				MessageQueue.sendMessage(barChannel, "Welcome to the Colonia Citizens Network, " + message.getAuthor().get().getMention() + "!");
 			}
 
-			IChannel actionLogChannel = message.getGuild().getChannelByID(Ccn.ccnActionLogChannelId);
+			Channel actionLogChannel = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnActionLogChannelId)).block();
 
 			if (actionLogChannel != null)
 			{
-				MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().getName() + " agrees with the guidelines and has therefore been tagged up.");
+				MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().get().getUsername() + " agrees with the guidelines and has therefore been tagged up.");
 			}
 
 			return true;
@@ -199,28 +199,19 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 		else if (messageParts[2].toLowerCase().equals("no") == true)
 		{
 			boolean kicked = false;
-
-			try
-			{
-				message.getGuild().kickUser(message.getAuthor());
-				kicked = true;
-			}
-			catch (MissingPermissionsException e)
-			{
-				Jeeves.debugException(e);
-			}
-
-			IChannel actionLogChannel = message.getGuild().getChannelByID(ccnActionLogChannelId);
+			message.getGuild().block().kick(message.getAuthor().get().getId()).block();
+			kicked = true;
+			Channel actionLogChannel = message.getGuild().block().getChannelById(Snowflake.of(ccnActionLogChannelId)).block();
 
 			if (actionLogChannel != null)
 			{
 				if (kicked == true)
 				{
-					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().getName() + " did not agree with the guidelines and has therefore been kicked.");
+					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().get().getUsername() + " did not agree with the guidelines and has therefore been kicked.");
 				}
 				else
 				{
-					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().getName() + " did not agree with the guidelines, but could not be kicked.");
+					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().get().getUsername() + " did not agree with the guidelines, but could not be kicked.");
 				}
 			}
 
@@ -255,15 +246,15 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			EdsmUserList edsmUserList;
 
@@ -274,53 +265,53 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 			catch (ParserConfigurationException | SAXException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM userlist is not available. Cannot process proximity check.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM userlist is not available. Cannot process proximity check.");
 				return;
 			}
 
-			String roleIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRole");
+			String roleIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ccnProximityRole");
 
 			if (roleIdString.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No CCN proximity role has been set.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No CCN proximity role has been set.");
 				return;
 			}
 
 			long roleId = Long.parseLong(roleIdString);
-			IRole role = message.getGuild().getRoleByID(roleId);
+			Role role = message.getGuild().block().getRoleById(Snowflake.of(roleId)).block();
 
 			if (role == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The current CCN proximity role is invalid.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The current CCN proximity role is invalid.");
 				//TODO Reset
 				return;
 			}
 
-			String ccnEdsmId = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnEdsmId");
+			String ccnEdsmId = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ccnEdsmId");
 
 			if (ccnEdsmId.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No CCN EDSM Id has been set.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No CCN EDSM Id has been set.");
 				return;
 			}
 
-			String ccnEdsmApiKey = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnEdsmApiKey");
+			String ccnEdsmApiKey = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ccnEdsmApiKey");
 
 			if (ccnEdsmApiKey.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No CCN EDSM API Key has been set.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No CCN EDSM API Key has been set.");
 				return;
 			}
 
-			String ccnProximityRadius = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRadius");
+			String ccnProximityRadius = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ccnProximityRadius");
 
 			if (ccnProximityRadius.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No proximity radius has been set.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No proximity radius has been set.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "This might take a while.");
+			MessageQueue.sendMessage(message.getChannel().block(), "This might take a while.");
 			String response;
 
 			try
@@ -330,18 +321,17 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			Ccn.ProximityCheckModel data = (Ccn.ProximityCheckModel)JSONHandler.parseJSON(response, Ccn.ProximityCheckModel.class);
-			List<IUser> userList = message.getGuild().getUsers();
+			Iterable<Member> userList = message.getGuild().block().getMembers().toIterable();
 			String output = "";
 
-			for (int userIndex = 0; userIndex < userList.size(); userIndex++)
+			for (Member user: userList)
 			{
-				IUser user = userList.get(userIndex);
-				String userIdString = Long.toString(user.getLongID());
+				String userIdString = user.getId().asString();
 
 				if (edsmUserList.hasKey(userIdString) == false)
 				{
@@ -350,7 +340,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 				String edsmUserName = (String)edsmUserList.getValue(userIdString);
 
-				if (user.hasRole(role) == true)
+				if (user.getRoleIds().contains(role.getId()) == true)
 				{
 					boolean found = false;
 
@@ -366,7 +356,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 					if (found == false)
 					{
 						RoleQueue.removeRoleFromUser(role, user);
-						output += user.getName() + " is no longer in Colonia.\n";
+						output += user.getDisplayName() + " is no longer in Colonia.\n";
 					}
 				}
 				else
@@ -376,7 +366,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 						if (data.commanders[edsmUserIndex].toLowerCase().equals(edsmUserName.toLowerCase()) == true)
 						{
 							RoleQueue.addRoleToUser(role, user);
-							output += user.getName() + " has arrived in Colonia.\n";
+							output += user.getDisplayName() + " has arrived in Colonia.\n";
 							break;
 						}
 					}
@@ -385,11 +375,11 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 			if (output.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No changes to process.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No changes to process.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), output);
+				MessageQueue.sendMessage(message.getChannel().block(), output);
 			}
 		}
 	}
@@ -410,33 +400,33 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String roleIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnProximityRole");
+			String roleIdString = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ccnProximityRole");
 
 			if (roleIdString.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No CCN proximity role has been set.");
+				MessageQueue.sendMessage(message.getChannel().block(), "No CCN proximity role has been set.");
 				return;
 			}
 
 			long roleId = Long.parseLong(roleIdString);
-			IRole role = message.getGuild().getRoleByID(roleId);
+			Role role = message.getGuild().block().getRoleById(Snowflake.of(roleId)).block();
 
 			if (role == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "A CCN proximity role has been set, but it does not exist.");
+				MessageQueue.sendMessage(message.getChannel().block(), "A CCN proximity role has been set, but it does not exist.");
 
 				Ccn ccn = new Ccn();
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnProximityRole", ccn.getDefaultConfig().get("ccnProximityRole"));
+				Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ccnProximityRole", ccn.getDefaultConfig().get("ccnProximityRole"));
 
 				try
 				{
@@ -450,7 +440,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "The CCN proximity role is: " + role.getName());
+			MessageQueue.sendMessage(message.getChannel().block(), "The CCN proximity role is: " + role.getName());
 		}
 	}
 
@@ -471,34 +461,34 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String roleName)
+		public void execute(Message message, String roleName)
 		{
-			IRole role = null;
+			Role role = null;
 
 			if (roleName.isEmpty() == true)
 			{
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnProximityRole", "");
+				Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ccnProximityRole", "");
 			}
 			else
 			{
-				role = Jeeves.findRole(message.getGuild(), roleName);
+				role = Jeeves.findRole(message.getGuild().block(), roleName);
 
 				if (role == null)
 				{
-					MessageQueue.sendMessage(message.getChannel(), "Cannot find the role " + roleName);
+					MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the role " + roleName);
 					return;
 				}
 
-				String roleIdString = Long.toString(role.getLongID());
-				Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnProximityRole", roleIdString);
+				String roleIdString = role.getId().asString();
+				Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ccnProximityRole", roleIdString);
 			}
 
 			try
@@ -508,17 +498,17 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
 			if (role == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The CCN proximity role has been cleared.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The CCN proximity role has been cleared.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The CCN proximity role has been set to: " + role.getName());
+				MessageQueue.sendMessage(message.getChannel().block(), "The CCN proximity role has been set to: " + role.getName());
 			}
 		}
 	}
@@ -539,25 +529,25 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String ccnWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "ccnWelcomeMessageEnabled");
+			String ccnWelcomeMessageEnabled = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "ccnWelcomeMessageEnabled");
 
 			if (ccnWelcomeMessageEnabled.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The CCN welcome message is disabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The CCN welcome message is disabled.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The CCN welcome message is enabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The CCN welcome message is enabled.");
 			}
 		}
 	}
@@ -579,23 +569,23 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String ccnWelcomeMessageEnabled)
+		public void execute(Message message, String ccnWelcomeMessageEnabled)
 		{
 			if ((ccnWelcomeMessageEnabled.equals("0") == false) && (ccnWelcomeMessageEnabled.equals("1") == false))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel().block(), "Invalid value");
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "ccnWelcomeMessageEnabled", ccnWelcomeMessageEnabled);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "ccnWelcomeMessageEnabled", ccnWelcomeMessageEnabled);
 
 			try
 			{
@@ -604,17 +594,17 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
 			if (ccnWelcomeMessageEnabled.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The CCN welcome message has been disabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The CCN welcome message has been disabled.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The CCN welcome message has ben enabled.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The CCN welcome message has ben enabled.");
 			}
 		}
 	}
@@ -635,21 +625,21 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			IChannel lobby = message.getGuild().getChannelByID(Ccn.ccnLobbyChannelId);
+			Channel lobby = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnLobbyChannelId)).block();
 
 			if (lobby == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot send the guidelines message. The ID of the lobby must have changed.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot send the guidelines message. The ID of the lobby must have changed.");
 				return;
 			}
 
