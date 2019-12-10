@@ -1,6 +1,6 @@
 # Jeeves
 
-A bot for Discord based on the Discord4J library (https://github.com/austinv11/Discord4J).
+A bot for Discord based on the Discord4J library (https://github.com/Discord4J/Discord4J).
 
 Through a number of modules Jeeves has a certain focus on the game Elite: Dangerous, but can also provide useful functions for Discord servers unrelated to the game.
 
