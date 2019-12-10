@@ -8,14 +8,14 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
 import me.unrealization.jeeves.dataLists.EdsmUserList;
 import me.unrealization.jeeves.jsonModels.EdsmModels;
 import me.unrealization.jeeves.apis.EdsmApi;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
 import me.unrealization.jeeves.interfaces.BotCommand;
 import me.unrealization.jeeves.interfaces.BotModule;
 
@@ -25,7 +25,7 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "0.10.0";
+		this.version = "1.99.0";
 
 		this.commandList = new String[18];
 		this.commandList[0] = "GetUseEdsmBetaServer";
@@ -99,25 +99,25 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String useBetaServer = (String)Jeeves.serverConfig.getValue(message.getGuild().getLongID(), "edsmUseBetaServer");
+			String useBetaServer = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "edsmUseBetaServer");
 
 			if (useBetaServer.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot uses the EDSM live server.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot uses the EDSM live server.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot uses the EDSM beta server.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot uses the EDSM beta server.");
 			}
 		}
 	}
@@ -139,23 +139,23 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public Permissions[] permissions()
+		public Permission[] permissions()
 		{
-			Permissions[] permissionList = new Permissions[1];
-			permissionList[0] = Permissions.MANAGE_SERVER;
+			Permission[] permissionList = new Permission[1];
+			permissionList[0] = Permission.MANAGE_GUILD;
 			return permissionList;
 		}
 
 		@Override
-		public void execute(IMessage message, String useBetaServer)
+		public void execute(Message message, String useBetaServer)
 		{
 			if ((useBetaServer.equals("0") == false) && (useBetaServer.equals("1") == false))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Invalid value");
+				MessageQueue.sendMessage(message.getChannel().block(), "Invalid value");
 				return;
 			}
 
-			Jeeves.serverConfig.setValue(message.getGuild().getLongID(), "edsmUseBetaServer", useBetaServer);
+			Jeeves.serverConfig.setValue(message.getGuild().block().getId().asLong(), "edsmUseBetaServer", useBetaServer);
 
 			try
 			{
@@ -164,17 +164,17 @@ public class Edsm extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
 			if (useBetaServer.equals("0") == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot will now use the EDSM live server.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot will now use the EDSM live server.");
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The bot will now use the EDSM beta server.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The bot will now use the EDSM beta server.");
 			}
 		}
 	}
@@ -196,15 +196,15 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String edsmUserName)
+		public void execute(Message message, String edsmUserName)
 		{
 			if (edsmUserName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide an EDSM username");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide an EDSM username");
 				return;
 			}
 
-			String userIdString = Long.toString(message.getAuthor().getLongID());
+			String userIdString = message.getAuthor().get().getId().asString();
 			Edsm.edsmUserList.setValue(userIdString, edsmUserName);
 
 			try
@@ -214,11 +214,11 @@ public class Edsm extends BotModule
 			catch (ParserConfigurationException | TransformerException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Cannot store the setting.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot store the setting.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "Your EDSM username has been set to: " + edsmUserName);
+			MessageQueue.sendMessage(message.getChannel().block(), "Your EDSM username has been set to: " + edsmUserName);
 		}
 	}
 
@@ -238,18 +238,18 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			String userIdString = Long.toString(message.getAuthor().getLongID());
+			String userIdString = message.getAuthor().get().getId().asString();
 
 			if (Edsm.edsmUserList.hasKey(userIdString) == false)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You have not registered an EDSM username.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You have not registered an EDSM username.");
 				return;
 			}
 
 			Edsm.edsmUserList.removeValue(userIdString);
-			MessageQueue.sendMessage(message.getChannel(), "Your EDSM username has been removed.");
+			MessageQueue.sendMessage(message.getChannel().block(), "Your EDSM username has been removed.");
 		}
 	}
 
@@ -270,36 +270,36 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String userName)
+		public void execute(Message message, String userName)
 		{
-			IUser user;
+			User user;
 
 			if (userName.isEmpty() == true)
 			{
-				user = message.getAuthor();
+				user = message.getAuthor().get();
 			}
 			else
 			{
-				user = Jeeves.findUser(message.getGuild(), userName);
+				user = Jeeves.findUser(message.getGuild().block(), userName);
 
 				if (user == null)
 				{
-					MessageQueue.sendMessage(message.getChannel(), "Cannot find the user " + userName);
+					MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the user " + userName);
 					return;
 				}
 			}
 
-			String userIdString = Long.toString(user.getLongID());
+			String userIdString = user.getId().asString();
 
 			if (Edsm.edsmUserList.hasKey(userIdString) == false)
 			{
 				if (userName.isEmpty() == true)
 				{
-					MessageQueue.sendMessage(message.getChannel(), "You have not registered an EDSM username.");
+					MessageQueue.sendMessage(message.getChannel().block(), "You have not registered an EDSM username.");
 				}
 				else
 				{
-					MessageQueue.sendMessage(message.getChannel(), user.getName() + " has not registered an EDSM username.");
+					MessageQueue.sendMessage(message.getChannel().block(), user.getUsername() + " has not registered an EDSM username.");
 				}
 
 				return;
@@ -309,11 +309,11 @@ public class Edsm extends BotModule
 
 			if (userName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Your EDSM username is: " + edsmUserName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Your EDSM username is: " + edsmUserName);
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel(), "The EDSM username for " + user.getName() + " is: " + edsmUserName);
+				MessageQueue.sendMessage(message.getChannel().block(), "The EDSM username for " + user.getUsername() + " is: " + edsmUserName);
 			}
 		}
 	}
@@ -334,9 +334,9 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.EDStatus data;
 
 			try
@@ -346,11 +346,11 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), "Elite: Dangerous Server Status: " + data.message + "\nLast Update: " + data.lastUpdate);
+			MessageQueue.sendMessage(message.getChannel().block(), "Elite: Dangerous Server Status: " + data.message + "\nLast Update: " + data.lastUpdate);
 		}
 	}
 
@@ -371,22 +371,22 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String commanderName)
+		public void execute(Message message, String commanderName)
 		{
 			if (commanderName.isEmpty() == true)
 			{
-				String userIdString = Long.toString(message.getAuthor().getLongID());
+				String userIdString = message.getAuthor().get().getId().asString();
 
 				if (Edsm.edsmUserList.hasKey(userIdString) == false)
 				{
-					MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander name or register your EDSM username.");
+					MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a commander name or register your EDSM username.");
 					return;
 				}
 
 				commanderName = (String)Edsm.edsmUserList.getValue(userIdString);
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.CommanderLocation data;
 
 			try
@@ -396,7 +396,7 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
@@ -427,7 +427,7 @@ public class Edsm extends BotModule
 				}
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -448,15 +448,15 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String systemName)
+		public void execute(Message message, String systemName)
 		{
 			if (systemName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a system name.");
 				return;
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.SystemInfo data;
 
 			try
@@ -466,18 +466,18 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (data == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), systemName + " cannot be found on EDSM.");
 				return;
 			}
 
 			String output = "System: " + data.name + " [ " + data.coords.x + " : " + data.coords.y + " : " + data.coords.z + " ]";
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -498,22 +498,22 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String commanderName)
+		public void execute(Message message, String commanderName)
 		{
 			if (commanderName.isEmpty() == true)
 			{
-				String userIdString = Long.toString(message.getAuthor().getLongID());
+				String userIdString = message.getAuthor().get().getId().asString();
 
 				if (Edsm.edsmUserList.hasKey(userIdString) == false)
 				{
-					MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander name or register your ESDM username.");
+					MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a commander name or register your ESDM username.");
 					return;
 				}
 
 				commanderName = (String)Edsm.edsmUserList.getValue(userIdString);
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.CommanderLocation data;
 
 			try
@@ -523,7 +523,7 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
@@ -549,7 +549,7 @@ public class Edsm extends BotModule
 				}
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -570,7 +570,7 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String[] arguments = Jeeves.splitArguments(argumentString);
 			String[] searchNames = new String[2];
@@ -589,11 +589,11 @@ public class Edsm extends BotModule
 
 				if (searchNames[index].isEmpty() == true)
 				{
-					String userIdString = Long.toString(message.getAuthor().getLongID());
+					String userIdString = message.getAuthor().get().getId().asString();
 
 					if (Edsm.edsmUserList.hasKey(userIdString) == false)
 					{
-						MessageQueue.sendMessage(message.getChannel(), "You need to provide a commander or system name or register your EDSM username.");
+						MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a commander or system name or register your EDSM username.");
 						return;
 					}
 
@@ -601,7 +601,7 @@ public class Edsm extends BotModule
 				}
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.SystemInfo systemInfo[] = new EdsmModels.SystemInfo[2];
 
 			for (int index = 0; index < searchNames.length; index++)
@@ -615,7 +615,7 @@ public class Edsm extends BotModule
 				catch (IOException e)
 				{
 					Jeeves.debugException(e);
-					MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+					MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 					return;
 				}
 
@@ -634,13 +634,13 @@ public class Edsm extends BotModule
 				catch (IOException e)
 				{
 					Jeeves.debugException(e);
-					MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+					MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 					return;
 				}
 
 				if (cmdrData == null)
 				{
-					MessageQueue.sendMessage(message.getChannel(), searchNames[index] + " cannot be found on EDSM.");
+					MessageQueue.sendMessage(message.getChannel().block(), searchNames[index] + " cannot be found on EDSM.");
 					return;
 				}
 
@@ -649,13 +649,13 @@ public class Edsm extends BotModule
 					switch (cmdrData.msgnum)
 					{
 					case "100":
-						MessageQueue.sendMessage(message.getChannel(), searchNames[index] + " cannot be located.");
+						MessageQueue.sendMessage(message.getChannel().block(), searchNames[index] + " cannot be located.");
 						return;
 					case "203":
-						MessageQueue.sendMessage(message.getChannel(), searchNames[index] + " does not seem to be using EDSM.");
+						MessageQueue.sendMessage(message.getChannel().block(), searchNames[index] + " does not seem to be using EDSM.");
 						return;
 					default:
-						MessageQueue.sendMessage(message.getChannel(), cmdrData.msg);
+						MessageQueue.sendMessage(message.getChannel().block(), cmdrData.msg);
 						return;
 					}
 				}
@@ -667,7 +667,7 @@ public class Edsm extends BotModule
 
 			String distance = Edsm.calculateDistance(systemInfo[0].coords, systemInfo[1].coords);
 			String output = "The distance between " + systemInfo[0].name + " and " + systemInfo[1].name + " is " + distance + " ly.";
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -688,13 +688,13 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String[] arguments = Jeeves.splitArguments(argumentString);
 
 			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a system name.");
 				return;
 			}
 
@@ -712,12 +712,12 @@ public class Edsm extends BotModule
 				catch (NumberFormatException e)
 				{
 					Jeeves.debugException(e);
-					MessageQueue.sendMessage(message.getChannel(), "Invalid value for radius.");
+					MessageQueue.sendMessage(message.getChannel().block(), "Invalid value for radius.");
 					return;
 				}
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.SystemInfo centerData;
 
 			try
@@ -727,13 +727,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (centerData == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), systemName + " cannot be found on EDSM.");
 			}
 
 			EdsmModels.SystemInfo[] data;
@@ -745,13 +745,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (data.length == 1)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No systems found near " + systemName);
+				MessageQueue.sendMessage(message.getChannel().block(), "No systems found near " + systemName);
 				return;
 			}
 
@@ -767,7 +767,7 @@ public class Edsm extends BotModule
 				output += data[index].name + " (Distance: " + Edsm.calculateDistance(centerData.coords, data[index].coords) + " ly)\n";
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -788,13 +788,13 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String[] arguments = Jeeves.splitArguments(argumentString);
 
 			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a system name.");
 				return;
 			}
 
@@ -812,12 +812,12 @@ public class Edsm extends BotModule
 				catch (NumberFormatException e)
 				{
 					Jeeves.debugException(e);
-					MessageQueue.sendMessage(message.getChannel(), "Invalid value for size.");
+					MessageQueue.sendMessage(message.getChannel().block(), "Invalid value for size.");
 					return;
 				}
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.SystemInfo centerData;
 
 			try
@@ -827,13 +827,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (centerData == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), systemName + " cannot be found on EDSM.");
 			}
 
 			EdsmModels.SystemInfo[] data;
@@ -845,13 +845,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (data.length == 1)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "No systems found near " + systemName);
+				MessageQueue.sendMessage(message.getChannel().block(), "No systems found near " + systemName);
 				return;
 			}
 
@@ -867,7 +867,7 @@ public class Edsm extends BotModule
 				output += data[index].name + " (Distance: " + Edsm.calculateDistance(centerData.coords, data[index].coords) + " ly)\n";
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -888,13 +888,13 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String[] arguments = Jeeves.splitArguments(argumentString);
 
 			if (arguments.length < 3)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Insufficient amount of parameters.\n" + this.getParameters());
+				MessageQueue.sendMessage(message.getChannel().block(), "Insufficient amount of parameters.\n" + this.getParameters());
 				return;
 			}
 
@@ -909,11 +909,11 @@ public class Edsm extends BotModule
 			catch (NumberFormatException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Invalid value for jump range.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Invalid value for jump range.");
 				return;
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.SystemInfo originInfo;
 
 			try
@@ -923,13 +923,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (originInfo == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), origin + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), origin + " cannot be found on EDSM.");
 				return;
 			}
 
@@ -942,13 +942,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (destinationInfo == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), destination + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), destination + " cannot be found on EDSM.");
 			}
 
 			EdsmModels.SystemInfo currentOriginInfo = originInfo;
@@ -969,7 +969,7 @@ public class Edsm extends BotModule
 				catch (IOException e)
 				{
 					Jeeves.debugException(e);
-					MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+					MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 					return;
 				}
 
@@ -1026,7 +1026,7 @@ public class Edsm extends BotModule
 				output = "Total number of jumps: " + jumpNo + "\n" + output;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -1047,13 +1047,13 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String[] arguments = Jeeves.splitArguments(argumentString);
 
 			if (arguments.length < 3)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Insufficient amount of parameters.\n" + this.getParameters());
+				MessageQueue.sendMessage(message.getChannel().block(), "Insufficient amount of parameters.\n" + this.getParameters());
 				return;
 			}
 
@@ -1068,11 +1068,11 @@ public class Edsm extends BotModule
 			catch (NumberFormatException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "Invalid value for jump range.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Invalid value for jump range.");
 				return;
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.SystemInfo originInfo;
 
 			try
@@ -1082,13 +1082,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (originInfo == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), origin + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), origin + " cannot be found on EDSM.");
 				return;
 			}
 
@@ -1101,13 +1101,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (destinationInfo == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), destination + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), destination + " cannot be found on EDSM.");
 			}
 
 			EdsmModels.SystemInfo[] systemBubble;
@@ -1119,13 +1119,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (systemBubble == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
@@ -1156,13 +1156,13 @@ public class Edsm extends BotModule
 
 			if (nextJump == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Unable to find the next jump.");
+				MessageQueue.sendMessage(message.getChannel().block(), "Unable to find the next jump.");
 				return;
 			}
 
 			String jumpDistance = Edsm.calculateDistance(originInfo.coords, nextJump.coords);
 			String output = nextJump.name + " (Jump Distance: " + jumpDistance + " ly) (Distance to " + destinationInfo.name + ": " + Float.toString(nextJumpDistance) + " ly)\n";
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -1183,15 +1183,15 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String systemName)
+		public void execute(Message message, String systemName)
 		{
 			if (systemName.isEmpty() == true)
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to supply as system name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to supply as system name.");
 				return;
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			EdsmModels.SystemInfo data;
 
 			try
@@ -1201,13 +1201,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (data == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), systemName + " cannot be found on EDSM.");
 			}
 
 			String output = "System: " + data.name + "\n";
@@ -1236,7 +1236,7 @@ public class Edsm extends BotModule
 				}
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -1257,17 +1257,17 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String[] arguments = Jeeves.splitArguments(argumentString);
 
 			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a system name.");
 				return;
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			String systemName = arguments[0];
 			String bodyName = null;
 
@@ -1285,13 +1285,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (data == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), systemName + " cannot be found on EDSM.");
 				return;
 			}
 
@@ -1566,11 +1566,11 @@ public class Edsm extends BotModule
 
 			if ((bodyName != null) && (bodyNotFound == true))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the body " + bodyName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the body " + bodyName);
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -1591,17 +1591,17 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String[] arguments = Jeeves.splitArguments(argumentString);
 
 			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a system name.");
 				return;
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			String systemName = arguments[0];
 			String stationName = null;
 
@@ -1619,13 +1619,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (data == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), systemName + " cannot be found on EDSM.");
 				return;
 			}
 
@@ -1659,11 +1659,11 @@ public class Edsm extends BotModule
 
 			if ((stationName != null) && (stationNotFound == true))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the station " + stationName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the station " + stationName);
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 
@@ -1684,17 +1684,17 @@ public class Edsm extends BotModule
 		}
 
 		@Override
-		public void execute(IMessage message, String argumentString)
+		public void execute(Message message, String argumentString)
 		{
 			String[] arguments = Jeeves.splitArguments(argumentString);
 
 			if ((arguments.length == 0) || (arguments[0].isEmpty() == true))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "You need to provide a system name.");
+				MessageQueue.sendMessage(message.getChannel().block(), "You need to provide a system name.");
 				return;
 			}
 
-			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().getLongID());
+			EdsmApi edsmApi = Edsm.getApiObject(message.getGuild().block().getId().asLong());
 			String systemName = arguments[0];
 			String factionName = null;
 
@@ -1712,13 +1712,13 @@ public class Edsm extends BotModule
 			catch (IOException e)
 			{
 				Jeeves.debugException(e);
-				MessageQueue.sendMessage(message.getChannel(), "EDSM communication error.");
+				MessageQueue.sendMessage(message.getChannel().block(), "EDSM communication error.");
 				return;
 			}
 
 			if (data == null)
 			{
-				MessageQueue.sendMessage(message.getChannel(), systemName + " cannot be found on EDSM.");
+				MessageQueue.sendMessage(message.getChannel().block(), systemName + " cannot be found on EDSM.");
 				return;
 			}
 
@@ -1808,11 +1808,11 @@ public class Edsm extends BotModule
 
 			if ((factionName != null) && (factionNotFound == true))
 			{
-				MessageQueue.sendMessage(message.getChannel(), "Cannot find the faction " + factionName);
+				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the faction " + factionName);
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel(), output);
+			MessageQueue.sendMessage(message.getChannel().block(), output);
 		}
 	}
 }
