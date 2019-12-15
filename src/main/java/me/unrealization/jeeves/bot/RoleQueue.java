@@ -34,7 +34,7 @@ public class RoleQueue
 				switch (queueItem.action)
 				{
 				case "add":
-					queueItem.user.addRole(queueItem.role.getId()).block();
+					queueItem.user.addRole(queueItem.role.getId()).doOnSuccess(something -> roleQueue.removeQueueItem()).doOnError(e -> System.out.println(e.getMessage())).block();
 
 					if (queueItem.notificationChannel != null)
 					{
@@ -42,7 +42,7 @@ public class RoleQueue
 					}
 					break;
 				case "remove":
-					queueItem.user.removeRole(queueItem.role.getId()).block();
+					queueItem.user.removeRole(queueItem.role.getId()).doOnSuccess(something -> roleQueue.removeQueueItem()).doOnError(e-> System.out.println(e.getMessage())).block();
 
 					if (queueItem.notificationChannel != null)
 					{
@@ -53,8 +53,6 @@ public class RoleQueue
 					System.out.println("Unknown role queue action " + queueItem.action);
 					break;
 				}
-
-				roleQueue.removeQueueItem();
 			}
 		}
 	}

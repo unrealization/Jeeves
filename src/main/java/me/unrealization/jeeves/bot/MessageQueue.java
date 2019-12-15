@@ -41,8 +41,7 @@ public class MessageQueue
 					channel = (MessageChannel)queueItem.channel;
 				}
 
-				channel.createMessage(queueItem.message).block();
-				messageQueue.removeQueueItem();
+				channel.createMessage(queueItem.message).doOnSuccess(something -> messageQueue.removeQueueItem()).doOnError(e -> System.out.println(e.getMessage())).block();
 			}
 		}
 	}
