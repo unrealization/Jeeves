@@ -309,20 +309,6 @@ public class Jeeves
 				Jeeves.debugException(e);
 			}
 
-			/*if (Jeeves.bot.isLoggedIn() == true)
-			{
-				System.out.println("Logging out.");
-
-				try
-				{
-					Jeeves.bot.logout();
-				}
-				catch (DiscordException e)
-				{
-					Jeeves.debugException(e);
-				}
-			}*/
-
 			if (Jeeves.bot.isConnected() == true)
 			{
 				Jeeves.bot.logout().block();
