@@ -28,7 +28,7 @@ public class Internal extends BotModule
 {
 	public Internal()
 	{
-		this.version = "2.0.0";
+		this.version = "2.0.1";
 
 		this.commandList = new String[31];
 		this.commandList[0] = "Help";
@@ -278,7 +278,7 @@ public class Internal extends BotModule
 				//wait for the queues to finish processing
 			}
 
-			message.getClient().logout();
+			message.getClient().logout().block();
 		}
 	}
 
