@@ -34,7 +34,7 @@ public class MessageQueue
 
 				if (queueItem.channel == null)
 				{
-					channel = queueItem.user.getPrivateChannel().block();
+					channel = (MessageChannel)queueItem.user.getPrivateChannel().block();
 				}
 				else
 				{

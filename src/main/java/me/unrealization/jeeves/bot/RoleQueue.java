@@ -3,8 +3,8 @@ package me.unrealization.jeeves.bot;
 import java.util.ArrayList;
 import java.util.List;
 
-import discord4j.core.object.entity.Channel;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.Role;
 
 public class RoleQueue
@@ -18,7 +18,7 @@ public class RoleQueue
 		public String action = null;
 		public Member user = null;
 		public Role role = null;
-		public Channel notificationChannel = null;
+		public MessageChannel notificationChannel = null;
 	}
 
 	private static class QueueWorker implements Runnable
@@ -72,7 +72,7 @@ public class RoleQueue
 		return RoleQueue.instance;
 	}
 
-	public static void addRoleToUser(Role role, Member user, Channel notificationChannel)
+	public static void addRoleToUser(Role role, Member user, MessageChannel notificationChannel)
 	{
 		RoleQueue roleQueue = RoleQueue.getInstance();
 		QueueItem roleItem = new QueueItem();
@@ -88,7 +88,7 @@ public class RoleQueue
 		RoleQueue.addRoleToUser(role, user, null);
 	}
 
-	public static void removeRoleFromUser(Role role, Member user, Channel notificationChannel)
+	public static void removeRoleFromUser(Role role, Member user, MessageChannel notificationChannel)
 	{
 		RoleQueue roleQueue = RoleQueue.getInstance();
 		QueueItem roleItem = new QueueItem();

@@ -7,8 +7,8 @@ import discord4j.core.event.domain.PresenceUpdateEvent;
 import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.guild.MemberLeaveEvent;
 import discord4j.core.event.domain.guild.MemberUpdateEvent;
-import discord4j.core.object.entity.Channel;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.presence.Presence;
 import discord4j.core.object.presence.Status;
@@ -27,7 +27,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 {
 	public UserLog()
 	{
-		this.version = "1.99.0";
+		this.version = "1.99.1";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetUserLogChannel";
@@ -47,7 +47,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		}
 
 		long channelId = Long.parseLong(channelIdString);
-		Channel channel = event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+		GuildChannel channel = event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 		if (channel == null)
 		{
@@ -81,7 +81,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		}
 
 		long channelId = Long.parseLong(channelIdString);
-		Channel channel = event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+		GuildChannel channel = event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 		if (channel == null)
 		{
@@ -114,7 +114,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		}
 
 		long channelId = Long.parseLong(channelIdString);
-		Channel channel = server.getChannelById(Snowflake.of(channelId)).block();
+		GuildChannel channel = server.getChannelById(Snowflake.of(channelId)).block();
 
 		if (channel == null)
 		{
@@ -196,7 +196,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 			}
 
 			long channelId = Long.parseLong(channelIdString);
-			Channel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+			GuildChannel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 			if (channel == null)
 			{
@@ -248,7 +248,7 @@ public class UserLog extends BotModule implements UserJoinedHandler, UserLeftHan
 		@Override
 		public void execute(Message message, String channelName)
 		{
-			Channel channel = null;
+			GuildChannel channel = null;
 
 			if (channelName.isEmpty() == true)
 			{

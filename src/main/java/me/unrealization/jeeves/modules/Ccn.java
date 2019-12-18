@@ -8,7 +8,7 @@ import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
 import discord4j.core.event.domain.guild.MemberJoinEvent;
-import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.Role;
@@ -36,7 +36,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 	public Ccn()
 	{
-		this.version = "1.99.1";
+		this.version = "1.99.2";
 
 		this.commandList = new String[6];
 		this.commandList[0] = "CcnProximityCheck";
@@ -81,7 +81,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 			MessageQueue.sendMessage(event.getMember(), message);
 		}
 
-		Channel lobby = event.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnLobbyChannelId)).block();
+		GuildChannel lobby = event.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnLobbyChannelId)).block();
 
 		if (lobby == null)
 		{
@@ -164,7 +164,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 			if ((guestRole == null) || (colonistRole == null))
 			{
-				Channel actionLogChannel = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnActionLogChannelId)).block();
+				GuildChannel actionLogChannel = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnActionLogChannelId)).block();
 
 				if (actionLogChannel != null)
 				{
@@ -180,14 +180,14 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 			RoleQueue.removeRoleFromUser(guestRole, message.getAuthorAsMember().block());
 			RoleQueue.addRoleToUser(colonistRole, message.getAuthorAsMember().block());
-			Channel barChannel = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnBarChannelId)).block();
+			GuildChannel barChannel = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnBarChannelId)).block();
 
 			if (barChannel != null)
 			{
 				MessageQueue.sendMessage(barChannel, "Welcome to the Colonia Citizens Network, " + message.getAuthor().get().getMention() + "!");
 			}
 
-			Channel actionLogChannel = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnActionLogChannelId)).block();
+			GuildChannel actionLogChannel = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnActionLogChannelId)).block();
 
 			if (actionLogChannel != null)
 			{
@@ -201,7 +201,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 			boolean kicked = false;
 			message.getGuild().block().kick(message.getAuthor().get().getId()).block();
 			kicked = true;
-			Channel actionLogChannel = message.getGuild().block().getChannelById(Snowflake.of(ccnActionLogChannelId)).block();
+			GuildChannel actionLogChannel = message.getGuild().block().getChannelById(Snowflake.of(ccnActionLogChannelId)).block();
 
 			if (actionLogChannel != null)
 			{
@@ -635,7 +635,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 		@Override
 		public void execute(Message message, String argumentString)
 		{
-			Channel lobby = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnLobbyChannelId)).block();
+			GuildChannel lobby = message.getGuild().block().getChannelById(Snowflake.of(Ccn.ccnLobbyChannelId)).block();
 
 			if (lobby == null)
 			{

@@ -5,8 +5,9 @@ import javax.xml.transform.TransformerException;
 
 import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
-import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.Snowflake;
 import me.unrealization.jeeves.bot.Jeeves;
@@ -20,7 +21,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 {
 	public ModLog()
 	{
-		this.version = "2.0.1";
+		this.version = "2.0.2";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetModLogChannel";
@@ -45,7 +46,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		}
 
 		long channelId = Long.parseLong(channelIdString);
-		Channel channel = event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+		MessageChannel channel = (MessageChannel)event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 		if (channel == null)
 		{
@@ -103,7 +104,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		}
 
 		long channelId = Long.parseLong(channelIdString);
-		Channel channel = event.getMessage().get().getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+		GuildChannel channel = event.getMessage().get().getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 		if (channel == null)
 		{
@@ -165,7 +166,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 			}
 
 			long channelId = Long.parseLong(channelIdString);
-			Channel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+			GuildChannel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 			if (channel == null)
 			{
@@ -217,7 +218,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 		@Override
 		public void execute(Message message, String channelName)
 		{
-			Channel channel = null;
+			GuildChannel channel = null;
 
 			if (channelName.isEmpty() == true)
 			{

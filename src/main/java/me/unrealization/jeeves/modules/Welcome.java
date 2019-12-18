@@ -4,7 +4,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import discord4j.core.event.domain.guild.MemberJoinEvent;
-import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.Snowflake;
@@ -18,7 +18,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 {
 	public Welcome()
 	{
-		this.version = "2.0.0";
+		this.version = "2.0.1";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetWelcomeChannel";
@@ -38,7 +38,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		}
 
 		long channelId = Long.parseLong(channelIdString);
-		Channel channel = event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+		GuildChannel channel = event.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 		if (channel == null)
 		{
@@ -96,7 +96,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 			}
 
 			long channelId = Long.parseLong(channelIdString);
-			Channel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+			GuildChannel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 
 			if (channel == null)
 			{
@@ -148,7 +148,7 @@ public class Welcome extends BotModule implements UserJoinedHandler
 		@Override
 		public void execute(Message message, String channelName)
 		{
-			Channel channel = null;
+			GuildChannel channel = null;
 
 			if (channelName.isEmpty() == true)
 			{

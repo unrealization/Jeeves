@@ -12,6 +12,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import discord4j.core.object.entity.Channel;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.Role;
@@ -27,7 +28,7 @@ public class Internal extends BotModule
 {
 	public Internal()
 	{
-		this.version = "2.0.2";
+		this.version = "2.0.3";
 
 		this.commandList = new String[31];
 		this.commandList[0] = "Help";
@@ -731,7 +732,7 @@ public class Internal extends BotModule
 			for (int channelIndex = 0; channelIndex < ignoredChannelList.size(); channelIndex++)
 			{
 				Long channelId = Long.parseLong(ignoredChannelList.get(channelIndex));
-				Channel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
+				GuildChannel channel = message.getGuild().block().getChannelById(Snowflake.of(channelId)).block();
 				output += channel.getMention() + "\n";
 			}
 
@@ -772,7 +773,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Channel channel = Jeeves.findChannel(message.getGuild().block(), channelName);
+			GuildChannel channel = Jeeves.findChannel(message.getGuild().block(), channelName);
 
 			if (channel == null)
 			{
@@ -850,7 +851,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			Channel channel = Jeeves.findChannel(message.getGuild().block(), channelName);
+			GuildChannel channel = Jeeves.findChannel(message.getGuild().block(), channelName);
 
 			if (channel == null)
 			{
