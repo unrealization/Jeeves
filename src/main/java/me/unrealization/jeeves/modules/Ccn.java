@@ -36,7 +36,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 	public Ccn()
 	{
-		this.version = "1.99.0";
+		this.version = "1.99.1";
 
 		this.commandList = new String[6];
 		this.commandList[0] = "CcnProximityCheck";
@@ -168,11 +168,11 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 				if (actionLogChannel != null)
 				{
-					MessageQueue.sendMessage(actionLogChannel, "Error: Cannot tag up " + message.getAuthor().get().getUsername() + ", the IDs role the guest- and/or colonist-role must have changed!");
+					MessageQueue.sendMessage(actionLogChannel, "Error: Cannot tag up " + message.getAuthorAsMember().block().getDisplayName() + ", the IDs role the guest- and/or colonist-role must have changed!");
 				}
 				else
 				{
-					System.out.println("Error: Cannot tag up " + message.getAuthor().get().getUsername() + ", the IDs role the guest- and/or colonist-role must have changed!");
+					System.out.println("Error: Cannot tag up " + message.getAuthorAsMember().block().getDisplayName() + ", the IDs role the guest- and/or colonist-role must have changed!");
 				}
 
 				return true;
@@ -191,7 +191,7 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 
 			if (actionLogChannel != null)
 			{
-				MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().get().getUsername() + " agrees with the guidelines and has therefore been tagged up.");
+				MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthorAsMember().block().getDisplayName() + " agrees with the guidelines and has therefore been tagged up.");
 			}
 
 			return true;
@@ -207,11 +207,11 @@ public class Ccn extends BotModule implements UserJoinedHandler, MessageReceived
 			{
 				if (kicked == true)
 				{
-					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().get().getUsername() + " did not agree with the guidelines and has therefore been kicked.");
+					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthorAsMember().block().getDisplayName() + " did not agree with the guidelines and has therefore been kicked.");
 				}
 				else
 				{
-					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthor().get().getUsername() + " did not agree with the guidelines, but could not be kicked.");
+					MessageQueue.sendMessage(actionLogChannel, "The user " + message.getAuthorAsMember().block().getDisplayName() + " did not agree with the guidelines, but could not be kicked.");
 				}
 			}
 

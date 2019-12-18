@@ -11,7 +11,6 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.Role;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.Snowflake;
 import me.unrealization.jeeves.bot.Jeeves;
@@ -25,7 +24,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 {
 	public Roles()
 	{
-		this.version = "2.0.0";
+		this.version = "2.0.1";
 
 		this.commandList = new String[13];
 		this.commandList[0] = "GetRoles";
@@ -243,7 +242,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			if (message.getAuthorAsMember().block().getRoleIds().contains(role.getId()) == true)
 			{
-				MessageQueue.sendMessage(message.getChannel().block(), message.getAuthor().get().getUsername() + " already has the role " + role.getName());
+				MessageQueue.sendMessage(message.getChannel().block(), message.getAuthorAsMember().block().getDisplayName() + " already has the role " + role.getName());
 				return;
 			}
 
@@ -311,7 +310,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			if (message.getAuthorAsMember().block().getRoleIds().contains(role.getId()) == false)
 			{
-				MessageQueue.sendMessage(message.getChannel().block(), message.getAuthor().get().getUsername() + " does not have the role " + role.getName());
+				MessageQueue.sendMessage(message.getChannel().block(), message.getAuthorAsMember().block().getDisplayName() + " does not have the role " + role.getName());
 				return;
 			}
 
@@ -357,9 +356,10 @@ public class Roles extends BotModule implements UserJoinedHandler
 			if (role == null)
 			{
 				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the role " + roleName);
+				return;
 			}
 
-			List<User> userList = new ArrayList<User>();
+			List<Member> userList = new ArrayList<Member>();
 			Iterable<Member> serverUserList = message.getGuild().block().getMembers().toIterable();
 
 			for (Member serverUser : serverUserList)
@@ -380,7 +380,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			for (int userIndex = 0; userIndex < userList.size(); userIndex++)
 			{
-				output += "\t" + userList.get(userIndex).getUsername() + "\n";
+				output += "\t" + userList.get(userIndex).getDisplayName() + "\n";
 			}
 
 			MessageQueue.sendMessage(message.getAuthor().get(), output);
@@ -426,10 +426,11 @@ public class Roles extends BotModule implements UserJoinedHandler
 			if (role == null)
 			{
 				MessageQueue.sendMessage(message.getChannel().block(), "Cannot find the role " + roleName);
+				return;
 			}
 
 			Iterable<Member> userList = message.getGuild().block().getMembers().toIterable();
-			List<User> usersMissingRole = new ArrayList<User>();
+			List<Member> usersMissingRole = new ArrayList<Member>();
 
 			for (Member user : userList)
 			{
@@ -451,7 +452,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			for (int userIndex = 0; userIndex < usersMissingRole.size(); userIndex++)
 			{
-				output += "\t" + usersMissingRole.get(userIndex).getUsername() + "\n";
+				output += "\t" + usersMissingRole.get(userIndex).getDisplayName() + "\n";
 			}
 
 			MessageQueue.sendMessage(message.getAuthor().get(), output);
@@ -486,7 +487,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 		public void execute(Message message, String argumentString)
 		{
 			Iterable<Member> userList = message.getGuild().block().getMembers().toIterable();
-			List<User> untaggedUsers = new ArrayList<User>();
+			List<Member> untaggedUsers = new ArrayList<Member>();
 
 			for (Member user : userList)
 			{
@@ -508,7 +509,7 @@ public class Roles extends BotModule implements UserJoinedHandler
 
 			for (int userIndex = 0; userIndex < untaggedUsers.size(); userIndex++)
 			{
-				output += "\t" + untaggedUsers.get(userIndex).getUsername() + "\n";
+				output += "\t" + untaggedUsers.get(userIndex).getDisplayName() + "\n";
 			}
 
 			MessageQueue.sendMessage(message.getAuthor().get(), output);

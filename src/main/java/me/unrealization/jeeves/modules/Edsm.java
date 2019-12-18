@@ -8,8 +8,8 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
 import me.unrealization.jeeves.bot.Jeeves;
 import me.unrealization.jeeves.bot.MessageQueue;
@@ -25,7 +25,7 @@ public class Edsm extends BotModule
 
 	public Edsm() throws ParserConfigurationException, SAXException
 	{
-		this.version = "1.99.0";
+		this.version = "1.99.1";
 
 		this.commandList = new String[18];
 		this.commandList[0] = "GetUseEdsmBetaServer";
@@ -272,11 +272,11 @@ public class Edsm extends BotModule
 		@Override
 		public void execute(Message message, String userName)
 		{
-			User user;
+			Member user;
 
 			if (userName.isEmpty() == true)
 			{
-				user = message.getAuthor().get();
+				user = message.getAuthorAsMember().block();
 			}
 			else
 			{
@@ -299,7 +299,7 @@ public class Edsm extends BotModule
 				}
 				else
 				{
-					MessageQueue.sendMessage(message.getChannel().block(), user.getUsername() + " has not registered an EDSM username.");
+					MessageQueue.sendMessage(message.getChannel().block(), user.getDisplayName() + " has not registered an EDSM username.");
 				}
 
 				return;
@@ -313,7 +313,7 @@ public class Edsm extends BotModule
 			}
 			else
 			{
-				MessageQueue.sendMessage(message.getChannel().block(), "The EDSM username for " + user.getUsername() + " is: " + edsmUserName);
+				MessageQueue.sendMessage(message.getChannel().block(), "The EDSM username for " + user.getDisplayName() + " is: " + edsmUserName);
 			}
 		}
 	}

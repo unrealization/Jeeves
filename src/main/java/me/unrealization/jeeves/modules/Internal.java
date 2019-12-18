@@ -15,7 +15,6 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.Role;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.Snowflake;
 import me.unrealization.jeeves.bot.Jeeves;
@@ -28,7 +27,7 @@ public class Internal extends BotModule
 {
 	public Internal()
 	{
-		this.version = "2.0.1";
+		this.version = "2.0.2";
 
 		this.commandList = new String[31];
 		this.commandList[0] = "Help";
@@ -989,7 +988,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			User user = Jeeves.findUser(message.getGuild().block(), userName);
+			Member user = Jeeves.findUser(message.getGuild().block(), userName);
 
 			if (user == null)
 			{
@@ -999,7 +998,7 @@ public class Internal extends BotModule
 
 			if (Jeeves.isIgnored(message.getGuild().block().getId().asLong(), user) == true)
 			{
-				MessageQueue.sendMessage(message.getChannel().block(), "The user " + user.getUsername() + " is being ignored already.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The user " + user.getDisplayName() + " is being ignored already.");
 				return;
 			}
 
@@ -1030,7 +1029,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel().block(), "The following user is now being ignored: " + user.getUsername());
+			MessageQueue.sendMessage(message.getChannel().block(), "The following user is now being ignored: " + user.getDisplayName());
 		}
 	}
 
@@ -1067,7 +1066,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			User user = Jeeves.findUser(message.getGuild().block(), userName);
+			Member user = Jeeves.findUser(message.getGuild().block(), userName);
 
 			if (user == null)
 			{
@@ -1096,7 +1095,7 @@ public class Internal extends BotModule
 
 			if (removed == false)
 			{
-				MessageQueue.sendMessage(message.getChannel().block(), "The user " + user.getUsername() + " is not being ignored.");
+				MessageQueue.sendMessage(message.getChannel().block(), "The user " + user.getDisplayName() + " is not being ignored.");
 				return;
 			}
 
@@ -1113,7 +1112,7 @@ public class Internal extends BotModule
 				return;
 			}
 
-			MessageQueue.sendMessage(message.getChannel().block(), "The following user is no longer being ignored: " + user.getUsername());
+			MessageQueue.sendMessage(message.getChannel().block(), "The following user is no longer being ignored: " + user.getDisplayName());
 		}
 	}
 
@@ -1705,11 +1704,11 @@ public class Internal extends BotModule
 		@Override
 		public void execute(Message message, String userName)
 		{
-			User user = null;
+			Member user = null;
 
 			if (userName.isEmpty() == true)
 			{
-				user = message.getAuthor().get();
+				user = message.getAuthorAsMember().block();
 			}
 			else
 			{
@@ -1723,7 +1722,7 @@ public class Internal extends BotModule
 			}
 
 			String idString = user.getId().asString();
-			MessageQueue.sendMessage(message.getChannel().block(), "The ID of the user " + user.getUsername() + " is " + idString);
+			MessageQueue.sendMessage(message.getChannel().block(), "The ID of the user " + user.getDisplayName() + " is " + idString);
 		}
 	}
 

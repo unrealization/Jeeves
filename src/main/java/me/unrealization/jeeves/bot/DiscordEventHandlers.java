@@ -32,6 +32,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.Role;
 import discord4j.core.object.entity.User;
@@ -211,7 +212,7 @@ public class DiscordEventHandlers
 
 			for (Guild server: serverList)
 			{
-				User user = server.getMemberById(event.getMemberId()).block();
+				Member user = server.getMemberById(event.getMemberId()).block();
 
 				if (user == null)
 				{
@@ -255,7 +256,7 @@ public class DiscordEventHandlers
 
 			for (Guild server: serverList)
 			{
-				User user = server.getMemberById(event.getUserId()).block();
+				Member user = server.getMemberById(event.getUserId()).block();
 
 				if (user == null)
 				{
@@ -586,7 +587,7 @@ public class DiscordEventHandlers
 					}
 				}
 
-				System.out.println("Executing " + command.getClass().getSimpleName() + " for " + message.getAuthor().get().getUsername() + " (" + message.getGuild().block().getName() + ": " + message.getChannel().block().getMention() + ")");
+				System.out.println("Executing " + command.getClass().getSimpleName() + " for " + message.getAuthorAsMember().block().getDisplayName() + " (" + message.getGuild().block().getName() + ": " + message.getChannel().block().getMention() + ")");
 				String argumentString = String.join(" ", arguments);
 				CommandQueue.runCommand(command, message, argumentString);
 			}

@@ -20,7 +20,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 {
 	public ModLog()
 	{
-		this.version = "2.0.0";
+		this.version = "2.0.1";
 
 		this.commandList = new String[2];
 		this.commandList[0] = "GetModLogChannel";
@@ -65,8 +65,8 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 			return;
 		}
 
-		String oldAuthor = event.getOld().get().getAuthor().get().getUsername();
-		String newAuthor = event.getMessage().block().getAuthor().get().getUsername();
+		String oldAuthor = event.getOld().get().getAuthorAsMember().block().getDisplayName();
+		String newAuthor = event.getMessage().block().getAuthorAsMember().block().getDisplayName();
 		String output = Jeeves.getUtcTime() + ": " + newAuthor + " has edited one of ";
 
 		if (oldAuthor.equals(newAuthor) == true)
@@ -123,7 +123,7 @@ public class ModLog extends BotModule implements MessageUpdateHandler, MessageDe
 			return;
 		}
 
-		String output = Jeeves.getUtcTime() + ": One of " + event.getMessage().get().getAuthor().get().getUsername() + "'s messages has been deleted in " + event.getChannel().block().getMention() + "\n";
+		String output = Jeeves.getUtcTime() + ": One of " + event.getMessage().get().getAuthorAsMember().block().getDisplayName() + "'s messages has been deleted in " + event.getChannel().block().getMention() + "\n";
 		output += "=============================================\n";
 		output += event.getMessage().get().getContent().get() + "\n";
 		output += "=============================================\n";
