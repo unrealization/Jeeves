@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>com.discord4j</groupId>
 			<artifactId>discord4j-core</artifactId>
-			<version>3.0.10</version>
+			<version>3.0.12</version>
 			<!-- <classifier>shaded</classifier> -->
 		</dependency>
 		<dependency>
@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.3.1</version>
+			<version>2.3.2</version>
 		</dependency>
 	</dependencies>
 
