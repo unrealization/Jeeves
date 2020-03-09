@@ -120,17 +120,30 @@ public class DiscordEventHandlers
 			}
 
 			String respondOnPrefix = (String)Jeeves.serverConfig.getValue(event.getGuildId().get().asLong(), "respondOnPrefix");
+			String respondOnMention = (String)Jeeves.serverConfig.getValue(event.getGuildId().get().asLong(), "respondOnMention");
+			String messageContent = message.getContent().get();
 
-			if (respondOnPrefix.equals("0") == true)
+			if ((respondOnPrefix.equals("1") == true) && (messageContent.startsWith((String)Jeeves.serverConfig.getValue(event.getGuildId().get().asLong(), "commandPrefix")) == true))
 			{
+				DiscordEventHandlers.handleMessage(message);
 				return;
 			}
 
-			String messageContent = message.getContent().get();
-
-			if (messageContent.startsWith((String)Jeeves.serverConfig.getValue(event.getGuildId().get().asLong(), "commandPrefix")) == true)
+			if (respondOnMention.equals("1") == true)
 			{
-				DiscordEventHandlers.handleMessage(message);
+				Member botUser = Jeeves.bot.getSelf().block().asMember(message.getGuild().block().getId()).block();
+
+				if (messageContent.startsWith(botUser.getMention()) == true)
+				{
+					DiscordEventHandlers.handleMessage(message);
+					return;
+				}
+
+				if (messageContent.startsWith(botUser.getNicknameMention()) == true)
+				{
+					DiscordEventHandlers.handleMessage(message);
+					return;
+				}
 			}
 		}
 	}
@@ -413,7 +426,7 @@ public class DiscordEventHandlers
 		}
 
 		String messageContent = message.getContent().get().trim();
-		User botUser = message.getClient().getSelf().block();
+		Member botUser = Jeeves.bot.getSelf().block().asMember(message.getGuild().block().getId()).block();
 		int cutLength = 0;
 		String commandPrefix = (String)Jeeves.serverConfig.getValue(message.getGuild().block().getId().asLong(), "commandPrefix");
 
@@ -425,18 +438,14 @@ public class DiscordEventHandlers
 		{
 			cutLength = botUser.getMention().length();
 		}
-		/*else if (messageContent.startsWith(botUser.mention(true)))
+		else if (messageContent.startsWith(botUser.getNicknameMention()))
 		{
-			cutLength = botUser.mention(true).length();
+			cutLength = botUser.getNicknameMention().length();
 		}
-		else if (messageContent.startsWith(botUser.mention(false)))
-		{
-			cutLength = botUser.mention(false).length();
-		}*/
 		else
 		{
 			System.out.println("What is this message doing here?");
-			System.out.println("Message: " + message.getContent());
+			System.out.println("Message: " + messageContent);
 		}
 		
 		if (cutLength > 0)
