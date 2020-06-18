@@ -347,7 +347,7 @@ public class Jeeves
 
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		Jeeves.loadModules();
-		Jeeves.bot = new DiscordClientBuilder((String)Jeeves.clientConfig.getValue("loginToken")).build();
+		Jeeves.bot = DiscordClientBuilder.create((String)Jeeves.clientConfig.getValue("loginToken")).build();
 		EventDispatcher dispatcher = Jeeves.bot.getEventDispatcher();
 		dispatcher.on(ReadyEvent.class).subscribe(event -> new DiscordEventHandlers.ReadyEventListener().execute(event));
 		Jeeves.bot.login().block();
